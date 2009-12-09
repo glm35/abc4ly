@@ -1,24 +1,26 @@
 * Feuille de route
 +Ouvrir le fichier abc+
 +Reconnaître le champ informatif "titre" (T)+
-+Reconnaître le champ informatif "compositeur" (C)+
-+Reconnaître le champ informatif "rythme" (R)+
-Ignorer les commentaires
-Ignorer les lignes vides
-
-+Ignorer les champs informatif valides non gérés: "any line beginning+
-+with a letter in the range A-Z and immediately followed by a : is
-+interpreted as a field".+
 
 Un morceau peut avoir plusieurs titres qui peuvent même apparaître au
 milieu des notes. Le titre du morceau pour lilypond sera le premier
 champ titre rencontré.
 
-+Vérifier que pas de problème d'analyse quand le fichier ne termine pas+
-+par une ligne vide.+
++Reconnaître le champ informatif "compositeur" (C)+
++Reconnaître le champ informatif "rythme" (R)+
+
++Ignorer les champs informatif valides non gérés: "any line beginning+
++with a letter in the range A-Z and immediately followed by a : is
++interpreted as a field".+
 
 Vérifier que les champs informatifs réservés à l'entête ne se retrouvent
 pas ailleurs dans le morceau.
+
++Ignorer les commentaires+
++Ignorer les lignes vides+
+
++Vérifier que pas de problème d'analyse quand le fichier ne termine pas+
++par une ligne vide.+
 
 * But du jeu
 Avoir un abc2ly qui marche pour tous les .abc du tunebook.
