@@ -1,0 +1,120 @@
+* Feuille de route
++Ouvrir le fichier abc+
++Reconnaître le champ informatif "titre" (T)+
+Reconnaître le champ informatif "compositeur" (C)
+Reconnaître le champ informatif "rythme" (R)
+Ignorer les commentaires
+Ignorer les lignes vides
+
+Ignorer les champs informatif valides non gérés: "any line beginning with a letter in the range A-Z and immediately followed by a : is interpreted as a field".
+
+Un morceau peut avoir plusieurs titres qui peuvent même apparaître au milieu des notes. Le titre du morceau pour lilypond sera le premier champ titre rencontré.
+
+Vérifier que pas de problème d'analyse quand le fichier ne termine pas par une ligne vide.
+
+Vérifier que les champs informatifs réservés à l'entête ne se retrouvent pas ailleurs dans le morceau.
+
+* But du jeu
+Avoir un abc2ly qui marche pour tous les .abc du tunebook.
+
+Prendre en main la méthode TDD.
+
+Améliorer ma maîtrise de Python.
+
+* Stratégie
+Ré-écrire abc2ly en Python en utilisant la méthode TDD et en se
+focalisant sur les spécifications "abc.txt"
+
+En parallèle écrire un jeu de tests de régressions. S'inspirer du (et à
+terme, s'intégrer dans le) système de tests de régressions de lilypond
+("make test-baseline").
+
+* Principe des tests
+Tests unitaires: utilisation du module unittest de Python (clone de
+JUnit, l'environnement de test utilisé pour illustrer TDD).
+
+Tests fonctionnels: pour chaque test de la base, comparaison automatique
+de la sortie de abc2ly (.ly) avec un fichier .ly de référence. Pour
+valider les .ly de référence: la première fois, comparer le fichier .abc
+avec le résultat graphique de lilypond (e.g. page web qui met en vis à
+vis le code abc et la partition). Les fois suivantes, comparer la
+nouvelle partition (abc=>ly=>png) à la partition de référence.
+
+En résumé, 3 outils:
+  - abc2ly-test-ref (abc_vs_png) => génération de snippets de référence
+    (.ly et .png) et d'une page web
+  - abc2ly-test
+    => génération de nouveaux snippets .ly
+    => comparaison texte de ces snippets avec les snippets de
+    référence. Création d'un rapport.
+    => génération de nouveaux snippets .png (et log des erreurs)
+    => génération d'une page web qui met les snippets .png en relation
+    avec les snippets de référence en faisant apparaître les différences
+    idem les tests de régression de lilypond et en affichant les
+    statistiques.
+
+* Design de abc4ly.py
+Nom du programme: abc4ly.py
+
+Base de l'analyseur: 
+- 1 ligne de texte
+- type: commentaire (%) ou ligne vide, champ informatif, musique.
+
+Pour chaque ligne de texte:
+    - commentaire: on ignore la ligne
+    - ligne vide: on ignore la ligne
+    - champ informatif: on vérifie la syntaxe, on extrait l'information
+      en supprimant les caractères blancs en trop
+
+* Gestion des champs informatifs
+On retient les champs informatifs suivants:
+
+Pour l'entête (titre, auteur, type de morceau):
+
+    dans un premier temps:
+
+Field name            header tune elsewhere Used by Examples and notes
+==========            ====== ==== ========= ======= ==================
+C:composer            yes                           C:Trad.
+R:rhythm              yes         yes       index   R:R, R:reel
+T:title               second yes                    T:Paddy O'Rafferty
+
+    dans un second temps, pourquoi pas:
+
+Field name            header tune elsewhere Used by Examples and notes
+==========            ====== ==== ========= ======= ==================
+D:discography         yes                   archive D:Chieftans IV
+H:history             yes         yes       archive H:This tune said to ...
+
+
+Pour la musique:
+
+Field name            header tune elsewhere Used by Examples and notes
+==========            ====== ==== ========= ======= ==================
+K:key                 last   yes                    K:G, K:Dm, K:AMix
+L:default note length yes    yes                    L:1/4, L:1/8
+M:meter               yes    yes  yes               M:3/4, M:4/4
+Q:tempo               yes    yes                    Q:200, Q:C2=200
+
+
+Champs ignorés:
+
+Field name            header tune elsewhere Used by Examples and notes
+==========            ====== ==== ========= ======= ==================
+A:area                yes                           A:Donegal, A:Bampton
+B:book                yes         yes       archive B:O'Neills
+E:elemskip            yes    yes                    see Line Breaking
+F:file name                         yes               see index.tex
+G:group               yes         yes       archive G:flute
+I:information         yes         yes       playabc
+N:notes               yes                           N:see also O'Neills - 234
+O:origin              yes         yes       index   O:I, O:Irish, O:English
+P:parts               yes    yes                    P:ABAC, P:A, P:B
+S:source              yes                           S:collected in Brittany
+W:words                      yes                    W:Hey, the dusty miller
+X:reference number    first                         X:1, X:2
+Z:transcription note  yes                           Z:from photocopy
+
+Les champs spécifiés dans abc.txt mais non traités par myabc2ly sont
+ignorés silencieusement. La découverte d'un champ informatif non
+spécifié génère l'affichage d'un warning.
