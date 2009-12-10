@@ -22,6 +22,11 @@ class TestInformationFields(unittest.TestCase):
         abc4ly.convert("regression/header.abc", "")
         self.assertEqual(abc4ly.title, "Hello, world!")
 
+    def test_several_titles(self):
+        # The first title is THE title
+        abc4ly.convert("regression/header_with_several_titles.abc", "")
+        self.assertEqual(abc4ly.title, "Hello, world!")
+
     def test_composer(self):
         abc4ly.convert("regression/header.abc", "")
         self.assertEqual(abc4ly.composer, "M. Foo")

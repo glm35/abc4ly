@@ -2,9 +2,9 @@
 +Ouvrir le fichier abc+
 +Reconnaître le champ informatif "titre" (T)+
 
-Un morceau peut avoir plusieurs titres qui peuvent même apparaître au
-milieu des notes. Le titre du morceau pour lilypond sera le premier
-champ titre rencontré.
++Un morceau peut avoir plusieurs titres qui peuvent même apparaître au+
++milieu des notes. Le titre du morceau pour lilypond sera le premier+
++champ titre rencontré.+
 
 +Reconnaître le champ informatif "compositeur" (C)+
 +Reconnaître le champ informatif "rythme" (R)+
@@ -21,6 +21,21 @@ pas ailleurs dans le morceau.
 
 +Vérifier que pas de problème d'analyse quand le fichier ne termine pas+
 +par une ligne vide.+
+
+Générer l'entête du fichier lilypond:
+    numéro de version
+    titre, auteur, type (entre parenthèses après le titre sauf si le
+    type apparaît dans le titre)
+    générer le MIDI par défaut (permet de vérifier la conversion à l'oreille)
+
+Utiliser les vérificateurs de mesure
+
+Une mesure par ligne de texte
+
+Identer les accolades (4 espaces)
+
+Reconnaître les accords
+
 
 * But du jeu
 Avoir un abc2ly qui marche pour tous les .abc du tunebook.

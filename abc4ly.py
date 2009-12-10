@@ -7,6 +7,25 @@ title = ""
 composer = ""
 rythm = ""
 
+def dump_template():
+    pass
+#\version "2.12.2"
+#
+#melody = \relative c' {
+#  \clef treble
+#  \key c \major
+#  \time 4/4
+#  
+#  a4 b c d
+#}
+#
+#\score {
+#  \new Staff \melody
+#  \layout { }
+#  \midi { }
+#}
+
+
 def process_info_line(line):
     raw_field = line[2:] # Remove the leading "T:" or so
     # Remove leading/trailing spaces, and substititue any occurence
@@ -14,7 +33,8 @@ def process_info_line(line):
     nice_field = string.join(raw_field.split(), " ")
     if line[0] == 'T':
         global title
-        title = nice_field
+        if title == "":
+            title = nice_field
     elif line[0] == 'C':
         global composer
         composer = nice_field
