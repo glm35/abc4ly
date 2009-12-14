@@ -1,4 +1,33 @@
 * Feuille de route
+** P0
+Extraire et faire apparaître dans l'entête "meter" le type de morceau (jig,
+reel, ...) si il est donné dans le .abc
+
+Reconnaître le champ "signature rythmique" ou "mesure" (meter): 4/4, C,
+C|, ...
+
+Reconnaître le champ key
+
+Notation des modes? Dans abc.txt, exemple Dmix = f# + c# + gnat. Est-ce
+que ça se retrouve dans la musique écrite?
+
+Utiliser les vérificateurs de mesure
+
+Une mesure par ligne de texte
+
+Identer les accolades (4 espaces)
+
+** P1
+Reconnaître le champ tempo
+
+Vérifier que les champs informatifs réservés à l'entête ne se retrouvent
+pas ailleurs dans le morceau.
+
+Reconnaître les accords
+
+Si un nom de fichier lilypond n'est pas spécifié, sortir sur stdout
+
+** Done
 +Ouvrir le fichier abc+
 +Reconnaître le champ informatif "titre" (T)+
 
@@ -13,31 +42,19 @@
 +with a letter in the range A-Z and immediately followed by a : is
 +interpreted as a field".+
 
-Vérifier que les champs informatifs réservés à l'entête ne se retrouvent
-pas ailleurs dans le morceau.
-
 +Ignorer les commentaires+
 +Ignorer les lignes vides+
 
 +Vérifier que pas de problème d'analyse quand le fichier ne termine pas+
 +par une ligne vide.+
 
-Générer l'entête du fichier lilypond:
++Générer l'entête du fichier lilypond:+
     +numéro de version+
     +titre+
     +auteur+
-    type (entre parenthèses après le titre sauf si le type apparaît dans le titre)
     +générer le MIDI par défaut (permet de vérifier la conversion à l'oreille)+
 
-Utiliser les vérificateurs de mesure
-
-Une mesure par ligne de texte
-
-Identer les accolades (4 espaces)
-
-Reconnaître les accords
-
-Si un nom de fichier lilypond n'est pas spécifié, sortir sur stdout
+** Wontdo
 
 * But du jeu
 Avoir un abc2ly qui marche pour tous les .abc du tunebook.
