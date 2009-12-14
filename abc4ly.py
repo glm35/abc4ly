@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
+from __future__ import print_function
 import string
 
 title = ""
@@ -42,23 +43,26 @@ def convert(abc_filename, ly_filename):
             return
 
         with open(ly_filename, 'w') as ly_file:
-            print >> ly_file, r'''\version "2.12.2"
+            # Warning: with format(), curly braces must be escaped by
+            # doubling them!
+            ly_file.write(r'''\version "2.12.2"
 
-\header {
-  title = "%s"
-  composer = "%s"
-}
+\header {{
+  title = "{0}"
+  composer = "{1}"
+}}
 
-melody = \relative c' {
+melody = \relative c' {{
   \clef treble
   \key c \major
   \time 4/4
   
   a4 b c d
-}
+}}
 
-\score {
+\score {{
   \new Staff \melody
-  \layout { }
-  \midi { }
-}''' % (title, composer)
+  \layout {{ }}
+  \midi {{ }}
+}}
+'''.format(title, composer))

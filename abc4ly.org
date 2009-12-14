@@ -48,7 +48,8 @@ Améliorer ma maîtrise de Python.
 
 * Stratégie
 Ré-écrire abc2ly en Python en utilisant la méthode TDD et en se
-focalisant sur les spécifications "abc.txt"
+focalisant sur les spécifications "abc.txt". Python 2.6 compatible
+Python 3 partout où c'est possible.
 
 En parallèle écrire un jeu de tests de régressions. S'inspirer du (et à
 terme, s'intégrer dans le) système de tests de régressions de lilypond
