@@ -3,6 +3,7 @@
 
 import abc4ly
 import unittest
+import filecmp
 
 # unittest reminder:
 # assert functions: assertEqual(), assertRaises() and assert_(condition)
@@ -50,6 +51,15 @@ class TestMisc(unittest.TestCase):
     def test_blank_lines(self):
         # A mix of empty lines, spaces and tabs
         abc4ly.convert("regression/header_with_blank_lines.abc", "")
+
+class TestOutput(unittest.TestCase):
+
+    def test_hello_world(self):
+        # A very simple, very basic example
+        abc4ly.convert("regression/hello_world.abc",
+                       "regression-out/hello_world.ly")
+        self.assert_(filecmp.cmp("regression-out/hello_world.ly",
+                                 "regression-ref/hello_world.ly"))
 
 if __name__ == '__main__':
     unittest.main()

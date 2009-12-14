@@ -23,10 +23,11 @@ pas ailleurs dans le morceau.
 +par une ligne vide.+
 
 Générer l'entête du fichier lilypond:
-    numéro de version
-    titre, auteur, type (entre parenthèses après le titre sauf si le
-    type apparaît dans le titre)
-    générer le MIDI par défaut (permet de vérifier la conversion à l'oreille)
+    +numéro de version+
+    +titre+
+    +auteur+
+    type (entre parenthèses après le titre sauf si le type apparaît dans le titre)
+    +générer le MIDI par défaut (permet de vérifier la conversion à l'oreille)+
 
 Utiliser les vérificateurs de mesure
 
@@ -36,6 +37,7 @@ Identer les accolades (4 espaces)
 
 Reconnaître les accords
 
+Si un nom de fichier lilypond n'est pas spécifié, sortir sur stdout
 
 * But du jeu
 Avoir un abc2ly qui marche pour tous les .abc du tunebook.
