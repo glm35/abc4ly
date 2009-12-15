@@ -1,8 +1,5 @@
 * Feuille de route
 ** P0
-Extraire et faire apparaître dans l'entête "meter" le type de morceau (jig,
-reel, ...) si il est donné dans le .abc
-
 Reconnaître le champ "signature rythmique" ou "mesure" (meter): 4/4, C,
 C|, ...
 
@@ -53,6 +50,12 @@ Si un nom de fichier lilypond n'est pas spécifié, sortir sur stdout
     +titre+
     +auteur+
     +générer le MIDI par défaut (permet de vérifier la conversion à l'oreille)+
+
++Extraire et faire apparaître dans l'entête "meter" le type de morceau (jig+
++reel, ...) si il est donné dans le .abc+
+    +R:<not empty> => meter+
+    +R: absent => not meter+
+    +R:<empty> => not meter+
 
 ** Wontdo
 

@@ -20,30 +20,30 @@ class TestFileOperations(unittest.TestCase):
 class TestInformationFields(unittest.TestCase):
 
     def test_title(self):
-        abc4ly.convert("regression/header.abc", "")
-        self.assertEqual(abc4ly.title, "Hello, world!")
+        header = abc4ly.convert("regression/header.abc", "")
+        self.assertEqual(header['title'], "Hello, world!")
 
     def test_several_titles(self):
         # The first title is THE title
-        abc4ly.convert("regression/header_with_several_titles.abc", "")
-        self.assertEqual(abc4ly.title, "Hello, world!")
+        header = abc4ly.convert("regression/header_with_several_titles.abc", "")
+        self.assertEqual(header['title'], "Hello, world!")
 
     def test_composer(self):
-        abc4ly.convert("regression/header.abc", "")
-        self.assertEqual(abc4ly.composer, "M. Foo")
+        header = abc4ly.convert("regression/header.abc", "")
+        self.assertEqual(header['composer'], "M. Foo")
 
     def test_rythm(self):
-        abc4ly.convert("regression/header.abc", "")
-        self.assertEqual(abc4ly.rythm, "reel")
+        header = abc4ly.convert("regression/header.abc", "")
+        self.assertEqual(header['rythm'], "reel")
 
     def test_other(self):
-        abc4ly.convert("regression/header.abc", "")
+        header = abc4ly.convert("regression/header.abc", "")
 
 class TestMisc(unittest.TestCase):
 
     def test_no_ending_empty_line(self):
-        abc4ly.convert("regression/header_no_endl.abc", "")
-        self.assertEqual(abc4ly.title, "Hello, world!")
+        header = abc4ly.convert("regression/header_no_endl.abc", "")
+        self.assertEqual(header['title'], "Hello, world!")
 
     def test_comments(self):
         abc4ly.convert("regression/header_with_comments.abc", "")
@@ -60,6 +60,20 @@ class TestOutput(unittest.TestCase):
                        "regression-out/hello_world.ly")
         self.assert_(filecmp.cmp("regression-out/hello_world.ly",
                                  "regression-ref/hello_world.ly"))
+
+    def test_hello_world_reel(self):
+        # Check that the meter field is written
+        abc4ly.convert("regression/hello_world_reel.abc",
+                       "regression-out/hello_world_reel.ly")
+        self.assert_(filecmp.cmp("regression-out/hello_world_reel.ly",
+                                 "regression-ref/hello_world_reel.ly"))
+
+    def test_hello_world_empty_rythm(self):
+        # Check that a blank rythm does not generate a meter field
+        abc4ly.convert("regression/hello_world_empty_rythm.abc",
+                       "regression-out/hello_world_empty_rythm.ly")
+        self.assert_(filecmp.cmp("regression-out/hello_world_empty_rythm.ly",
+                                 "regression-ref/hello_world_empty_rythm.ly"))
 
 if __name__ == '__main__':
     unittest.main()
