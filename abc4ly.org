@@ -1,7 +1,11 @@
 * Feuille de route
 ** P0
-Reconnaître le champ "signature rythmique" ou "mesure" (meter): 4/4, C,
-C|, ...
+Reconnaître le champ "signature rythmique" ou "mesure" (meter):
+	+C = 4/4 = common time+
+	+C| = 2/2 = cut time+
+	Fraction (4/4, 6/8, ...) = entier + "/" + entier
+	Erreur fatale si le champ est absent
+	Erreur fatale si le champ est incorrect
 
 Reconnaître le champ key
 
@@ -60,11 +64,12 @@ Si un nom de fichier lilypond n'est pas spécifié, sortir sur stdout
 ** Wontdo
 
 * But du jeu
-Avoir un abc2ly qui marche pour tous les .abc du tunebook.
+Avoir un abc2ly qui marche pour tous les .abc du tunebook. Vérifier la
+syntaxe du fichier .abc: si problème bloquant: arrêt, sinon: warning.
 
 Prendre en main la méthode TDD.
 
-Améliorer ma maîtrise de Python.
+Améliorer ma maîtrise de Python. Code compatible Python 2.6 et Python 3.
 
 * Stratégie
 Ré-écrire abc2ly en Python en utilisant la méthode TDD et en se

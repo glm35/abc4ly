@@ -9,8 +9,8 @@
 melody = \relative c' {
   \clef treble
   \key c \major
-  \time 4/4
-  
+  \time 2/2
+
   a4 b c d
 }
 

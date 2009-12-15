@@ -20,6 +20,8 @@ def read_info_line(line, header):
         header['composer'] = nice_field
     elif line[0] == 'R':
         header['rythm'] = nice_field
+    elif line[0] == 'M':
+        header['meter'] = nice_field
 
 def read_line(line, header):
     if line[0] in string.ascii_uppercase and line[1] == ":":
@@ -28,7 +30,7 @@ def read_line(line, header):
     # ignored
 
 def convert(abc_filename, ly_filename):
-    header = {'title':'', 'composer':'', 'rythm':''}
+    header = {'title':'', 'composer':'', 'rythm':'', 'meter':''}
     with open(abc_filename, 'r') as abc_file:
         for line in abc_file.readlines():
             read_line(line, header)
@@ -45,8 +47,9 @@ def convert(abc_filename, ly_filename):
 melody = \relative c' {
   \clef treble
   \key c \major
-  \time 4/4
-  
+''')
+            write_time_signature(ly_file, header['meter'])
+            ly_file.write(r'''
   a4 b c d
 }
 
@@ -65,3 +68,13 @@ def write_header(ly_file, header):
     if header['rythm'] <> "":
         ly_file.write('  meter = "{0}"\n'.format(header['rythm']))
     ly_file.write("}\n")
+
+def write_time_signature(ly_file, meter):
+    if meter == "C":
+        time_signature = "4/4"
+    elif meter == "C|":
+        time_signature = "2/2"
+    else:
+        time_signature = meter
+        # TODO: check fraction
+    ly_file.write(r'''  \time {0}'''.format(time_signature) + "\n")

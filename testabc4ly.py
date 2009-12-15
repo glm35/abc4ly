@@ -55,14 +55,16 @@ class TestMisc(unittest.TestCase):
 class TestOutput(unittest.TestCase):
 
     def test_hello_world(self):
-        # A very simple, very basic example
+        # A very basic (eventually) syntaxely correct example:
+        # title, composer, common time
         abc4ly.convert("regression/hello_world.abc",
                        "regression-out/hello_world.ly")
         self.assert_(filecmp.cmp("regression-out/hello_world.ly",
                                  "regression-ref/hello_world.ly"))
 
     def test_hello_world_reel(self):
-        # Check that the meter field is written
+        # Check that the rythm/meter field is written
+        # Check the "cut time" meter/time signature
         abc4ly.convert("regression/hello_world_reel.abc",
                        "regression-out/hello_world_reel.ly")
         self.assert_(filecmp.cmp("regression-out/hello_world_reel.ly",
