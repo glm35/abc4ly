@@ -69,12 +69,25 @@ def write_header(ly_file, header):
         ly_file.write('  meter = "{0}"\n'.format(header['rythm']))
     ly_file.write("}\n")
 
+# Returns True if "char_string" contains only digits
+def only_digits(char_string):
+    for char in list(char_string):
+        if string.digits.find(char) == -1:
+            return False
+    return True
+
 def write_time_signature(ly_file, meter):
     if meter == "C":
         time_signature = "4/4"
     elif meter == "C|":
         time_signature = "2/2"
     else:
-        time_signature = meter
-        # TODO: check fraction
+        meter_tab = meter.split("/")
+        for i in range(len(meter_tab)):
+            meter_tab[i].strip()
+        if len(meter_tab) != 2 or \
+                not only_digits(meter_tab[0]) or \
+                not only_digits(meter_tab[1]):
+            raise Exception
+        time_signature = string.join(meter_tab, "/")
     ly_file.write(r'''  \time {0}'''.format(time_signature) + "\n")

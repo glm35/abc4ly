@@ -52,6 +52,16 @@ class TestMisc(unittest.TestCase):
         # A mix of empty lines, spaces and tabs
         abc4ly.convert("regression/header_with_blank_lines.abc", "")
 
+    def test_only_digits(self):
+        self.assertEqual(abc4ly.only_digits("4"), True)
+        self.assertEqual(abc4ly.only_digits("457"), True)
+        self.assertEqual(abc4ly.only_digits("p"), False)
+        self.assertEqual(abc4ly.only_digits("toto"), False)
+        self.assertEqual(abc4ly.only_digits("p45t"), False)
+        self.assertEqual(abc4ly.only_digits("4pt"), False)
+        self.assertEqual(abc4ly.only_digits("p457"), False)
+        self.assertEqual(abc4ly.only_digits("42p5"), False)
+
 class TestOutput(unittest.TestCase):
 
     def test_hello_world(self):
@@ -76,6 +86,18 @@ class TestOutput(unittest.TestCase):
                        "regression-out/hello_world_empty_rythm.ly")
         self.assert_(filecmp.cmp("regression-out/hello_world_empty_rythm.ly",
                                  "regression-ref/hello_world_empty_rythm.ly"))
+
+    def test_4_4(self):
+        # Check that the 4/4 time signature is recognized
+        abc4ly.convert("regression/4_4.abc", "regression-out/4_4.ly")
+        self.assert_(filecmp.cmp("regression-out/4_4.ly",
+                                 "regression-ref/4_4.ly"))
+
+    def test_6_8(self):
+        # Check that the 6/8 time signature is recognized
+        abc4ly.convert("regression/6_8.abc", "regression-out/6_8.ly")
+        self.assert_(filecmp.cmp("regression-out/6_8.ly",
+                                 "regression-ref/6_8.ly"))
 
 if __name__ == '__main__':
     unittest.main()

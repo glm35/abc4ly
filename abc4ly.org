@@ -3,9 +3,10 @@
 Reconnaître le champ "signature rythmique" ou "mesure" (meter):
 	+C = 4/4 = common time+
 	+C| = 2/2 = cut time+
-	Fraction (4/4, 6/8, ...) = entier + "/" + entier
-	Erreur fatale si le champ est absent
-	Erreur fatale si le champ est incorrect
+	+Fraction (4/4, 6/8, ...) = entier + "/" + entier+
+	Des espaces dans la fraction (OK)
+	Erreur fatale si le champ est absent (exception "abc syntax error")
+	Erreur fatale si le champ est incorrect (exception
 
 Reconnaître le champ key
 
