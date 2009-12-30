@@ -11,7 +11,20 @@ Reconnaître le champ "signature rythmique" ou "mesure" (meter):
 En cas d'erreur de syntaxe ABC, donner du contexte à l'utilisateur (nom
 du fichier, numéro de la ligne et description de l'erreur
 
-Reconnaître le champ key
+Reconnaître la tonalité du morceau (champ Key "K:")
+	=> reconnaître et normaliser "pitch" (hauteur) et "type" (mode)
+	Gammes majeures (une lettre en majuscules (should) + #/b)
+	Gammes mineures (e.g. "A minor")
+	Modes (seulement 3 premières lettres du mode analysées)
+	Highland bagpipe keys (HP et Hp)
+	Global accidentals
+
+Ecrire la tonalité du morceau (\key):
+	Rappel: altérations: bémol=es (e.g. bes pour sib), dièse=is
+	Gamme majeure: \key <hauteur> \major (e.g. "\key g \major")
+	Gamme mineure: \key <hauteur> \minor (e.g. \key bes \minor) (sib mineur)
+	Mode: \key <hauteur> \<mode> (e.g \key d \mixolydian)
+	Pour faire plus compliqué: utiliser la propriété "Staff.keySignature"
 
 Notation des modes? Dans abc.txt, exemple Dmix = f# + c# + gnat. Est-ce
 que ça se retrouve dans la musique écrite?
