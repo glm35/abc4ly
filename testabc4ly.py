@@ -11,46 +11,64 @@ import filecmp
 class TestFileOperations(unittest.TestCase):
 
     def test_open_failure(self):
-        self.assertRaises(IOError, abc4ly.convert,
-                          "regression/missing.abc", "")
+        self.assertRaises(IOError, abc4ly.open_abc,
+                          "regression/missing.abc")
 
     def test_open_success(self):
-        abc4ly.convert("regression/empty.abc", "")
+        tmp = abc4ly.open_abc("regression/empty.abc")
+        tmp.close()
 
 class TestInformationFields(unittest.TestCase):
 
     def test_title(self):
-        header = abc4ly.convert("regression/header.abc", "")
+        header = abc4ly.create_empty_header()
+        abc4ly.read_line("T:Hello, world!\n", header)
         self.assertEqual(header['title'], "Hello, world!")
 
     def test_several_titles(self):
         # The first title is THE title
-        header = abc4ly.convert("regression/header_with_several_titles.abc", "")
+        header = abc4ly.create_empty_header()
+        abc4ly.read_line("T:Hello, world!\n", header)
+        abc4ly.read_line("C:M. Foo!\n", header)
+        abc4ly.read_line("T:Welcome to the cruel world\n", header)
         self.assertEqual(header['title'], "Hello, world!")
 
     def test_composer(self):
-        header = abc4ly.convert("regression/header.abc", "")
+        header = abc4ly.create_empty_header()
+        abc4ly.read_line("C:M. Foo\n", header)
         self.assertEqual(header['composer'], "M. Foo")
 
     def test_rythm(self):
-        header = abc4ly.convert("regression/header.abc", "")
+        header = abc4ly.create_empty_header()
+        abc4ly.read_line("R:reel\n", header)
         self.assertEqual(header['rythm'], "reel")
 
     def test_other(self):
-        header = abc4ly.convert("regression/header.abc", "")
+        header = abc4ly.create_empty_header()
+        abc4ly.read_line("I:No comment\n", header)
 
 class TestMisc(unittest.TestCase):
 
     def test_no_ending_empty_line(self):
-        header = abc4ly.convert("regression/header_no_endl.abc", "")
+        header = abc4ly.create_empty_header()
+        with open("regression/header_no_endl.abc") as tmp:
+            for line in tmp.readlines():
+                abc4ly.read_line(line, header)
         self.assertEqual(header['title'], "Hello, world!")
 
     def test_comments(self):
-        abc4ly.convert("regression/header_with_comments.abc", "")
+        # Check that comments are handled silently
+        header = abc4ly.create_empty_header()
+        with open("regression/header_with_comments.abc") as tmp:
+            for line in tmp.readlines():
+                abc4ly.read_line(line, header)
 
     def test_blank_lines(self):
         # A mix of empty lines, spaces and tabs
-        abc4ly.convert("regression/header_with_blank_lines.abc", "")
+        header = abc4ly.create_empty_header()
+        with open("regression/header_with_blank_lines.abc") as tmp:
+            for line in tmp.readlines():
+                abc4ly.read_line(line, header)
 
     def test_only_digits(self):
         self.assertEqual(abc4ly.only_digits("4"), True)
@@ -61,6 +79,37 @@ class TestMisc(unittest.TestCase):
         self.assertEqual(abc4ly.only_digits("4pt"), False)
         self.assertEqual(abc4ly.only_digits("p457"), False)
         self.assertEqual(abc4ly.only_digits("42p5"), False)
+
+class TestTimeSignature(unittest.TestCase):
+    def test_4_4(self):
+        # Check that the 4/4 time signature is recognized
+        abc4ly.convert("regression/4_4.abc", "regression-out/4_4.ly")
+        self.assert_(filecmp.cmp("regression-out/4_4.ly",
+                                 "regression-ref/4_4.ly"))
+
+    def test_6_8(self):
+        # Check that the 6/8 time signature is recognized
+        abc4ly.convert("regression/6_8.abc", "regression-out/6_8.ly")
+        self.assert_(filecmp.cmp("regression-out/6_8.ly",
+                                 "regression-ref/6_8.ly"))
+
+    def test_with_spaces(self):
+        # Check that a time signature including spaces is recognized
+        abc4ly.convert("regression/4_4_with_spaces.abc",
+                       "regression-out/4_4.ly")
+        self.assert_(filecmp.cmp("regression-out/4_4.ly",
+                                 "regression-ref/4_4.ly"))
+
+    def test_invalid(self):
+        # Check that a syntactically incorrect time signature raises an
+        # exception
+        self.assertRaises(abc4ly.AbcSyntaxError, abc4ly.convert,
+                          "regression/invalid_time_signature.abc", "")
+
+    def test_missing(self):
+        # Check that a mising time signature raises an exception
+        self.assertRaises(abc4ly.AbcSyntaxError, abc4ly.convert,
+                          "regression/missing_time_signature.abc", "")
 
 class TestOutput(unittest.TestCase):
 
@@ -86,18 +135,6 @@ class TestOutput(unittest.TestCase):
                        "regression-out/hello_world_empty_rythm.ly")
         self.assert_(filecmp.cmp("regression-out/hello_world_empty_rythm.ly",
                                  "regression-ref/hello_world_empty_rythm.ly"))
-
-    def test_4_4(self):
-        # Check that the 4/4 time signature is recognized
-        abc4ly.convert("regression/4_4.abc", "regression-out/4_4.ly")
-        self.assert_(filecmp.cmp("regression-out/4_4.ly",
-                                 "regression-ref/4_4.ly"))
-
-    def test_6_8(self):
-        # Check that the 6/8 time signature is recognized
-        abc4ly.convert("regression/6_8.abc", "regression-out/6_8.ly")
-        self.assert_(filecmp.cmp("regression-out/6_8.ly",
-                                 "regression-ref/6_8.ly"))
 
 if __name__ == '__main__':
     unittest.main()

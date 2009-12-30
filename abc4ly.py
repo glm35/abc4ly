@@ -3,6 +3,13 @@
 
 from __future__ import print_function
 import string
+import sys
+
+# ------------------------------------------------------------------------
+#     Exceptions
+# ------------------------------------------------------------------------
+
+class AbcSyntaxError(Exception): pass
 
 # ------------------------------------------------------------------------
 #     Read and process the input file
@@ -29,37 +36,9 @@ def read_line(line, header):
     # Comments (lines starting with '%') and empty lines are silently
     # ignored
 
-def convert(abc_filename, ly_filename):
-    header = {'title':'', 'composer':'', 'rythm':'', 'meter':''}
-    with open(abc_filename, 'r') as abc_file:
-        for line in abc_file.readlines():
-            read_line(line, header)
-
-        if ly_filename == '':
-            return header
-
-        with open(ly_filename, 'w') as ly_file:
-            # Warning: with format(), curly braces must be escaped by
-            # doubling them!
-            ly_file.write(r'''\version "2.12.2"''' "\n")
-            write_header(ly_file, header)
-            ly_file.write(r'''
-melody = \relative c' {
-  \clef treble
-  \key c \major
-''')
-            write_time_signature(ly_file, header['meter'])
-            ly_file.write(r'''
-  a4 b c d
-}
-
-\score {
-  \new Staff \melody
-  \layout { }
-  \midi { }
-}
-''')
-    return header
+# ------------------------------------------------------------------------
+#     Write the lilypond output
+# ------------------------------------------------------------------------
 
 def write_header(ly_file, header):
     ly_file.write("\n" r'''\header {''' "\n")
@@ -84,10 +63,61 @@ def write_time_signature(ly_file, meter):
     else:
         meter_tab = meter.split("/")
         for i in range(len(meter_tab)):
-            meter_tab[i].strip()
+            meter_tab[i] = meter_tab[i].strip()
         if len(meter_tab) != 2 or \
                 not only_digits(meter_tab[0]) or \
                 not only_digits(meter_tab[1]):
-            raise Exception
+            raise AbcSyntaxError
         time_signature = string.join(meter_tab, "/")
     ly_file.write(r'''  \time {0}'''.format(time_signature) + "\n")
+
+# ------------------------------------------------------------------------
+#     The main program
+# ------------------------------------------------------------------------
+
+def open_abc(abc_filename):
+    abc_file = open(abc_filename, 'r')
+    return abc_file
+
+def create_empty_header():
+    header = {'title':'', 'composer':'', 'rythm':'', 'meter':''}
+    return header
+
+def convert(abc_filename, ly_filename):
+    abc_file = open_abc(abc_filename)
+    header = create_empty_header()
+    for line in abc_file.readlines():
+        read_line(line, header)
+
+    if ly_filename == '':
+        ly_file = sys.stdout
+    else:
+        ly_file = open(ly_filename, 'w')
+
+    try:
+        # Warning: with format(), curly braces must be escaped by
+        # doubling them!
+        ly_file.write(r'''\version "2.12.2"''' "\n")
+        write_header(ly_file, header)
+        ly_file.write(r'''
+melody = \relative c' {
+  \clef treble
+  \key c \major
+''')
+        write_time_signature(ly_file, header['meter'])
+        ly_file.write(r'''
+  a4 b c d
+}
+
+\score {
+  \new Staff \melody
+  \layout { }
+  \midi { }
+}
+''')
+    finally:
+        if ly_file != sys.stdout:
+            ly_file.close()
+
+    return header
+

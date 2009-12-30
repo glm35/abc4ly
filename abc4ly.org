@@ -4,9 +4,12 @@ Reconnaître le champ "signature rythmique" ou "mesure" (meter):
 	+C = 4/4 = common time+
 	+C| = 2/2 = cut time+
 	+Fraction (4/4, 6/8, ...) = entier + "/" + entier+
-	Des espaces dans la fraction (OK)
-	Erreur fatale si le champ est absent (exception "abc syntax error")
-	Erreur fatale si le champ est incorrect (exception
+	+Des espaces dans la fraction (OK)+
+	+Erreur fatale si le champ est absent (exception "abc syntax error")+
+	+Erreur fatale si le champ est incorrect (exception "abc syntax error")+
+
+En cas d'erreur de syntaxe ABC, donner du contexte à l'utilisateur (nom
+du fichier, numéro de la ligne et description de l'erreur
 
 Reconnaître le champ key
 
