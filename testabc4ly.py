@@ -111,6 +111,11 @@ class TestTimeSignature(unittest.TestCase):
         self.assertRaises(abc4ly.AbcSyntaxError, abc4ly.convert,
                           "regression/missing_time_signature.abc", "")
 
+class TestKeySignature(unittest.TestCase):
+
+    def test_major_keys(self):
+        self.assertEqual(abc4ly.translate_key_signature("K:C"), "\key c \major")
+
 class TestOutput(unittest.TestCase):
 
     def test_hello_world(self):

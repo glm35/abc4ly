@@ -71,6 +71,40 @@ def write_time_signature(ly_file, meter):
         time_signature = string.join(meter_tab, "/")
     ly_file.write(r'''  \time {0}'''.format(time_signature) + "\n")
 
+# Translate a key signature in ABC format to a key signature in lilypond
+# format. Currently, this function only understands a key signature in
+# the format: pitch (one letter) + (opt) # or b + (opt) mode
+#
+# input: abc_key_signature: contents of the "K:" line with the "K:" prefix
+
+def translate_key_signature(abc_key_signature):
+    # Strip the leading "K:", remove the leading/trailing spaces, and
+    # substititue any occurence of more than one space by just one space
+    ks = abc_key_signature[2:]
+    ks = string.join(ks.split(), " ")
+    pitch = ''
+    alteration = ''
+    mode = '\major'
+
+    # The first char should be the pitch
+    pitch = ks[0].lower()
+#    if not pitch in "cdefgab":
+#        raise AbcSyntaxError
+    ks = ks[1:]
+
+    # Then optional space
+
+    # Then optional alteration (sharp or flat)
+
+    # Then optional space
+
+    # Then optional mode
+
+    # Forget the rest
+
+    lily_signature = "\key " + pitch + " " + mode
+    return lily_signature
+
 # ------------------------------------------------------------------------
 #     The main program
 # ------------------------------------------------------------------------

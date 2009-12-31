@@ -11,6 +11,10 @@ Reconnaître le champ "signature rythmique" ou "mesure" (meter):
 En cas d'erreur de syntaxe ABC, donner du contexte à l'utilisateur (nom
 du fichier, numéro de la ligne et description de l'erreur
 
+Translation de la tonalité du morceau: "K:..." => "\key ..."
+	+K:C => \key c \major+
+	K:s => AbcSyntaxError
+
 Reconnaître la tonalité du morceau (champ Key "K:")
 	=> reconnaître et normaliser "pitch" (hauteur) et "type" (mode)
 	Gammes majeures (une lettre en majuscules (should) + #/b)
