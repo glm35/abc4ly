@@ -78,31 +78,61 @@ def write_time_signature(ly_file, meter):
 # input: abc_key_signature: contents of the "K:" line with the "K:" prefix
 
 def translate_key_signature(abc_key_signature):
-    # Strip the leading "K:", remove the leading/trailing spaces, and
-    # substititue any occurence of more than one space by just one space
+    # Strip the leading "K:", remove any space, and substititue any
+    # occurence of more than one space by just one space
     ks = abc_key_signature[2:]
-    ks = string.join(ks.split(), " ")
-    pitch = ''
-    alteration = ''
-    mode = '\major'
+    ks = string.join(ks.split(), "")
+    pitch = ""
+    alteration = ""
+    mode = "major"
 
-    # The first char should be the pitch
-    pitch = ks[0].lower()
-#    if not pitch in "cdefgab":
-#        raise AbcSyntaxError
-    ks = ks[1:]
+    state = "pitch"
 
-    # Then optional space
+    if len(ks) == 0:
+        raise AbcSyntaxError
 
-    # Then optional alteration (sharp or flat)
+    while len(ks) != 0:
 
-    # Then optional space
+        if state == "pitch":
+            # The first char should be the pitch
+            pitch = ks[0].lower()
+            if not pitch in "cdefgab":
+                raise AbcSyntaxError
+            ks = ks[1:]
+            state = "alteration"
 
-    # Then optional mode
+        elif state == "alteration":
+            # Then optional alteration (sharp or flat)
+            if ks[0] == "#":
+                alteration = "is"
+                ks = ks[1:]
+            elif ks[0] == "b":
+                alteration = "es"
+                ks = ks[1:]
+            state = "mode"
 
-    # Forget the rest
+        elif state == "mode":
+            # Then optional mode
+            if ks == "m":
+                mode = "minor"
+            elif len(ks) < 3:
+                raise AbcSyntaxError
+            else:
+                ks = ks.lower()
+                modes = [ "ionian", "dorian", "phrygian", "lydian", "mixolydian",
+                          "aeolian", "minor", "locrian" ]
+                mode = ""
+                for m in modes:
+                    if m[0:3] == ks[0:3]:
+                        mode = m
+                        break
+                if mode == "":
+                    raise AbcSyntaxError
 
-    lily_signature = "\key " + pitch + " " + mode
+            # Forget the rest
+            break
+
+    lily_signature = "\key " + pitch + alteration + " " + "\\" + mode
     return lily_signature
 
 # ------------------------------------------------------------------------

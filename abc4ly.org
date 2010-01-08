@@ -1,37 +1,7 @@
 * Feuille de route
 ** P0
-Reconnaître le champ "signature rythmique" ou "mesure" (meter):
-	+C = 4/4 = common time+
-	+C| = 2/2 = cut time+
-	+Fraction (4/4, 6/8, ...) = entier + "/" + entier+
-	+Des espaces dans la fraction (OK)+
-	+Erreur fatale si le champ est absent (exception "abc syntax error")+
-	+Erreur fatale si le champ est incorrect (exception "abc syntax error")+
-
 En cas d'erreur de syntaxe ABC, donner du contexte à l'utilisateur (nom
-du fichier, numéro de la ligne et description de l'erreur
-
-Translation de la tonalité du morceau: "K:..." => "\key ..."
-	+K:C => \key c \major+
-	K:s => AbcSyntaxError
-
-Reconnaître la tonalité du morceau (champ Key "K:")
-	=> reconnaître et normaliser "pitch" (hauteur) et "type" (mode)
-	Gammes majeures (une lettre en majuscules (should) + #/b)
-	Gammes mineures (e.g. "A minor")
-	Modes (seulement 3 premières lettres du mode analysées)
-	Highland bagpipe keys (HP et Hp)
-	Global accidentals
-
-Ecrire la tonalité du morceau (\key):
-	Rappel: altérations: bémol=es (e.g. bes pour sib), dièse=is
-	Gamme majeure: \key <hauteur> \major (e.g. "\key g \major")
-	Gamme mineure: \key <hauteur> \minor (e.g. \key bes \minor) (sib mineur)
-	Mode: \key <hauteur> \<mode> (e.g \key d \mixolydian)
-	Pour faire plus compliqué: utiliser la propriété "Staff.keySignature"
-
-Notation des modes? Dans abc.txt, exemple Dmix = f# + c# + gnat. Est-ce
-que ça se retrouve dans la musique écrite?
+du fichier, numéro de la ligne et description de l'erreur)
 
 Utiliser les vérificateurs de mesure
 
@@ -49,38 +19,67 @@ Reconnaître les accords
 
 Si un nom de fichier lilypond n'est pas spécifié, sortir sur stdout
 
+Translation de la tonalité du morceau "Partie 2": "K:..." => "\key ..."
+	Highland bagpipe keys (HP et Hp)
+	Global accidentals
+
+Notation des modes? Dans abc.txt, exemple Dmix = f# + c# + gnat. Est-ce
+que ça se retrouve dans la musique écrite?
+
 ** Done
-+Ouvrir le fichier abc+
-+Reconnaître le champ informatif "titre" (T)+
+Ouvrir le fichier abc
+Reconnaître le champ informatif "titre" (T)
 
-+Un morceau peut avoir plusieurs titres qui peuvent même apparaître au+
-+milieu des notes. Le titre du morceau pour lilypond sera le premier+
-+champ titre rencontré.+
+Un morceau peut avoir plusieurs titres qui peuvent même apparaître au
+milieu des notes. Le titre du morceau pour lilypond sera le premier
+champ titre rencontré.
 
-+Reconnaître le champ informatif "compositeur" (C)+
-+Reconnaître le champ informatif "rythme" (R)+
+Reconnaître le champ informatif "compositeur" (C)
+Reconnaître le champ informatif "rythme" (R)
 
-+Ignorer les champs informatif valides non gérés: "any line beginning+
-+with a letter in the range A-Z and immediately followed by a : is
-+interpreted as a field".+
+Ignorer les champs informatif valides non gérés: "any line beginning
+with a letter in the range A-Z and immediately followed by a : is
+interpreted as a field".
 
-+Ignorer les commentaires+
-+Ignorer les lignes vides+
+Ignorer les commentaires
+Ignorer les lignes vides
 
-+Vérifier que pas de problème d'analyse quand le fichier ne termine pas+
-+par une ligne vide.+
+Vérifier que pas de problème d'analyse quand le fichier ne termine pas
+par une ligne vide.
 
-+Générer l'entête du fichier lilypond:+
-    +numéro de version+
-    +titre+
-    +auteur+
-    +générer le MIDI par défaut (permet de vérifier la conversion à l'oreille)+
+Générer l'entête du fichier lilypond:
+    numéro de version
+    titre
+    auteur
+    générer le MIDI par défaut (permet de vérifier la conversion à l'oreille)
 
-+Extraire et faire apparaître dans l'entête "meter" le type de morceau (jig+
-+reel, ...) si il est donné dans le .abc+
-    +R:<not empty> => meter+
-    +R: absent => not meter+
-    +R:<empty> => not meter+
+Extraire et faire apparaître dans l'entête "meter" le type de morceau (jig
+reel, ...) si il est donné dans le .abc
+    R:<not empty> => meter
+    R: absent => not meter
+    R:<empty> => not meter
+
+Reconnaître le champ "signature rythmique" ou "mesure" (meter):
+	C = 4/4 = common time
+	C| = 2/2 = cut time
+	Fraction (4/4, 6/8, ...) = entier  + "/" + entier
+	Des espaces dans la fraction (OK)
+	Erreur fatale si le champ est absent (exception "abc syntax error")
+	Erreur fatale si le champ est incorrect (exception "abc syntax error")
+
+Translation de la tonalité du morceau "Partie 1": "K:..." => "\key ..."
+	K:C => \key c \major
+	K:s => AbcSyntaxError
+	K: => AbcSyntaxError
+	K:Bb => \key bes
+	K:F# => \key fis
+	K:Am => \key a \minor
+	K:G minor => \key g \minor
+	K:Eb minor => \key ees \minor
+	K:D mixolydian => \key d \mixolydian
+	K:DMix
+	K:Dmix
+	les 7 modes
 
 ** Wontdo
 
@@ -190,3 +189,11 @@ Z:transcription note  yes                           Z:from photocopy
 Les champs spécifiés dans abc.txt mais non traités par myabc2ly sont
 ignorés silencieusement. La découverte d'un champ informatif non
 spécifié génère l'affichage d'un warning.
+* Rappels lilypond
+Altérations: bémol=es (e.g. bes pour sib), dièse=is
+
+Tonalité du morceau:
+	Gamme majeure: \key <hauteur> \major (e.g. "\key g \major")
+	Gamme mineure: \key <hauteur> \minor (e.g. \key bes \minor) (sib mineur)
+	Mode: \key <hauteur> \<mode> (e.g \key d \mixolydian)
+	Pour faire plus compliqué: utiliser la propriété "Staff.keySignature"

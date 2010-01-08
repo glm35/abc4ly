@@ -116,6 +116,36 @@ class TestKeySignature(unittest.TestCase):
     def test_major_keys(self):
         self.assertEqual(abc4ly.translate_key_signature("K:C"), "\key c \major")
 
+    def test_invalid_key(self):
+        self.assertRaises(abc4ly.AbcSyntaxError, abc4ly.translate_key_signature, "K:s")
+        self.assertRaises(abc4ly.AbcSyntaxError, abc4ly.translate_key_signature, "K:")
+        self.assertRaises(abc4ly.AbcSyntaxError, abc4ly.translate_key_signature, "K:ceolien")
+        self.assertRaises(abc4ly.AbcSyntaxError, abc4ly.translate_key_signature, "K:cio")
+
+    def test_accidentals(self):
+        self.assertEqual(abc4ly.translate_key_signature("K:Bb"), "\key bes \major")
+        self.assertEqual(abc4ly.translate_key_signature("K:F#"), "\key fis \major")
+
+    def test_modes(self):
+        self.assertEqual(abc4ly.translate_key_signature("K:Am"), "\key a \minor")
+        self.assertEqual(abc4ly.translate_key_signature("K:G minor"),
+                         "\key g \minor")
+        self.assertEqual(abc4ly.translate_key_signature("K:Eb minor"),
+                         "\key ees \minor")
+        self.assertEqual(abc4ly.translate_key_signature("K:D mixolydian"),
+                         "\key d \mixolydian")
+        self.assertEqual(abc4ly.translate_key_signature("K:DMix"),
+                         "\key d \mixolydian")
+        self.assertEqual(abc4ly.translate_key_signature("K:Dmix"),
+                         "\key d \mixolydian")
+        for mode in [ "ionian", "dorian", "phrygian", "lydian", "mixolydian",
+                          "aeolian", "minor", "locrian" ]:
+            abc_signature = "K:D {0}".format(mode)
+            ly_signature = "\key d \{0}".format(mode)
+            self.assertEqual(abc4ly.translate_key_signature(abc_signature),
+                             ly_signature)
+
+
 class TestOutput(unittest.TestCase):
 
     def test_hello_world(self):
