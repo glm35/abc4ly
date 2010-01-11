@@ -3,11 +3,41 @@
 En cas d'erreur de syntaxe ABC, donner du contexte à l'utilisateur (nom
 du fichier, numéro de la ligne et description de l'erreur)
 
+Morceau: c_major
+
+Reconnaître la durée des notes:
+	Calculer la durée des notes par défaut (default note length)
+	Gérer le coefficient multiplicateur (e.g. A2) => rallonger la durée par défaut
+	Gérer le coefficient diviseur => diminuer la durée par défaut
+	Gérer les marqueurs de rythme brisé (broken rythms markers: a>b, etc.)
+	Gérer les triolets de croche. Exemple en 4/4: "(3 abc"
+	Gérer les n-uplets (avec n variant de 2 à 9)
+	Gérer le champ informatif "default note length" (L:) qui permet de changer la durée des notes par défaut:
+		Dans l'entête
+		A l'improviste dans le morceau
+	Gérer les notes liées
+
+Exprimer la durée des notes en lilypond:
+	1 = whole note, 2 = half note (blanche), 4 = quarter note (noire)
+	. = note pointée
+
+Reconnaître la hauteur des notes:
+	Majuscules / minuscules / apostrophe / virgule
+	Altérations (dièse, bémol, naturel, ...)
+	Silences (rests)
+
+Exprimer la hauteur des notes en lilypond:
+	Ne pas utiliser le mode "\relative": ce mode facilite l'écriture
+        manuelle mais n'est pas facile à lire.
+
+Gérer les notes liées
+
 Utiliser les vérificateurs de mesure
 
-Une mesure par ligne de texte
-
-Identer les accolades (4 espaces)
+Style:
+	4 espaces entre deux notes (pour y voir bien clair)
+	Une mesure par ligne de texte
+	Identer les accolades (4 espaces)
 
 ** P1
 Reconnaître le champ tempo
@@ -189,6 +219,14 @@ Z:transcription note  yes                           Z:from photocopy
 Les champs spécifiés dans abc.txt mais non traités par myabc2ly sont
 ignorés silencieusement. La découverte d'un champ informatif non
 spécifié génère l'affichage d'un warning.
+* Rappels ABC
+Durée des notes par défaut:
+	1. Calculer (Evaluer) la signature rythmique qu'on appelera DTS
+           (decimal tempo signature). Exemple: dts(3/4) = 0.75.
+	2. Si dts < 0.75: default note length = sixteenth note (double
+           croche). Sinon (dts >= 0.75): default note length = eighth
+           note (croche)
+
 * Rappels lilypond
 Altérations: bémol=es (e.g. bes pour sib), dièse=is
 

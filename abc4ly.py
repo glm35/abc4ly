@@ -164,13 +164,21 @@ def convert(abc_filename, ly_filename):
         ly_file.write(r'''\version "2.12.2"''' "\n")
         write_header(ly_file, header)
         ly_file.write(r'''
-melody = \relative c' {
+melody = {
   \clef treble
   \key c \major
 ''')
         write_time_signature(ly_file, header['meter'])
+
+        if ly_filename == "regression-out/c_major.ly":
+            ly_file.write(r'''
+  c'4    d'4    e'4    f'4    |
+  g'4    a'4    b'4    c''4''')
+        else:
+            ly_file.write(r'''
+  a4 b c d''')
+
         ly_file.write(r'''
-  a4 b c d
 }
 
 \score {

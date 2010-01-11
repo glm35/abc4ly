@@ -82,6 +82,10 @@ screen -t ipython ipython
 screen -t abc4ly
 chdir ${ABC4LY_BASE_DIR}/regression
 screen -t regression
+chdir ${ABC4LY_BASE_DIR}/regression-ref
+screen -t regression-ref
+chdir ${ABC4LY_BASE_DIR}/regression-out
+screen -t regression-out
 select 1
 EOF
 

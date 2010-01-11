@@ -171,5 +171,12 @@ class TestOutput(unittest.TestCase):
         self.assert_(filecmp.cmp("regression-out/hello_world_empty_rythm.ly",
                                  "regression-ref/hello_world_empty_rythm.ly"))
 
+    def test_c_major(self):
+        # The C major scale
+        abc4ly.convert("regression/c_major.abc",
+                       "regression-out/c_major.ly")
+        self.assert_(filecmp.cmp("regression-out/c_major.ly",
+                                 "regression-ref/c_major.ly"))
+
 if __name__ == '__main__':
     unittest.main()

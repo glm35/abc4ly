@@ -1,17 +1,17 @@
 \version "2.12.2"
 
 \header {
-  title = "Hello, world!"
+  title = "C Major"
   composer = "M. Foo"
-  meter = "Reel"
 }
 
 melody = {
   \clef treble
   \key c \major
-  \time 2/2
+  \time 4/4
 
-  a4 b c d
+  c'4    d'4    e'4    f'4    |
+  g'4    a'4    b'4    c''4
 }
 
 \score {

@@ -5,7 +5,7 @@
   composer = "M. Foo"
 }
 
-melody = \relative c' {
+melody = {
   \clef treble
   \key c \major
   \time 4/4
