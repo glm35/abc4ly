@@ -1,9 +1,18 @@
 * Feuille de route
 ** P0
-En cas d'erreur de syntaxe ABC, donner du contexte à l'utilisateur (nom
-du fichier, numéro de la ligne et description de l'erreur)
+translate_notes():
+	+abc_line = "C2 D2 E2 F2"_+
+	+abc_line = ""_+
+	+abc_line = "   C2  D2   E2 F2  "_+
+	+abc_line = "C2 D2 E2 F  2": légal? => passe avec abc4ly+
+	+abc_line = "CDEF GABc"_+
+	M = 6/8 && abc_line = "CDE FGA" (TBC: on veut: default note
+        length != 2)
+	c_major
+	lower_c_major
 
-Morceau: c_major
+Morceau:
+	c_major
 
 Reconnaître la durée des notes:
 	Calculer la durée des notes par défaut (default note length)
@@ -27,8 +36,9 @@ Reconnaître la hauteur des notes:
 	Silences (rests)
 
 Exprimer la hauteur des notes en lilypond:
-	Ne pas utiliser le mode "\relative": ce mode facilite l'écriture
-        manuelle mais n'est pas facile à lire.
+
+En cas d'erreur de syntaxe ABC, donner du contexte à l'utilisateur (nom
+du fichier, numéro de la ligne et description de l'erreur)
 
 Gérer les notes liées
 
@@ -55,6 +65,8 @@ Translation de la tonalité du morceau "Partie 2": "K:..." => "\key ..."
 
 Notation des modes? Dans abc.txt, exemple Dmix = f# + c# + gnat. Est-ce
 que ça se retrouve dans la musique écrite?
+
+Beaming: notes groupées sans espace
 
 ** Done
 Ouvrir le fichier abc
@@ -167,6 +179,11 @@ Pour chaque ligne de texte:
     - champ informatif: on vérifie la syntaxe, on extrait l'information
       en supprimant les caractères blancs en trop
 
+La hauteur des notes est traduite de manière absolue. On n'utilise pas
+le mode "\relative": ce mode facilite l'écriture manuelle mais n'est pas
+facile à lire et est plus compliqué à écrire automatiquement.
+
+
 * Gestion des champs informatifs
 On retient les champs informatifs suivants:
 
@@ -227,6 +244,24 @@ Durée des notes par défaut:
            croche). Sinon (dts >= 0.75): default note length = eighth
            note (croche)
 
+** Grammaire ABC
+Qu'est-ce qu'une note?
+
+note : [ guitar_chord ] | [ accent ] | [ accidental ] pitch \
+              [ octaver ] [ lenght_modifier ]
+
+accidental : '^' | '=' | '_' | '^^' |'__'
+
+pitch : [a-gAG]
+
+octaver : "'" | ','
+
+length_modifier : multiplier | divider
+
+multiplier = number
+
+divider = /number
+
 * Rappels lilypond
 Altérations: bémol=es (e.g. bes pour sib), dièse=is
 
@@ -235,3 +270,14 @@ Tonalité du morceau:
 	Gamme mineure: \key <hauteur> \minor (e.g. \key bes \minor) (sib mineur)
 	Mode: \key <hauteur> \<mode> (e.g \key d \mixolydian)
 	Pour faire plus compliqué: utiliser la propriété "Staff.keySignature"
+
+* Equivalence ABC <=> lilypond
+** Hauteur des notes
+
+En notation absolue et avec la clé \treble de LilyPond:
+
+| ABC | LilyPond |
+|-----+----------|
+| C   | c'       |
+| c   | c''      |
+|     |          |

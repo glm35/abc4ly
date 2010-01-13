@@ -48,13 +48,6 @@ def write_header(ly_file, header):
         ly_file.write('  meter = "{0}"\n'.format(header['rythm']))
     ly_file.write("}\n")
 
-# Returns True if "char_string" contains only digits
-def only_digits(char_string):
-    for char in list(char_string):
-        if string.digits.find(char) == -1:
-            return False
-    return True
-
 def write_time_signature(ly_file, meter):
     if meter == "C":
         time_signature = "4/4"
@@ -65,8 +58,8 @@ def write_time_signature(ly_file, meter):
         for i in range(len(meter_tab)):
             meter_tab[i] = meter_tab[i].strip()
         if len(meter_tab) != 2 or \
-                not only_digits(meter_tab[0]) or \
-                not only_digits(meter_tab[1]):
+                not meter_tab[0].isdigit() or \
+                not meter_tab[1].isdigit():
             raise AbcSyntaxError
         time_signature = string.join(meter_tab, "/")
     ly_file.write(r'''  \time {0}'''.format(time_signature) + "\n")
@@ -134,6 +127,60 @@ def translate_key_signature(abc_key_signature):
 
     lily_signature = "\key " + pitch + alteration + " " + "\\" + mode
     return lily_signature
+
+def get_leading_digits(string):
+    leading_digits = ""
+    for char in string:
+        if char.isdigit():
+            leading_digits += char
+        else:
+            break
+    return leading_digits
+
+# Given a line of ABC music, translate the line to lilypond
+
+def translate_notes(tune_context, abc_line):
+    pitches = "abcdefgABCDEFG"
+
+    al = abc_line.lstrip()
+    state = "pitch"
+    ly_line = ""
+    first_note = True
+
+    while len(al) != 0 or state == "duration":
+        
+        if state == "pitch":
+            pitch = al[0]
+            al = al[1:]
+            ly_pitch = ""
+            if not pitch in pitches:
+                print("Not a pitch: " + pitch)
+                raise AbcSyntaxError
+            if pitch.lower() == pitch:
+                ly_pitch = pitch + "''"
+            else:
+                ly_pitch = pitch.lower() + "'"
+            if not first_note:
+                ly_line += "    "
+            else:
+                first_note = False
+            ly_line += ly_pitch
+            state = "duration"
+
+        elif state == "duration":
+            lm = get_leading_digits(al)
+            if lm != "":
+                al = al[len(lm):]
+                ly_duration = str(int(lm) * 2)
+                ly_line += ly_duration
+            else:
+                # Use default note length
+                ly_line += "2"
+            state = "pitch"
+
+        al = al.lstrip()
+
+    return ly_line
 
 # ------------------------------------------------------------------------
 #     The main program

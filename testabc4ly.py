@@ -70,15 +70,14 @@ class TestMisc(unittest.TestCase):
             for line in tmp.readlines():
                 abc4ly.read_line(line, header)
 
-    def test_only_digits(self):
-        self.assertEqual(abc4ly.only_digits("4"), True)
-        self.assertEqual(abc4ly.only_digits("457"), True)
-        self.assertEqual(abc4ly.only_digits("p"), False)
-        self.assertEqual(abc4ly.only_digits("toto"), False)
-        self.assertEqual(abc4ly.only_digits("p45t"), False)
-        self.assertEqual(abc4ly.only_digits("4pt"), False)
-        self.assertEqual(abc4ly.only_digits("p457"), False)
-        self.assertEqual(abc4ly.only_digits("42p5"), False)
+    def test_get_leading_digits(self):
+        self.assertEqual(abc4ly.get_leading_digits("123"), "123")
+        self.assertEqual(abc4ly.get_leading_digits("8"), "8")
+        self.assertEqual(abc4ly.get_leading_digits("54abc"), "54")
+        self.assertEqual(abc4ly.get_leading_digits("ab123"), "")
+        self.assertEqual(abc4ly.get_leading_digits(""), "")
+        self.assertEqual(abc4ly.get_leading_digits("   123"), "")
+
 
 class TestTimeSignature(unittest.TestCase):
     def test_4_4(self):
@@ -144,6 +143,24 @@ class TestKeySignature(unittest.TestCase):
             ly_signature = "\key d \{0}".format(mode)
             self.assertEqual(abc4ly.translate_key_signature(abc_signature),
                              ly_signature)
+
+
+class TestTranslateNotes(unittest.TestCase):
+
+    def test_c_major(self):
+        tune_context = ""
+        self.assertEqual(abc4ly.translate_notes(tune_context, "C2 D2 E2 F2"),
+                         "c'4    d'4    e'4    f'4")
+        self.assertEqual(abc4ly.translate_notes(tune_context, ""), "")
+        self.assertEqual(abc4ly.translate_notes(tune_context,
+                                                "   C2  D2   E2 F2  "),
+                         "c'4    d'4    e'4    f'4")
+        self.assertEqual(abc4ly.translate_notes(tune_context,
+                                                "C2 D2 E2 F    2"),
+                         "c'4    d'4    e'4    f'4")
+        self.assertEqual(abc4ly.translate_notes(tune_context,
+                                                "CDEF GABc"),
+                         "c'2    d'2    e'2    f'2    g'2    a'2    b'2    c''2")
 
 
 class TestOutput(unittest.TestCase):
