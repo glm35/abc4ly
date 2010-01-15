@@ -158,24 +158,47 @@ class TestNoteDuration(unittest.TestCase):
 
 class TestTranslateNotes(unittest.TestCase):
 
-    def test_c_major(self):
-        tune_context = TuneContext()
-        tune_context.default_note_duration = get_default_note_duration("2/2")
-        self.assertEqual(translate_notes(tune_context, "C2 D2 E2 F2"),
-                         "c'4    d'4    e'4    f'4")
-        self.assertEqual(translate_notes(tune_context, ""), "")
-        self.assertEqual(translate_notes(tune_context,
-                                                "   C2  D2   E2 F2  "),
-                         "c'4    d'4    e'4    f'4")
-        self.assertEqual(translate_notes(tune_context,
-                                                "C2 D2 E2 F    2"),
-                         "c'4    d'4    e'4    f'4")
-        self.assertEqual(translate_notes(tune_context,
-                                                "CDEF GABc"),
-                         "c'8    d'8    e'8    f'8    g'8    a'8    b'8    c''8")
-        self.assertEqual(translate_notes(tune_context,
-                                         "C2 D2 E2 F2 | G2 A2 B2 c2"),
-                         "c'4    d'4    e'4    f'4    |\ng'4    a'4    b'4    c''4")
+    def setUp(self):
+        self.tc = TuneContext()
+        self.tc.default_note_duration = get_default_note_duration("2/2")
+
+    def tearDown(self):
+        del self.tc
+
+    def translate_and_test(self, abc_notes, expected_output):
+        translate_notes(self.tc, abc_notes)
+        self.assertEqual(self.tc.output, expected_output)
+
+    def test_one_bar(self):
+        abc_notes = "C2 D2 E2 F2"
+        expected_output = ["c'4    d'4    e'4    f'4"]
+        self.translate_and_test(abc_notes, expected_output)
+
+    def test_empty_bar(self):
+        abc_notes = ""
+        expected_output = [""]
+        self.translate_and_test(abc_notes, expected_output)
+
+    def test_bar_starting_with_spaces(self):
+        abc_notes = "   C2  D2   E2 F2  "
+        expected_output = ["c'4    d'4    e'4    f'4"]
+        self.translate_and_test(abc_notes, expected_output)
+
+    def test_space_between_pitch_and_duration(self):
+        abc_notes = "C2 D2 E2 F    2"
+        expected_output = ["c'4    d'4    e'4    f'4"]
+        self.translate_and_test(abc_notes, expected_output)
+
+    def test_one_bar_with_eights_notes(self):
+        abc_notes =  "CDEF GABc"
+        expected_output = ["c'8    d'8    e'8    f'8    g'8    a'8    b'8    c''8"]
+        self.translate_and_test(abc_notes, expected_output)
+
+    def test_two_bars(self):
+        abc_notes = "C2 D2 E2 F2 | G2 A2 B2 c2"
+        expected_output = ["c'4    d'4    e'4    f'4    |"]
+        expected_output.append("g'4    a'4    b'4    c''4")
+        self.translate_and_test(abc_notes, expected_output)
 
 
 class TestOutput(unittest.TestCase):

@@ -15,13 +15,16 @@ class AbcSyntaxError(Exception): pass
 #     Tune context
 # ------------------------------------------------------------------------
 
-class TuneContext:
-    title = ""
-    composer = ""
-    rythm = ""
-    meter = ""
+class TuneContext():
+    def __init__(self):
+        self.title = ""
+        self.composer = ""
+        self.rythm = ""
+        self.meter = ""
 
-    default_note_duration = 0
+        self.default_note_duration = 0
+
+        self.output = []
 
 # ------------------------------------------------------------------------
 #     Read and process the input file
@@ -164,7 +167,7 @@ def get_default_note_duration(time_signature):
 
 # Given a line of ABC music, translate the line to lilypond
 
-def translate_notes(tune_context, abc_line):
+def translate_notes(tc, abc_line):
     pitches = "abcdefgABCDEFG"
 
     al = abc_line.lstrip()
@@ -176,7 +179,8 @@ def translate_notes(tune_context, abc_line):
 
         if len(al) != 0 and al[0] == '|':
             al = al[1:]
-            ly_line += "    |\n"
+            tc.output.append(ly_line + "    |")
+            ly_line = ""
             first_note = True
         
         elif state == "pitch":
@@ -201,16 +205,16 @@ def translate_notes(tune_context, abc_line):
             lm = get_leading_digits(al)
             if lm != "":
                 al = al[len(lm):]
-                ly_duration = str(tune_context.default_note_duration / int(lm))
+                ly_duration = str(tc.default_note_duration / int(lm))
                 ly_line += ly_duration
             else:
                 # Use default note length
-                ly_line += str(tune_context.default_note_duration)
+                ly_line += str(tc.default_note_duration)
             state = "pitch"
 
         al = al.lstrip()
 
-    return ly_line
+    tc.output.append(ly_line)
 
 # ------------------------------------------------------------------------
 #     The main program
