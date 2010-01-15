@@ -82,30 +82,19 @@ class TestMisc(unittest.TestCase):
 
 
 class TestTimeSignature(unittest.TestCase):
-    def test_4_4(self):
-        # Check that the 4/4 time signature is recognized
-        convert("regression/4_4.abc", "regression-out/4_4.ly")
-        self.assert_(filecmp.cmp("regression-out/4_4.ly",
-                                 "regression-ref/4_4.ly"))
 
-    def test_6_8(self):
-        # Check that the 6/8 time signature is recognized
-        convert("regression/6_8.abc", "regression-out/6_8.ly")
-        self.assert_(filecmp.cmp("regression-out/6_8.ly",
-                                 "regression-ref/6_8.ly"))
+    def test_normalize_time_signature(self):
+        self.assertEqual(normalize_time_signature("C"), "4/4")
+        self.assertEqual(normalize_time_signature("C|"), "2/2")
+        self.assertEqual(normalize_time_signature("4/4"), "4/4")
+        self.assertEqual(normalize_time_signature("12/8"), "12/8")
 
-    def test_with_spaces(self):
         # Check that a time signature including spaces is recognized
-        convert("regression/4_4_with_spaces.abc",
-                       "regression-out/4_4.ly")
-        self.assert_(filecmp.cmp("regression-out/4_4.ly",
-                                 "regression-ref/4_4.ly"))
-
-    def test_invalid(self):
+        self.assertEqual(normalize_time_signature(" 4 /   4"), "4/4")
+        
         # Check that a syntactically incorrect time signature raises an
         # exception
-        self.assertRaises(AbcSyntaxError, convert,
-                          "regression/invalid_time_signature.abc", "")
+        self.assertRaises(AbcSyntaxError, normalize_time_signature, "4/foo")
 
     def test_missing(self):
         # Check that a mising time signature raises an exception
