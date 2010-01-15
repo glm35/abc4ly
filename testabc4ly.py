@@ -189,6 +189,11 @@ class TestTranslateNotes(unittest.TestCase):
         expected_output.append("g'4    a'4    b'4    c''4")
         self.translate_and_test(abc_notes, expected_output)
 
+    def test_lower_c_major(self):
+        abc_notes =  "C,D,E,F, G,A,B,C"
+        expected_output = ["c8    d8    e8    f8    g8    a8    b8    c'8"]
+        self.translate_and_test(abc_notes, expected_output)
+
 
 class TestOutput(unittest.TestCase):
 

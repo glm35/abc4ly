@@ -186,7 +186,7 @@ def translate_notes(tc, abc_line):
     ly_line = ""
     first_note = True
 
-    while len(al) != 0 or state == "duration":
+    while len(al) != 0 or state != "pitch":
 
         if len(al) != 0 and al[0] == '|':
             al = al[1:]
@@ -210,6 +210,9 @@ def translate_notes(tc, abc_line):
             else:
                 first_note = False
             ly_line += ly_pitch
+            state = "octaver"
+
+        elif state == "octaver":
             state = "duration"
 
         elif state == "duration":
