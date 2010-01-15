@@ -265,19 +265,11 @@ melody = {
 ''')
         write_time_signature(ly_file, tc.meter)
 
-        if ly_filename == "regression-out/c_major.ly":
-            print("tc output:")
-            print(tc.output)
-            ly_file.write("\n")
-            for line in tc.output:
-                ly_file.writelines("  " + line + "\n")
-#            ly_file.write(r'''
-#  c'4    d'4    e'4    f'4    |
-#  g'4    a'4    b'4    c''4''')
-        else:
-            ly_file.write(r'''
-  a4 b c d
-''')
+        print("tc output:")
+        print(tc.output)
+        ly_file.write("\n")
+        for line in tc.output:
+            ly_file.writelines("  " + line + "\n")
 
         ly_file.write(r'''}
 

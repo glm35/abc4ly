@@ -13,7 +13,7 @@ translate_notes():
 
 Morceau:
 	+c_major+
-	hello_world
+	hello_world & friends
 
 Reconnaître la durée des notes:
 	Supprimer la duplication de l'appel à normalize_time_signature()

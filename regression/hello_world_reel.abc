@@ -1,5 +1,7 @@
 T:Hello, world!
 C:M. Foo
-R:Reel
 I:No comment
-M:C|
+R:reel
+M:C
+K:C
+A,2 B,2 C2 D2
