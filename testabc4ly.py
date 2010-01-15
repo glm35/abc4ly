@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-import abc4ly
 import unittest
 import filecmp
+
+import abc4ly
+from abc4ly import *
 
 # unittest reminder:
 # assert functions: assertEqual(), assertRaises() and assert_(condition)
@@ -11,90 +13,90 @@ import filecmp
 class TestFileOperations(unittest.TestCase):
 
     def test_open_failure(self):
-        self.assertRaises(IOError, abc4ly.open_abc,
+        self.assertRaises(IOError, open_abc,
                           "regression/missing.abc")
 
     def test_open_success(self):
-        tmp = abc4ly.open_abc("regression/empty.abc")
+        tmp = open_abc("regression/empty.abc")
         tmp.close()
 
 class TestInformationFields(unittest.TestCase):
 
     def test_title(self):
-        header = abc4ly.create_empty_header()
-        abc4ly.read_line("T:Hello, world!\n", header)
-        self.assertEqual(header['title'], "Hello, world!")
+        tc = TuneContext()
+        read_line(tc, "T:Hello, world!\n")
+        self.assertEqual(tc.title, "Hello, world!")
 
     def test_several_titles(self):
         # The first title is THE title
-        header = abc4ly.create_empty_header()
-        abc4ly.read_line("T:Hello, world!\n", header)
-        abc4ly.read_line("C:M. Foo!\n", header)
-        abc4ly.read_line("T:Welcome to the cruel world\n", header)
-        self.assertEqual(header['title'], "Hello, world!")
+        tc = TuneContext()
+        read_line(tc, "T:Hello, world!\n")
+        read_line(tc, "C:M. Foo!\n")
+        read_line(tc, "T:Welcome to the cruel world\n")
+        self.assertEqual(tc.title, "Hello, world!")
 
     def test_composer(self):
-        header = abc4ly.create_empty_header()
-        abc4ly.read_line("C:M. Foo\n", header)
-        self.assertEqual(header['composer'], "M. Foo")
+        tc = TuneContext()
+        read_line(tc, "C:M. Foo\n")
+        self.assertEqual(tc.composer, "M. Foo")
 
     def test_rythm(self):
-        header = abc4ly.create_empty_header()
-        abc4ly.read_line("R:reel\n", header)
-        self.assertEqual(header['rythm'], "reel")
+        tc = TuneContext()
+        read_line(tc, "R:reel\n")
+        self.assertEqual(tc.rythm, "reel")
 
     def test_other(self):
-        header = abc4ly.create_empty_header()
-        abc4ly.read_line("I:No comment\n", header)
+        tc = TuneContext()
+        read_line(tc, "I:No comment\n")
 
 class TestMisc(unittest.TestCase):
 
     def test_no_ending_empty_line(self):
-        header = abc4ly.create_empty_header()
+        tc = TuneContext()
         with open("regression/header_no_endl.abc") as tmp:
             for line in tmp.readlines():
-                abc4ly.read_line(line, header)
-        self.assertEqual(header['title'], "Hello, world!")
+                read_line(tc, line)
+        self.assertEqual(tc.title, "Hello, world!")
 
     def test_comments(self):
         # Check that comments are handled silently
-        header = abc4ly.create_empty_header()
+        tc = TuneContext()
         with open("regression/header_with_comments.abc") as tmp:
             for line in tmp.readlines():
-                abc4ly.read_line(line, header)
+                read_line(tc, line)
 
     def test_blank_lines(self):
         # A mix of empty lines, spaces and tabs
-        header = abc4ly.create_empty_header()
+        tc = TuneContext()
         with open("regression/header_with_blank_lines.abc") as tmp:
             for line in tmp.readlines():
-                abc4ly.read_line(line, header)
+                read_line(tc, line)
 
     def test_get_leading_digits(self):
-        self.assertEqual(abc4ly.get_leading_digits("123"), "123")
-        self.assertEqual(abc4ly.get_leading_digits("8"), "8")
-        self.assertEqual(abc4ly.get_leading_digits("54abc"), "54")
-        self.assertEqual(abc4ly.get_leading_digits("ab123"), "")
-        self.assertEqual(abc4ly.get_leading_digits(""), "")
-        self.assertEqual(abc4ly.get_leading_digits("   123"), "")
+        self.assertEqual(get_leading_digits("123"), "123")
+        self.assertEqual(get_leading_digits("8"), "8")
+        self.assertEqual(get_leading_digits("54abc"), "54")
+        self.assertEqual(get_leading_digits("ab123"), "")
+        self.assertEqual(get_leading_digits(""), "")
+        self.assertEqual(get_leading_digits("   123"), "")
 
 
 class TestTimeSignature(unittest.TestCase):
     def test_4_4(self):
         # Check that the 4/4 time signature is recognized
-        abc4ly.convert("regression/4_4.abc", "regression-out/4_4.ly")
+        convert("regression/4_4.abc", "regression-out/4_4.ly")
         self.assert_(filecmp.cmp("regression-out/4_4.ly",
                                  "regression-ref/4_4.ly"))
 
     def test_6_8(self):
         # Check that the 6/8 time signature is recognized
-        abc4ly.convert("regression/6_8.abc", "regression-out/6_8.ly")
+        convert("regression/6_8.abc", "regression-out/6_8.ly")
         self.assert_(filecmp.cmp("regression-out/6_8.ly",
                                  "regression-ref/6_8.ly"))
 
     def test_with_spaces(self):
         # Check that a time signature including spaces is recognized
-        abc4ly.convert("regression/4_4_with_spaces.abc",
+        convert("regression/4_4_with_spaces.abc",
                        "regression-out/4_4.ly")
         self.assert_(filecmp.cmp("regression-out/4_4.ly",
                                  "regression-ref/4_4.ly"))
@@ -102,65 +104,78 @@ class TestTimeSignature(unittest.TestCase):
     def test_invalid(self):
         # Check that a syntactically incorrect time signature raises an
         # exception
-        self.assertRaises(abc4ly.AbcSyntaxError, abc4ly.convert,
+        self.assertRaises(AbcSyntaxError, convert,
                           "regression/invalid_time_signature.abc", "")
 
     def test_missing(self):
         # Check that a mising time signature raises an exception
-        self.assertRaises(abc4ly.AbcSyntaxError, abc4ly.convert,
+        self.assertRaises(AbcSyntaxError, convert,
                           "regression/missing_time_signature.abc", "")
+
 
 class TestKeySignature(unittest.TestCase):
 
     def test_major_keys(self):
-        self.assertEqual(abc4ly.translate_key_signature("K:C"), "\key c \major")
+        self.assertEqual(translate_key_signature("K:C"), "\key c \major")
 
     def test_invalid_key(self):
-        self.assertRaises(abc4ly.AbcSyntaxError, abc4ly.translate_key_signature, "K:s")
-        self.assertRaises(abc4ly.AbcSyntaxError, abc4ly.translate_key_signature, "K:")
-        self.assertRaises(abc4ly.AbcSyntaxError, abc4ly.translate_key_signature, "K:ceolien")
-        self.assertRaises(abc4ly.AbcSyntaxError, abc4ly.translate_key_signature, "K:cio")
+        self.assertRaises(AbcSyntaxError, translate_key_signature, "K:s")
+        self.assertRaises(AbcSyntaxError, translate_key_signature, "K:")
+        self.assertRaises(AbcSyntaxError, translate_key_signature, "K:ceolien")
+        self.assertRaises(AbcSyntaxError, translate_key_signature, "K:cio")
 
     def test_accidentals(self):
-        self.assertEqual(abc4ly.translate_key_signature("K:Bb"), "\key bes \major")
-        self.assertEqual(abc4ly.translate_key_signature("K:F#"), "\key fis \major")
+        self.assertEqual(translate_key_signature("K:Bb"), "\key bes \major")
+        self.assertEqual(translate_key_signature("K:F#"), "\key fis \major")
 
     def test_modes(self):
-        self.assertEqual(abc4ly.translate_key_signature("K:Am"), "\key a \minor")
-        self.assertEqual(abc4ly.translate_key_signature("K:G minor"),
+        self.assertEqual(translate_key_signature("K:Am"), "\key a \minor")
+        self.assertEqual(translate_key_signature("K:G minor"),
                          "\key g \minor")
-        self.assertEqual(abc4ly.translate_key_signature("K:Eb minor"),
+        self.assertEqual(translate_key_signature("K:Eb minor"),
                          "\key ees \minor")
-        self.assertEqual(abc4ly.translate_key_signature("K:D mixolydian"),
+        self.assertEqual(translate_key_signature("K:D mixolydian"),
                          "\key d \mixolydian")
-        self.assertEqual(abc4ly.translate_key_signature("K:DMix"),
+        self.assertEqual(translate_key_signature("K:DMix"),
                          "\key d \mixolydian")
-        self.assertEqual(abc4ly.translate_key_signature("K:Dmix"),
+        self.assertEqual(translate_key_signature("K:Dmix"),
                          "\key d \mixolydian")
         for mode in [ "ionian", "dorian", "phrygian", "lydian", "mixolydian",
                           "aeolian", "minor", "locrian" ]:
             abc_signature = "K:D {0}".format(mode)
             ly_signature = "\key d \{0}".format(mode)
-            self.assertEqual(abc4ly.translate_key_signature(abc_signature),
+            self.assertEqual(translate_key_signature(abc_signature),
                              ly_signature)
+
+
+class TestNoteDuration(unittest.TestCase):
+
+    def test_get_default_note_duration(self):
+        self.assertEqual(get_default_note_duration("6/8"), 8)
+        self.assertEqual(get_default_note_duration("4/4"), 8)
+        self.assertEqual(get_default_note_duration("2/4"), 16)
 
 
 class TestTranslateNotes(unittest.TestCase):
 
     def test_c_major(self):
-        tune_context = ""
-        self.assertEqual(abc4ly.translate_notes(tune_context, "C2 D2 E2 F2"),
+        tune_context = TuneContext()
+        tune_context.default_note_duration = get_default_note_duration("2/2")
+        self.assertEqual(translate_notes(tune_context, "C2 D2 E2 F2"),
                          "c'4    d'4    e'4    f'4")
-        self.assertEqual(abc4ly.translate_notes(tune_context, ""), "")
-        self.assertEqual(abc4ly.translate_notes(tune_context,
+        self.assertEqual(translate_notes(tune_context, ""), "")
+        self.assertEqual(translate_notes(tune_context,
                                                 "   C2  D2   E2 F2  "),
                          "c'4    d'4    e'4    f'4")
-        self.assertEqual(abc4ly.translate_notes(tune_context,
+        self.assertEqual(translate_notes(tune_context,
                                                 "C2 D2 E2 F    2"),
                          "c'4    d'4    e'4    f'4")
-        self.assertEqual(abc4ly.translate_notes(tune_context,
+        self.assertEqual(translate_notes(tune_context,
                                                 "CDEF GABc"),
-                         "c'2    d'2    e'2    f'2    g'2    a'2    b'2    c''2")
+                         "c'8    d'8    e'8    f'8    g'8    a'8    b'8    c''8")
+        self.assertEqual(translate_notes(tune_context,
+                                         "C2 D2 E2 F2 | G2 A2 B2 c2"),
+                         "c'4    d'4    e'4    f'4    |\ng'4    a'4    b'4    c''4")
 
 
 class TestOutput(unittest.TestCase):
@@ -168,7 +183,7 @@ class TestOutput(unittest.TestCase):
     def test_hello_world(self):
         # A very basic (eventually) syntaxely correct example:
         # title, composer, common time
-        abc4ly.convert("regression/hello_world.abc",
+        convert("regression/hello_world.abc",
                        "regression-out/hello_world.ly")
         self.assert_(filecmp.cmp("regression-out/hello_world.ly",
                                  "regression-ref/hello_world.ly"))
@@ -176,21 +191,21 @@ class TestOutput(unittest.TestCase):
     def test_hello_world_reel(self):
         # Check that the rythm/meter field is written
         # Check the "cut time" meter/time signature
-        abc4ly.convert("regression/hello_world_reel.abc",
+        convert("regression/hello_world_reel.abc",
                        "regression-out/hello_world_reel.ly")
         self.assert_(filecmp.cmp("regression-out/hello_world_reel.ly",
                                  "regression-ref/hello_world_reel.ly"))
 
     def test_hello_world_empty_rythm(self):
         # Check that a blank rythm does not generate a meter field
-        abc4ly.convert("regression/hello_world_empty_rythm.abc",
+        convert("regression/hello_world_empty_rythm.abc",
                        "regression-out/hello_world_empty_rythm.ly")
         self.assert_(filecmp.cmp("regression-out/hello_world_empty_rythm.ly",
                                  "regression-ref/hello_world_empty_rythm.ly"))
 
     def test_c_major(self):
         # The C major scale
-        abc4ly.convert("regression/c_major.abc",
+        convert("regression/c_major.abc",
                        "regression-out/c_major.ly")
         self.assert_(filecmp.cmp("regression-out/c_major.ly",
                                  "regression-ref/c_major.ly"))

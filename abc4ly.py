@@ -12,40 +12,53 @@ import sys
 class AbcSyntaxError(Exception): pass
 
 # ------------------------------------------------------------------------
+#     Tune context
+# ------------------------------------------------------------------------
+
+class TuneContext:
+    title = ""
+    composer = ""
+    rythm = ""
+    meter = ""
+
+    default_note_duration = 0
+
+# ------------------------------------------------------------------------
 #     Read and process the input file
 # ------------------------------------------------------------------------
 
-def read_info_line(line, header):
+def read_info_line(tc, line):
     raw_field = line[2:] # Remove the leading "T:" or so
     # Remove leading/trailing spaces, and substititue any occurence
     # of more than one space by just one space
     nice_field = string.join(raw_field.split(), " ")
     if line[0] == 'T':
-        if header['title'] == "":
-            header['title'] = nice_field
+        if tc.title == "":
+            tc.title = nice_field
     elif line[0] == 'C':
-        header['composer'] = nice_field
+        tc.composer = nice_field
     elif line[0] == 'R':
-        header['rythm'] = nice_field
+        tc.rythm = nice_field
     elif line[0] == 'M':
-        header['meter'] = nice_field
+        tc.meter = nice_field
 
-def read_line(line, header):
+def read_line(tc, line):
     if line[0] in string.ascii_uppercase and line[1] == ":":
-        read_info_line(line, header)
-    # Comments (lines starting with '%') and empty lines are silently
-    # ignored
+        read_info_line(tc, line)
+    elif line.isspace() or line.lstrip()[0] == "%":
+        # Silently ignore comments (lines starting with '%') and empty lines
+        pass
 
 # ------------------------------------------------------------------------
 #     Write the lilypond output
 # ------------------------------------------------------------------------
 
-def write_header(ly_file, header):
+def write_header(tc, ly_file):
     ly_file.write("\n" r'''\header {''' "\n")
-    ly_file.write('  title = "{0}"\n'.format(header['title']))
-    ly_file.write('  composer = "{0}"\n'.format(header['composer']))
-    if header['rythm'] <> "":
-        ly_file.write('  meter = "{0}"\n'.format(header['rythm']))
+    ly_file.write('  title = "{0}"\n'.format(tc.title))
+    ly_file.write('  composer = "{0}"\n'.format(tc.composer))
+    if tc.rythm <> "":
+        ly_file.write('  meter = "{0}"\n'.format(tc.rythm))
     ly_file.write("}\n")
 
 def write_time_signature(ly_file, meter):
@@ -137,6 +150,18 @@ def get_leading_digits(string):
             break
     return leading_digits
 
+# Given the time signature as a fraction (e.g. "6/8" or "4/4"), compute
+# the default note length in lilypond format
+
+def get_default_note_duration(time_signature):
+    ts_tab = time_signature.split("/")
+    num = float(ts_tab[0])
+    den = float(ts_tab[1])
+    if num / den < 0.75:
+        return 16
+    else:
+        return 8
+
 # Given a line of ABC music, translate the line to lilypond
 
 def translate_notes(tune_context, abc_line):
@@ -148,8 +173,13 @@ def translate_notes(tune_context, abc_line):
     first_note = True
 
     while len(al) != 0 or state == "duration":
+
+        if len(al) != 0 and al[0] == '|':
+            al = al[1:]
+            ly_line += "    |\n"
+            first_note = True
         
-        if state == "pitch":
+        elif state == "pitch":
             pitch = al[0]
             al = al[1:]
             ly_pitch = ""
@@ -171,11 +201,11 @@ def translate_notes(tune_context, abc_line):
             lm = get_leading_digits(al)
             if lm != "":
                 al = al[len(lm):]
-                ly_duration = str(int(lm) * 2)
+                ly_duration = str(tune_context.default_note_duration / int(lm))
                 ly_line += ly_duration
             else:
                 # Use default note length
-                ly_line += "2"
+                ly_line += str(tune_context.default_note_duration)
             state = "pitch"
 
         al = al.lstrip()
@@ -190,15 +220,24 @@ def open_abc(abc_filename):
     abc_file = open(abc_filename, 'r')
     return abc_file
 
-def create_empty_header():
-    header = {'title':'', 'composer':'', 'rythm':'', 'meter':''}
-    return header
-
 def convert(abc_filename, ly_filename):
     abc_file = open_abc(abc_filename)
-    header = create_empty_header()
+
+    # Setup the context data
+
+    tc = TuneContext()
+
+    # Parse the ABC file
+
     for line in abc_file.readlines():
-        read_line(line, header)
+        read_line(tc, line)
+
+        #tc = TuneContext()
+        #tc.default_note_duration = get_default_note_duration(header['meter'])
+
+
+
+    # Write the lilypond file
 
     if ly_filename == '':
         ly_file = sys.stdout
@@ -209,13 +248,13 @@ def convert(abc_filename, ly_filename):
         # Warning: with format(), curly braces must be escaped by
         # doubling them!
         ly_file.write(r'''\version "2.12.2"''' "\n")
-        write_header(ly_file, header)
+        write_header(tc, ly_file)
         ly_file.write(r'''
 melody = {
   \clef treble
   \key c \major
 ''')
-        write_time_signature(ly_file, header['meter'])
+        write_time_signature(ly_file, tc.meter)
 
         if ly_filename == "regression-out/c_major.ly":
             ly_file.write(r'''
@@ -238,5 +277,5 @@ melody = {
         if ly_file != sys.stdout:
             ly_file.close()
 
-    return header
+    return tc
 

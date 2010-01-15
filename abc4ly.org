@@ -6,9 +6,9 @@ translate_notes():
 	+abc_line = "   C2  D2   E2 F2  "_+
 	+abc_line = "C2 D2 E2 F  2": légal? => passe avec abc4ly+
 	+abc_line = "CDEF GABc"_+
-	M = 6/8 && abc_line = "CDE FGA" (TBC: on veut: default note
-        length != 2)
-	c_major
+	+M = 6/8 && abc_line = "CDE FGA" (TBC: on veut: default note length != 2)+
+	+Séparateur de mesures+
+	+c_major+
 	lower_c_major
 
 Morceau:
@@ -239,10 +239,11 @@ spécifié génère l'affichage d'un warning.
 * Rappels ABC
 Durée des notes par défaut:
 	1. Calculer (Evaluer) la signature rythmique qu'on appelera DTS
-           (decimal tempo signature). Exemple: dts(3/4) = 0.75.
+           (decimal tempo signature).
+	   Exemples: dts(3/4) = 0.75; dts(2/2) = 1
 	2. Si dts < 0.75: default note length = sixteenth note (double
-           croche). Sinon (dts >= 0.75): default note length = eighth
-           note (croche)
+           croche = 16). Sinon (dts >= 0.75): default note length = eighth
+           note (croche = 8)
 
 ** Grammaire ABC
 Qu'est-ce qu'une note?
@@ -281,3 +282,5 @@ En notation absolue et avec la clé \treble de LilyPond:
 | C   | c'       |
 | c   | c''      |
 |     |          |
+
+** Durée des notes
