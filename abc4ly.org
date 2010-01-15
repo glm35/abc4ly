@@ -12,9 +12,11 @@ translate_notes():
 	lower_c_major
 
 Morceau:
-	c_major
+	+c_major+
+	hello_world
 
 Reconnaître la durée des notes:
+	Supprimer la duplication de l'appel à normalize_time_signature()
 	Calculer la durée des notes par défaut (default note length)
 	Gérer le coefficient multiplicateur (e.g. A2) => rallonger la durée par défaut
 	Gérer le coefficient diviseur => diminuer la durée par défaut

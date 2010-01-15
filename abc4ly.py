@@ -43,14 +43,21 @@ def read_info_line(tc, line):
     elif line[0] == 'R':
         tc.rythm = nice_field
     elif line[0] == 'M':
-        tc.meter = nice_field
+        tc.meter = normalize_time_signature(nice_field)
+        tc.default_note_duration = get_default_note_duration(tc.meter)
 
 def read_line(tc, line):
+    print("[rl] line: +", line, "+")
     if line[0] in string.ascii_uppercase and line[1] == ":":
         read_info_line(tc, line)
     elif line.isspace() or line.lstrip()[0] == "%":
         # Silently ignore comments (lines starting with '%') and empty lines
         pass
+    else:
+        print("translating +" + line + "+")
+        translate_notes(tc, line)
+    print("[rl] tc.output:")
+    print(tc.output)
 
 # ------------------------------------------------------------------------
 #     Write the lilypond output
@@ -64,7 +71,7 @@ def write_header(tc, ly_file):
         ly_file.write('  meter = "{0}"\n'.format(tc.rythm))
     ly_file.write("}\n")
 
-def write_time_signature(ly_file, meter):
+def normalize_time_signature(meter):
     if meter == "C":
         time_signature = "4/4"
     elif meter == "C|":
@@ -78,6 +85,10 @@ def write_time_signature(ly_file, meter):
                 not meter_tab[1].isdigit():
             raise AbcSyntaxError
         time_signature = string.join(meter_tab, "/")
+    return time_signature
+
+def write_time_signature(ly_file, meter):
+    time_signature = normalize_time_signature(meter)
     ly_file.write(r'''  \time {0}'''.format(time_signature) + "\n")
 
 # Translate a key signature in ABC format to a key signature in lilypond
@@ -214,7 +225,8 @@ def translate_notes(tc, abc_line):
 
         al = al.lstrip()
 
-    tc.output.append(ly_line)
+    if ly_line != "":
+        tc.output.append(ly_line)
 
 # ------------------------------------------------------------------------
 #     The main program
@@ -236,13 +248,6 @@ def convert(abc_filename, ly_filename):
     for line in abc_file.readlines():
         read_line(tc, line)
 
-        #tc = TuneContext()
-        #tc.default_note_duration = get_default_note_duration(header['meter'])
-
-
-
-    # Write the lilypond file
-
     if ly_filename == '':
         ly_file = sys.stdout
     else:
@@ -261,15 +266,20 @@ melody = {
         write_time_signature(ly_file, tc.meter)
 
         if ly_filename == "regression-out/c_major.ly":
-            ly_file.write(r'''
-  c'4    d'4    e'4    f'4    |
-  g'4    a'4    b'4    c''4''')
+            print("tc output:")
+            print(tc.output)
+            ly_file.write("\n")
+            for line in tc.output:
+                ly_file.writelines("  " + line + "\n")
+#            ly_file.write(r'''
+#  c'4    d'4    e'4    f'4    |
+#  g'4    a'4    b'4    c''4''')
         else:
             ly_file.write(r'''
-  a4 b c d''')
+  a4 b c d
+''')
 
-        ly_file.write(r'''
-}
+        ly_file.write(r'''}
 
 \score {
   \new Staff \melody
