@@ -27,6 +27,16 @@ class TuneContext():
         self.output = []
 
 # ------------------------------------------------------------------------
+#     The logical representation of a LilyPond note
+# ------------------------------------------------------------------------
+
+class Note():
+    def __init(self):
+        self.pitch = ""
+        self.octaver = ""
+        self.duration = ""
+
+# ------------------------------------------------------------------------
 #     Read and process the input file
 # ------------------------------------------------------------------------
 
@@ -185,6 +195,7 @@ def translate_notes(tc, abc_line):
     state = "pitch"
     ly_line = ""
     first_note = True
+    note = Note()
 
     while len(al) != 0 or state != "pitch":
 
@@ -195,24 +206,32 @@ def translate_notes(tc, abc_line):
             first_note = True
         
         elif state == "pitch":
-            pitch = al[0]
+            abc_pitch = al[0]
             al = al[1:]
-            ly_pitch = ""
-            if not pitch in pitches:
-                print("Not a pitch: " + pitch)
+            if not abc_pitch in pitches:
+                print("Not a pitch: " + abc_pitch)
                 raise AbcSyntaxError
-            if pitch.lower() == pitch:
-                ly_pitch = pitch + "''"
+            note.pitch = abc_pitch.lower()
+            if abc_pitch.lower() == abc_pitch:
+                note.octaver = "''"
             else:
-                ly_pitch = pitch.lower() + "'"
+                note.octaver = "'"
             if not first_note:
                 ly_line += "    "
             else:
                 first_note = False
-            ly_line += ly_pitch
             state = "octaver"
 
         elif state == "octaver":
+            # Look for "," or "'"
+            octaver = ""
+            if len(al) != 0:
+                octaver = al[0]
+            if octaver == "'" or octaver == ",":
+                al = al[1:]
+            if octaver == ",":
+                pass # TODO
+            ly_line += note.pitch + note.octaver
             state = "duration"
 
         elif state == "duration":

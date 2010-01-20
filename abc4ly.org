@@ -281,8 +281,9 @@ En notation absolue et avec la clé \treble de LilyPond:
 
 | ABC | LilyPond |
 |-----+----------|
+| C,  | c        |
 | C   | c'       |
 | c   | c''      |
-|     |          |
+| c'  | c''      |
 
 ** Durée des notes
