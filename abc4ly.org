@@ -14,6 +14,7 @@ translate_notes():
 	+octaver = "'"_+
 	+erreur si octaver = "'" et abc_pitch en majuscule+
 	state "done" => dump note
+	dump note: check that a note has really been setup
 
 Morceau:
 	+c_major+

@@ -31,7 +31,7 @@ class TuneContext():
 # ------------------------------------------------------------------------
 
 class Note():
-    def __init(self):
+    def __init():
         self.pitch = ""
         self.octaver = ""
         self.duration = ""
@@ -196,16 +196,28 @@ def translate_notes(tc, abc_line):
     ly_line = ""
     first_note = True
     note = Note()
+    note.duration = tc.default_note_duration
 
     while len(al) != 0 or state != "pitch":
 
-        if len(al) != 0 and al[0] == '|':
+        if len(al) == 0 or state == "done":
+            # Dump note # TODO: check that it exists
+            if not first_note:
+                ly_line += "    "
+            else:
+                first_note = False
+            ly_line += note.pitch + note.octaver + str(note.duration)
+            state = "pitch"
+
+        elif al[0] == '|':
             al = al[1:]
             tc.output.append(ly_line + "    |")
             ly_line = ""
             first_note = True
         
         elif state == "pitch":
+            note = Note()
+            note.duration = tc.default_note_duration
             abc_pitch = al[0]
             al = al[1:]
             if not abc_pitch in pitches:
@@ -216,17 +228,11 @@ def translate_notes(tc, abc_line):
                 note.octaver = "''"
             else:
                 note.octaver = "'"
-            if not first_note:
-                ly_line += "    "
-            else:
-                first_note = False
             state = "octaver"
 
         elif state == "octaver":
             # Look for "," or "'"
-            octaver = ""
-            if len(al) != 0:
-                octaver = al[0]
+            octaver = al[0]
             if octaver == "'" or octaver == ",":
                 al = al[1:]
             if octaver == ",":
@@ -239,18 +245,14 @@ def translate_notes(tc, abc_line):
                     # "C'" etc is an invalid ABC construct
                     raise AbcSyntaxError
                 note.octaver += "'"
-            ly_line += note.pitch + note.octaver
             state = "duration"
 
         elif state == "duration":
             lm = get_leading_digits(al)
             if lm != "":
                 al = al[len(lm):]
-                ly_duration = str(tc.default_note_duration / int(lm))
-                ly_line += ly_duration
-            else:
-                # Use default note length
-                ly_line += str(tc.default_note_duration)
+                note.duration /= int(lm)
+            # Else use default note length
             state = "done"
 
         elif state == "done":
