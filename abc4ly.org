@@ -9,7 +9,11 @@ translate_notes():
 	+M = 6/8 && abc_line = "CDE FGA" (TBC: on veut: default note length != 2)+
 	+Séparateur de mesures+
 	+c_major+
-	lower_c_major
+	+lower_c_major+
+	+erreur si octaver = "," et abc_pitch en minuscule+
+	+octaver = "'"_+
+	+erreur si octaver = "'" et abc_pitch en majuscule+
+	state "done" => dump note
 
 Morceau:
 	+c_major+
@@ -284,6 +288,6 @@ En notation absolue et avec la clé \treble de LilyPond:
 | C,  | c        |
 | C   | c'       |
 | c   | c''      |
-| c'  | c''      |
+| c'  | c'''     |
 
 ** Durée des notes

@@ -230,7 +230,15 @@ def translate_notes(tc, abc_line):
             if octaver == "'" or octaver == ",":
                 al = al[1:]
             if octaver == ",":
-                pass # TODO
+                if note.octaver == "''":
+                    # "c," etc is an invalid ABC construct
+                    raise AbcSyntaxError
+                note.octaver = ""
+            elif octaver == "'":
+                if note.octaver == "'":
+                    # "C'" etc is an invalid ABC construct
+                    raise AbcSyntaxError
+                note.octaver += "'"
             ly_line += note.pitch + note.octaver
             state = "duration"
 
@@ -243,6 +251,9 @@ def translate_notes(tc, abc_line):
             else:
                 # Use default note length
                 ly_line += str(tc.default_note_duration)
+            state = "done"
+
+        elif state == "done":
             state = "pitch"
 
         al = al.lstrip()

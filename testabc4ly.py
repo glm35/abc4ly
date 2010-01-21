@@ -194,6 +194,21 @@ class TestTranslateNotes(unittest.TestCase):
         expected_output = ["c8    d8    e8    f8    g8    a8    b8    c'8"]
         self.translate_and_test(abc_notes, expected_output)
 
+    def test_octaver_error_down(self):
+        abc_notes = "c,D,E,F, G,A,B,C"
+        self.assertRaises(AbcSyntaxError,
+                          translate_notes, self.tc, abc_notes)
+
+    def test_upper_c_major(self):
+        abc_notes =  "cdef gabc'"
+        expected_output = ["c''8    d''8    e''8    f''8    g''8    a''8    b''8    c'''8"]
+        self.translate_and_test(abc_notes, expected_output)
+
+    def test_octaver_error_up(self):
+        abc_notes = "C'D,E,F, G,A,B,C"
+        self.assertRaises(AbcSyntaxError,
+                          translate_notes, self.tc, abc_notes)
+
 
 class TestOutput(unittest.TestCase):
 
