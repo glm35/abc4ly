@@ -20,6 +20,7 @@ class TestFileOperations(unittest.TestCase):
         tmp = open_abc("regression/empty.abc")
         tmp.close()
 
+
 class TestInformationFields(unittest.TestCase):
 
     def test_title(self):
@@ -48,6 +49,7 @@ class TestInformationFields(unittest.TestCase):
     def test_other(self):
         tc = TuneContext()
         read_line(tc, "I:No comment\n")
+
 
 class TestMisc(unittest.TestCase):
 
@@ -209,40 +211,38 @@ class TestTranslateNotes(unittest.TestCase):
         self.assertRaises(AbcSyntaxError,
                           translate_notes, self.tc, abc_notes)
 
+    def test_empty_note_line(self):
+        abc_notes = ""
+        expected_output = []
+        self.translate_and_test(abc_notes, expected_output)
+
 
 class TestOutput(unittest.TestCase):
 
+    def check_output(self, basename):
+        test = "regression/" + basename + ".abc"
+        out = "regression-out/" + basename + ".ly"
+        ref = "regression-ref/" + basename + ".ly"
+        convert(test, out)
+        self.assert_(filecmp.cmp(ref, out),
+                     "Files " + ref + " and " + out + " differ")
+
     def test_c_major(self):
         # The C major scale
-        test = "regression/c_major.abc"
-        out = "regression-out/c_major.ly"
-        ref = "regression-ref/c_major.ly"
+        self.check_output("c_major")
 
-        convert(test, out)
-        self.assert_(filecmp.cmp(out, ref),
-                     "Files " + out + " and " + ref + " differ")
+    def test_hello_world(self):
+        # A very basic (eventually) syntaxely correct example:
+        # title, composer, common time
+        self.check_output("hello_world")
 
-#    def test_hello_world(self):
-#        # A very basic (eventually) syntaxely correct example:
-#        # title, composer, common time
-#        convert("regression/hello_world.abc",
-#                       "regression-out/hello_world.ly")
-#        self.assert_(filecmp.cmp("regression-out/hello_world.ly",
-#                                 "regression-ref/hello_world.ly"))
+    def test_hello_world_reel(self):
+        # Check that the rythm/meter (abc/ly) field is written
+        self.check_output("hello_world_reel")
 
-#    def test_hello_world_reel(self):
-#        # Check that the rythm/meter field is written
-#        convert("regression/hello_world_reel.abc",
-#                       "regression-out/hello_world_reel.ly")
-#        self.assert_(filecmp.cmp("regression-out/hello_world_reel.ly",
-#                                 "regression-ref/hello_world_reel.ly"))
-#
-#    def test_hello_world_empty_rythm(self):
-#        # Check that a blank rythm does not generate a meter field
-#        convert("regression/hello_world_empty_rythm.abc",
-#                       "regression-out/hello_world_empty_rythm.ly")
-#        self.assert_(filecmp.cmp("regression-out/hello_world_empty_rythm.ly",
-#                                 "regression-ref/hello_world_empty_rythm.ly"))
+    def test_hello_world_empty_rythm(self):
+        # Check that a blank rythm (abc) does not generate a meter (ly) field
+        self.check_output("hello_world_empty_rythm")
 
 
 if __name__ == '__main__':

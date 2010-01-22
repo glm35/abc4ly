@@ -1,28 +1,18 @@
 * Feuille de route
 ** P0
-translate_notes():
-	+abc_line = "C2 D2 E2 F2"_+
-	+abc_line = ""_+
-	+abc_line = "   C2  D2   E2 F2  "_+
-	+abc_line = "C2 D2 E2 F  2": légal? => passe avec abc4ly+
-	+abc_line = "CDEF GABc"_+
-	+M = 6/8 && abc_line = "CDE FGA" (TBC: on veut: default note length != 2)+
-	+Séparateur de mesures+
-	+c_major+
-	+lower_c_major+
-	+erreur si octaver = "," et abc_pitch en minuscule+
-	+octaver = "'"_+
-	+erreur si octaver = "'" et abc_pitch en majuscule+
-	state "done" => dump note
-	dump note: check that a note has really been setup
+Définir le style de la sortie (TBC avec des exemples réels):
+	4 espaces entre deux notes (pour y voir bien clair)
+	Une mesure par ligne de texte
+	Identer les accolades (4 espaces)
+	+Utilisation des vérificateurs de mesure+
 
 Morceau:
 	+c_major+
 	hello_world & friends
 
-Reconnaître la durée des notes:
+Traiter la durée des notes:
 	Supprimer la duplication de l'appel à normalize_time_signature()
-	Calculer la durée des notes par défaut (default note length)
+	+Calculer la durée des notes par défaut (default note length)+
 	Gérer le coefficient multiplicateur (e.g. A2) => rallonger la durée par défaut
 	Gérer le coefficient diviseur => diminuer la durée par défaut
 	Gérer les marqueurs de rythme brisé (broken rythms markers: a>b, etc.)
@@ -33,28 +23,16 @@ Reconnaître la durée des notes:
 		A l'improviste dans le morceau
 	Gérer les notes liées
 
-Exprimer la durée des notes en lilypond:
-	1 = whole note, 2 = half note (blanche), 4 = quarter note (noire)
-	. = note pointée
-
 Reconnaître la hauteur des notes:
-	Majuscules / minuscules / apostrophe / virgule
+	+Majuscules / minuscules / apostrophe / virgule+
 	Altérations (dièse, bémol, naturel, ...)
 	Silences (rests)
 
-Exprimer la hauteur des notes en lilypond:
+Reconnaître la structure du morceau (barres de mesure, répétitions, ...):
+	+Séparateur de mesures+
 
 En cas d'erreur de syntaxe ABC, donner du contexte à l'utilisateur (nom
 du fichier, numéro de la ligne et description de l'erreur)
-
-Gérer les notes liées
-
-Utiliser les vérificateurs de mesure
-
-Style:
-	4 espaces entre deux notes (pour y voir bien clair)
-	Une mesure par ligne de texte
-	Identer les accolades (4 espaces)
 
 ** P1
 Reconnaître le champ tempo
@@ -190,6 +168,8 @@ La hauteur des notes est traduite de manière absolue. On n'utilise pas
 le mode "\relative": ce mode facilite l'écriture manuelle mais n'est pas
 facile à lire et est plus compliqué à écrire automatiquement.
 
+On utilise les vérificateurs de mesure: permet à lilypond d'informer
+l'utilisateur des erreurs d'écriture (quand ce n'est pas fait par abc4ly).
 
 * Gestion des champs informatifs
 On retient les champs informatifs suivants:
@@ -278,6 +258,10 @@ Tonalité du morceau:
 	Gamme mineure: \key <hauteur> \minor (e.g. \key bes \minor) (sib mineur)
 	Mode: \key <hauteur> \<mode> (e.g \key d \mixolydian)
 	Pour faire plus compliqué: utiliser la propriété "Staff.keySignature"
+
+Pour exprimer la durée des notes en lilypond:
+	1 = whole note, 2 = half note (blanche), 4 = quarter note (noire)
+	. = note pointée
 
 * Equivalence ABC <=> lilypond
 ** Hauteur des notes

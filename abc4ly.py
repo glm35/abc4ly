@@ -201,7 +201,7 @@ def translate_notes(tc, abc_line):
     while len(al) != 0 or state != "pitch":
 
         if len(al) == 0 or state == "done":
-            # Dump note # TODO: check that it exists
+            # Dump note
             if not first_note:
                 ly_line += "    "
             else:
