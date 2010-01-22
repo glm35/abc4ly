@@ -5,7 +5,11 @@ set -e
 
 ME=$(basename "$0")
 
-ABC4LY_BASE_DIR=${HOME}/doc/.perso/abc4ly
+if [ "$HOSTNAME" == "potiron" ] || [ "$HOSTNAME" == potimarron ]; then
+    ABC4LY_BASE_DIR=${HOME}/code/abc4ly
+else
+    ABC4LY_BASE_DIR=${HOME}/doc/.perso/abc4ly
+fi
 
 # ----------------------------------------------------------------------------
 # Configuration options

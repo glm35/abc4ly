@@ -8,7 +8,7 @@ Définir le style de la sortie (TBC avec des exemples réels):
 
 Morceau:
 	+c_major+
-	hello_world & friends
+	+hello_world & friends+
 
 Traiter la durée des notes:
 	Supprimer la duplication de l'appel à normalize_time_signature()

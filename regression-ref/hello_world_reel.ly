@@ -11,7 +11,7 @@ melody = {
   \key c \major
   \time 2/2
 
-  a4 b c d
+  a4    b4    c'4    d'4
 }
 
 \score {
