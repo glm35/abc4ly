@@ -244,6 +244,8 @@ class TestOutput(unittest.TestCase):
         # Check that a blank rythm (abc) does not generate a meter (ly) field
         self.check_output("hello_world_empty_rythm")
 
+    def test_brid_harper_s(self):
+        self.check_output("brid_harper_s")
 
 if __name__ == '__main__':
     unittest.main()

@@ -9,6 +9,13 @@ Définir le style de la sortie (TBC avec des exemples réels):
 Morceau:
 	+c_major+
 	+hello_world & friends+
+	brid_harper_s (jig, sol, répétition simple)
+		informations de contexte avec AbcSyntaxError: nom du
+        fichier, numéro de ligne, contenu de la ligne, position de
+        l'erreur (^), raison de l'erreur
+	        altération: Gmaj => fa dièse
+		noire pointée (E3 => e'4.)
+		répétition |: ... :|
 
 Traiter la durée des notes:
 	Supprimer la duplication de l'appel à normalize_time_signature()
