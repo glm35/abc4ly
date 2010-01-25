@@ -9,7 +9,21 @@ import sys
 #     Exceptions
 # ------------------------------------------------------------------------
 
-class AbcSyntaxError(Exception): pass
+class AbcSyntaxError(Exception):
+    def __init__(self):
+        self.what = ""
+        self.filename = ""
+        self.abc_line = ""
+        self.lineno = 0 # line count starts at 1 (idem Emacs)
+        self.colno = 0  # column count starts at 0 (idem Emacs)
+
+    def __str__(self):
+        return """In "{0}", line {1}, column {2}:
+{3}
+{4}^
+{4}{5}""".format(self.filename, self.lineno, self.colno,
+                 self.abc_line,
+                 " " * self.colno, self.what)
 
 # ------------------------------------------------------------------------
 #     Tune context
@@ -17,6 +31,9 @@ class AbcSyntaxError(Exception): pass
 
 class TuneContext():
     def __init__(self):
+        self.filename = ""
+        self.lineno = 1
+
         self.title = ""
         self.composer = ""
         self.rythm = ""
@@ -31,7 +48,10 @@ class TuneContext():
 # ------------------------------------------------------------------------
 
 class Note():
-    def __init():
+    def __init__(self):
+        self.clear()
+
+    def clear(self):
         self.pitch = ""
         self.octaver = ""
         self.duration = ""
@@ -68,6 +88,7 @@ def read_line(tc, line):
         translate_notes(tc, line)
     print("[rl] tc.output:")
     print(tc.output)
+    tc.lineno += 1
 
 # ------------------------------------------------------------------------
 #     Write the lilypond output
@@ -189,16 +210,25 @@ def get_default_note_duration(time_signature):
 # Given a line of ABC music, translate the line to lilypond
 
 def translate_notes(tc, abc_line):
+    # Prepare an exception (just in case)
+    e = AbcSyntaxError()
+    e.filename = tc.filename
+    e.abc_line = abc_line.rstrip()
+    e.lineno = tc.lineno
+    e.colno = 0
+
     pitches = "abcdefgABCDEFG"
 
-    al = abc_line.lstrip()
+    al = abc_line
     state = "pitch"
     ly_line = ""
     first_note = True
     note = Note()
-    note.duration = tc.default_note_duration
 
     while len(al) != 0 or state != "pitch":
+
+        al = al.lstrip()
+        # TODO: count the current column (hint: compare len before and after strip)
 
         if len(al) == 0 or state == "done":
             # Dump note
@@ -207,6 +237,7 @@ def translate_notes(tc, abc_line):
             else:
                 first_note = False
             ly_line += note.pitch + note.octaver + str(note.duration)
+            note.clear()
             state = "pitch"
 
         elif al[0] == '|':
@@ -216,14 +247,13 @@ def translate_notes(tc, abc_line):
             first_note = True
         
         elif state == "pitch":
-            note = Note()
-            note.duration = tc.default_note_duration
             abc_pitch = al[0]
             al = al[1:]
             if not abc_pitch in pitches:
-                print("Not a pitch: " + abc_pitch)
-                raise AbcSyntaxError
+                e.what = "'{0}' is not a pitch".format(abc_pitch)
+                raise e
             note.pitch = abc_pitch.lower()
+            note.duration = tc.default_note_duration
             if abc_pitch.lower() == abc_pitch:
                 note.octaver = "''"
             else:
@@ -255,11 +285,6 @@ def translate_notes(tc, abc_line):
             # Else use default note length
             state = "done"
 
-        elif state == "done":
-            state = "pitch"
-
-        al = al.lstrip()
-
     if ly_line != "":
         tc.output.append(ly_line)
 
@@ -277,6 +302,7 @@ def convert(abc_filename, ly_filename):
     # Setup the context data
 
     tc = TuneContext()
+    tc.filename = abc_filename
 
     # Parse the ABC file
 

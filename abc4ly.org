@@ -1,5 +1,11 @@
 * Feuille de route
 ** P0
+En cas d'erreur de syntaxe ABC, donner du contexte à l'utilisateur
+	+nom du fichier+
+	+numéro de la ligne+
+	colonne en cours d'analyse
+	+description de l'erreur+
+
 Définir le style de la sortie (TBC avec des exemples réels):
 	4 espaces entre deux notes (pour y voir bien clair)
 	Une mesure par ligne de texte
@@ -37,9 +43,6 @@ Reconnaître la hauteur des notes:
 
 Reconnaître la structure du morceau (barres de mesure, répétitions, ...):
 	+Séparateur de mesures+
-
-En cas d'erreur de syntaxe ABC, donner du contexte à l'utilisateur (nom
-du fichier, numéro de la ligne et description de l'erreur)
 
 ** P1
 Reconnaître le champ tempo
