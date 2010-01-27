@@ -3,8 +3,11 @@
 En cas d'erreur de syntaxe ABC, donner du contexte à l'utilisateur
 	+nom du fichier+
 	+numéro de la ligne+
-	colonne en cours d'analyse
+	+colonne en cours d'analyse+
 	+description de l'erreur+
+	+erreur: not a pitch+
+	erreur: "c," invalid construct
+	erreur: "C'" invalid construct
 
 Définir le style de la sortie (TBC avec des exemples réels):
 	4 espaces entre deux notes (pour y voir bien clair)

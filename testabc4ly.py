@@ -196,25 +196,58 @@ class TestTranslateNotes(unittest.TestCase):
         expected_output = ["c8    d8    e8    f8    g8    a8    b8    c'8"]
         self.translate_and_test(abc_notes, expected_output)
 
-    def test_octaver_error_down(self):
-        abc_notes = "c,D,E,F, G,A,B,C"
-        self.assertRaises(AbcSyntaxError,
-                          translate_notes, self.tc, abc_notes)
-
     def test_upper_c_major(self):
         abc_notes =  "cdef gabc'"
         expected_output = ["c''8    d''8    e''8    f''8    g''8    a''8    b''8    c'''8"]
         self.translate_and_test(abc_notes, expected_output)
+
+    def test_empty_note_line(self):
+        abc_notes = ""
+        expected_output = []
+        self.translate_and_test(abc_notes, expected_output)
+
+
+class TestTranslateNotesSyntaxError(unittest.TestCase):
+
+    def setUp(self):
+        self.tc = TuneContext()
+        self.tc.default_note_duration = get_default_note_duration("2/2")
+
+    def tearDown(self):
+        del self.tc
+
+    def translate_and_check_exception(self, abc_notes, exception_text):
+        try:
+            translate_notes(self.tc, abc_notes)
+        except (AbcSyntaxError), e:
+            print e.__str__()
+            self.assertEqual(e.__str__(), exception_text)
+        else:
+            self.assert_(False)
+
+    def test_octaver_error_down(self):
+        abc_notes = "c,D,E,F, G,A,B,C"
+        self.assertRaises(AbcSyntaxError,
+                          translate_notes, self.tc, abc_notes)
 
     def test_octaver_error_up(self):
         abc_notes = "C'D,E,F, G,A,B,C"
         self.assertRaises(AbcSyntaxError,
                           translate_notes, self.tc, abc_notes)
 
-    def test_empty_note_line(self):
-        abc_notes = ""
-        expected_output = []
-        self.translate_and_test(abc_notes, expected_output)
+    def test_not_a_pitch(self):
+        abc_notes = "cdef XYZK"
+        self.translate_and_check_exception(abc_notes, """In "", line 1, column 5:
+cdef XYZK
+     ^
+     'X' is not a pitch""")
+
+    def test_not_a_pitch_leading_spaces(self):
+        abc_notes = "   cdef XYZK"
+        self.translate_and_check_exception(abc_notes, """In "", line 1, column 8:
+   cdef XYZK
+        ^
+        'X' is not a pitch""")
 
 
 class TestOutput(unittest.TestCase):
@@ -244,8 +277,8 @@ class TestOutput(unittest.TestCase):
         # Check that a blank rythm (abc) does not generate a meter (ly) field
         self.check_output("hello_world_empty_rythm")
 
-    def test_brid_harper_s(self):
-        self.check_output("brid_harper_s")
+#    def test_brid_harper_s(self):
+#        self.check_output("brid_harper_s")
 
 if __name__ == '__main__':
     unittest.main()

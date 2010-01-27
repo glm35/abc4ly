@@ -227,8 +227,9 @@ def translate_notes(tc, abc_line):
 
     while len(al) != 0 or state != "pitch":
 
+        len_before = len(al)
         al = al.lstrip()
-        # TODO: count the current column (hint: compare len before and after strip)
+        e.colno += len_before - len(al)
 
         if len(al) == 0 or state == "done":
             # Dump note
@@ -242,16 +243,18 @@ def translate_notes(tc, abc_line):
 
         elif al[0] == '|':
             al = al[1:]
+            e.colno += 1
             tc.output.append(ly_line + "    |")
             ly_line = ""
             first_note = True
         
         elif state == "pitch":
             abc_pitch = al[0]
-            al = al[1:]
             if not abc_pitch in pitches:
                 e.what = "'{0}' is not a pitch".format(abc_pitch)
                 raise e
+            al = al[1:]
+            e.colno += 1
             note.pitch = abc_pitch.lower()
             note.duration = tc.default_note_duration
             if abc_pitch.lower() == abc_pitch:
@@ -265,6 +268,7 @@ def translate_notes(tc, abc_line):
             octaver = al[0]
             if octaver == "'" or octaver == ",":
                 al = al[1:]
+                e.colno += 1
             if octaver == ",":
                 if note.octaver == "''":
                     # "c," etc is an invalid ABC construct
@@ -281,6 +285,7 @@ def translate_notes(tc, abc_line):
             lm = get_leading_digits(al)
             if lm != "":
                 al = al[len(lm):]
+                e.colno += len(lm)
                 note.duration /= int(lm)
             # Else use default note length
             state = "done"
