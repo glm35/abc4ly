@@ -96,10 +96,10 @@ def read_line(tc, line):
 
 def write_header(tc, ly_file):
     ly_file.write("\n" r'''\header {''' "\n")
-    ly_file.write('  title = "{0}"\n'.format(tc.title))
-    ly_file.write('  composer = "{0}"\n'.format(tc.composer))
+    ly_file.write('    title = "{0}"\n'.format(tc.title))
+    ly_file.write('    composer = "{0}"\n'.format(tc.composer))
     if tc.rythm <> "":
-        ly_file.write('  meter = "{0}"\n'.format(tc.rythm))
+        ly_file.write('    meter = "{0}"\n'.format(tc.rythm))
     ly_file.write("}\n")
 
 def normalize_time_signature(meter):
@@ -120,7 +120,7 @@ def normalize_time_signature(meter):
 
 def write_time_signature(ly_file, meter):
     time_signature = normalize_time_signature(meter)
-    ly_file.write(r'''  \time {0}'''.format(time_signature) + "\n")
+    ly_file.write(r'''    \time {0}'''.format(time_signature) + "\n")
 
 # Translate a key signature in ABC format to a key signature in lilypond
 # format. Currently, this function only understands a key signature in
@@ -234,7 +234,7 @@ def translate_notes(tc, abc_line):
         if len(al) == 0 or state == "done":
             # Dump note
             if not first_note:
-                ly_line += "    "
+                ly_line += " "
             else:
                 first_note = False
             ly_line += note.pitch + note.octaver + str(note.duration)
@@ -244,7 +244,7 @@ def translate_notes(tc, abc_line):
         elif al[0] == '|':
             al = al[1:]
             e.colno += 1
-            tc.output.append(ly_line + "    |")
+            tc.output.append(ly_line + " |")
             ly_line = ""
             first_note = True
         
@@ -328,8 +328,8 @@ def convert(abc_filename, ly_filename):
         write_header(tc, ly_file)
         ly_file.write(r'''
 melody = {
-  \clef treble
-  \key c \major
+    \clef treble
+    \key c \major
 ''')
         write_time_signature(ly_file, tc.meter)
 
@@ -337,14 +337,14 @@ melody = {
         print(tc.output)
         ly_file.write("\n")
         for line in tc.output:
-            ly_file.writelines("  " + line + "\n")
+            ly_file.writelines("    " + line + "\n")
 
         ly_file.write(r'''}
 
 \score {
-  \new Staff \melody
-  \layout { }
-  \midi { }
+    \new Staff \melody
+    \layout { }
+    \midi { }
 }
 ''')
     finally:

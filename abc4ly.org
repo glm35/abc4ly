@@ -1,20 +1,5 @@
 * Feuille de route
 ** P0
-En cas d'erreur de syntaxe ABC, donner du contexte à l'utilisateur
-	+nom du fichier+
-	+numéro de la ligne+
-	+colonne en cours d'analyse+
-	+description de l'erreur+
-	+erreur: not a pitch+
-	+erreur: "c," invalid construct+
-	+erreur: "C'" invalid construct+
-
-Définir le style de la sortie (TBC avec des exemples réels):
-	1 espace entre deux notes (vu dans des exemples sur mutopia)
-	Une mesure par ligne de texte
-	Identer les accolades (4 espaces)
-	+Utilisation des vérificateurs de mesure+
-
 Morceau:
 	+c_major+
 	+hello_world & friends+
@@ -46,6 +31,15 @@ Reconnaître la hauteur des notes:
 
 Reconnaître la structure du morceau (barres de mesure, répétitions, ...):
 	+Séparateur de mesures+
+
+En cas d'erreur de syntaxe ABC, donner du contexte à l'utilisateur
+	+nom du fichier+
+	+numéro de la ligne+
+	+colonne en cours d'analyse+
+	+description de l'erreur+
+	+erreur: not a pitch+
+	+erreur: "c," invalid construct+
+	+erreur: "C'" invalid construct+
 
 ** P1
 Reconnaître le champ tempo
@@ -183,6 +177,12 @@ facile à lire et est plus compliqué à écrire automatiquement.
 
 On utilise les vérificateurs de mesure: permet à lilypond d'informer
 l'utilisateur des erreurs d'écriture (quand ce n'est pas fait par abc4ly).
+
+Style de la sortie lilypond (basé sur les guidelines lilypond et sur des
+exemples mutopia):
+	1 espace entre deux notes (vu dans des exemples sur mutopia)
+	Une mesure par ligne de texte
+	Identer les accolades (4 espaces)
 
 * Gestion des champs informatifs
 On retient les champs informatifs suivants:

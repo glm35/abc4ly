@@ -1,19 +1,19 @@
 \version "2.12.2"
 
 \header {
-  title = "Hello, world!"
-  composer = "M. Foo"
+    title = "Hello, world!"
+    composer = "M. Foo"
 }
 
 melody = {
-  \clef treble
-  \key c \major
-  \time 4/4
+    \clef treble
+    \key c \major
+    \time 4/4
 
 }
 
 \score {
-  \new Staff \melody
-  \layout { }
-  \midi { }
+    \new Staff \melody
+    \layout { }
+    \midi { }
 }

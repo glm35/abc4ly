@@ -162,7 +162,7 @@ class TestTranslateNotes(unittest.TestCase):
 
     def test_one_bar(self):
         abc_notes = "C2 D2 E2 F2"
-        expected_output = ["c'4    d'4    e'4    f'4"]
+        expected_output = ["c'4 d'4 e'4 f'4"]
         self.translate_and_test(abc_notes, expected_output)
 
     def test_empty_bar(self):
@@ -172,33 +172,33 @@ class TestTranslateNotes(unittest.TestCase):
 
     def test_bar_starting_with_spaces(self):
         abc_notes = "   C2  D2   E2 F2  "
-        expected_output = ["c'4    d'4    e'4    f'4"]
+        expected_output = ["c'4 d'4 e'4 f'4"]
         self.translate_and_test(abc_notes, expected_output)
 
     def test_space_between_pitch_and_duration(self):
         abc_notes = "C2 D2 E2 F    2"
-        expected_output = ["c'4    d'4    e'4    f'4"]
+        expected_output = ["c'4 d'4 e'4 f'4"]
         self.translate_and_test(abc_notes, expected_output)
 
     def test_one_bar_with_eights_notes(self):
         abc_notes =  "CDEF GABc"
-        expected_output = ["c'8    d'8    e'8    f'8    g'8    a'8    b'8    c''8"]
+        expected_output = ["c'8 d'8 e'8 f'8 g'8 a'8 b'8 c''8"]
         self.translate_and_test(abc_notes, expected_output)
 
     def test_two_bars(self):
         abc_notes = "C2 D2 E2 F2 | G2 A2 B2 c2"
-        expected_output = ["c'4    d'4    e'4    f'4    |"]
-        expected_output.append("g'4    a'4    b'4    c''4")
+        expected_output = ["c'4 d'4 e'4 f'4 |"]
+        expected_output.append("g'4 a'4 b'4 c''4")
         self.translate_and_test(abc_notes, expected_output)
 
     def test_lower_c_major(self):
         abc_notes =  "C,D,E,F, G,A,B,C"
-        expected_output = ["c8    d8    e8    f8    g8    a8    b8    c'8"]
+        expected_output = ["c8 d8 e8 f8 g8 a8 b8 c'8"]
         self.translate_and_test(abc_notes, expected_output)
 
     def test_upper_c_major(self):
         abc_notes =  "cdef gabc'"
-        expected_output = ["c''8    d''8    e''8    f''8    g''8    a''8    b''8    c'''8"]
+        expected_output = ["c''8 d''8 e''8 f''8 g''8 a''8 b''8 c'''8"]
         self.translate_and_test(abc_notes, expected_output)
 
     def test_empty_note_line(self):
