@@ -227,13 +227,17 @@ class TestTranslateNotesSyntaxError(unittest.TestCase):
 
     def test_octaver_error_down(self):
         abc_notes = "c,D,E,F, G,A,B,C"
-        self.assertRaises(AbcSyntaxError,
-                          translate_notes, self.tc, abc_notes)
+        self.translate_and_check_exception(abc_notes, """In "", line 1, column 1:
+c,D,E,F, G,A,B,C
+ ^
+ 'c,' is not syntactically correct""")
 
     def test_octaver_error_up(self):
         abc_notes = "C'D,E,F, G,A,B,C"
-        self.assertRaises(AbcSyntaxError,
-                          translate_notes, self.tc, abc_notes)
+        self.translate_and_check_exception(abc_notes, """In "", line 1, column 1:
+C'D,E,F, G,A,B,C
+ ^
+ "C'" is not syntactically correct""")
 
     def test_not_a_pitch(self):
         abc_notes = "cdef XYZK"

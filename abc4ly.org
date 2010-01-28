@@ -6,11 +6,11 @@ En cas d'erreur de syntaxe ABC, donner du contexte à l'utilisateur
 	+colonne en cours d'analyse+
 	+description de l'erreur+
 	+erreur: not a pitch+
-	erreur: "c," invalid construct
-	erreur: "C'" invalid construct
+	+erreur: "c," invalid construct+
+	+erreur: "C'" invalid construct+
 
 Définir le style de la sortie (TBC avec des exemples réels):
-	4 espaces entre deux notes (pour y voir bien clair)
+	1 espace entre deux notes (vu dans des exemples sur mutopia)
 	Une mesure par ligne de texte
 	Identer les accolades (4 espaces)
 	+Utilisation des vérificateurs de mesure+
@@ -275,6 +275,8 @@ Tonalité du morceau:
 Pour exprimer la durée des notes en lilypond:
 	1 = whole note, 2 = half note (blanche), 4 = quarter note (noire)
 	. = note pointée
+
+Exemples réels de musique écrite avec lilypond: http://www.mutopiaproject.org/
 
 * Equivalence ABC <=> lilypond
 ** Hauteur des notes

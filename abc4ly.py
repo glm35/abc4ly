@@ -266,19 +266,21 @@ def translate_notes(tc, abc_line):
         elif state == "octaver":
             # Look for "," or "'"
             octaver = al[0]
-            if octaver == "'" or octaver == ",":
-                al = al[1:]
-                e.colno += 1
             if octaver == ",":
                 if note.octaver == "''":
                     # "c," etc is an invalid ABC construct
-                    raise AbcSyntaxError
+                    e.what = "'{0}{1}' is not syntactically correct".format(abc_pitch, octaver)
+                    raise e
                 note.octaver = ""
             elif octaver == "'":
                 if note.octaver == "'":
                     # "C'" etc is an invalid ABC construct
-                    raise AbcSyntaxError
+                    e.what = '"{0}{1}" is not syntactically correct'.format(abc_pitch, octaver)
+                    raise e
                 note.octaver += "'"
+            if octaver == "'" or octaver == ",":
+                al = al[1:]
+                e.colno += 1
             state = "duration"
 
         elif state == "duration":
