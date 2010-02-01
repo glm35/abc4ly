@@ -1,15 +1,34 @@
 * Feuille de route
 ** P0
+Répétitions et barres de mesures (1):
+	"|: notes :|"
+	"|: notes | autres notes :|"
+	notes + |: autres notes :|
+        "|: notes :| + |: autres notes :|" (syntaxe valide?)
+	"|: notes :: autres notes :|"
+	" notes :|" (début de répétition implicite au début du morceau)
+	"| notes | autres notes |"
+
 Morceau:
 	+c_major+
 	+hello_world & friends+
+	hello_repeated
 	brid_harper_s (jig, sol, répétition simple)
-		informations de contexte avec AbcSyntaxError: nom du
-        fichier, numéro de ligne, contenu de la ligne, position de
-        l'erreur (^), raison de l'erreur
+		+informations de contexte avec AbcSyntaxError: nom du+
+        +fichier, numéro de ligne, contenu de la ligne, position de+
+        +l'erreur (^), raison de l'erreur+
+		répétition |: ... :|
 	        altération: Gmaj => fa dièse
 		noire pointée (E3 => e'4.)
-		répétition |: ... :|
+
+Répétitions et barres de mesures (2):
+	"|: notes :|"
+	"|: notes | autres notes :|"
+	notes + |: autres notes :|
+        "|: notes :| + |: autres notes :|" (syntaxe valide?)
+	"|: notes :: autres notes :|"
+	" notes :|" (début de répétition implicite au début du morceau)
+	"| notes | autres notes |"
 
 Traiter la durée des notes:
 	Supprimer la duplication de l'appel à normalize_time_signature()
@@ -277,6 +296,8 @@ Pour exprimer la durée des notes en lilypond:
 	. = note pointée
 
 Exemples réels de musique écrite avec lilypond: http://www.mutopiaproject.org/
+
+Répétition: \repeat volta 2 { ... }
 
 * Equivalence ABC <=> lilypond
 ** Hauteur des notes

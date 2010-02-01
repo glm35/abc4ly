@@ -206,6 +206,13 @@ class TestTranslateNotes(unittest.TestCase):
         expected_output = []
         self.translate_and_test(abc_notes, expected_output)
 
+    def test_one_bar_repeat(self):
+        abc_notes =  "|: cdef gabc' :|"
+        expected_output = ["\repeat volta 2 {",
+                           "    c''8 d''8 e''8 f''8 g''8 a''8 b''8 c'''8",
+                           "}"]
+        self.translate_and_test(abc_notes, expected_output)
+
 
 class TestTranslateNotesSyntaxError(unittest.TestCase):
 
@@ -283,6 +290,10 @@ class TestOutput(unittest.TestCase):
 
 #    def test_brid_harper_s(self):
 #        self.check_output("brid_harper_s")
+
+    def test_hello_repeated(self):
+        self.check_output("hello_repeated")
+
 
 if __name__ == '__main__':
     unittest.main()

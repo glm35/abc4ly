@@ -207,6 +207,20 @@ def get_default_note_duration(time_signature):
     else:
         return 8
 
+# Given a snippet of ABC music, try to recognize a repeat or bar pattern
+
+def get_bar(abc_snippet):
+    bars = [ '|:', ':|', '|' ] # longest first, please
+    bar = ""
+
+    for b in bars:
+        if len(abc_snippet) >= len(b) and abc_snippet[0:len(b)] == b:
+            bar = b
+            break
+
+    return bar
+        
+
 # Given a line of ABC music, translate the line to lilypond
 
 def translate_notes(tc, abc_line):
@@ -220,12 +234,13 @@ def translate_notes(tc, abc_line):
     pitches = "abcdefgABCDEFG"
 
     al = abc_line
-    state = "pitch"
+    start_state = "bar"
+    state = start_state
     ly_line = ""
     first_note = True
     note = Note()
 
-    while len(al) != 0 or state != "pitch":
+    while len(al) != 0 or state != start_state:
 
         len_before = len(al)
         al = al.lstrip()
@@ -239,14 +254,26 @@ def translate_notes(tc, abc_line):
                 first_note = False
             ly_line += note.pitch + note.octaver + str(note.duration)
             note.clear()
-            state = "pitch"
+            state = start_state
 
-        elif al[0] == '|':
-            al = al[1:]
-            e.colno += 1
-            tc.output.append(ly_line + " |")
-            ly_line = ""
-            first_note = True
+        elif state == "bar":
+            bar = get_bar(al)
+            al = al[len(bar):]
+            e.colno += len(bar)
+
+            if bar == "|:":
+                tc.output.append("\repeat volta 2 {")
+            elif bar == ":|":
+                tc.output.append("    " + ly_line)
+                tc.output.append("}")
+            elif bar == "|":
+                tc.output.append(ly_line + " |")
+
+            if bar != "":
+                ly_line = ""
+                first_note = True
+
+            state = "pitch"
         
         elif state == "pitch":
             abc_pitch = al[0]
@@ -337,7 +364,9 @@ melody = {
         print(tc.output)
         ly_file.write("\n")
         for line in tc.output:
-            ly_file.writelines("    " + line + "\n")
+            #ly_file.writelines("    " + line + "\n")
+            ly_file.write(r'''    {0}'''.format(line))
+            ly_file.write("\n")
 
         ly_file.write(r'''}
 
