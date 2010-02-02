@@ -213,6 +213,20 @@ class TestTranslateNotes(unittest.TestCase):
                            "}"]
         self.translate_and_test(abc_notes, expected_output)
 
+    def test_two_bars_repeat(self):
+        abc_notes =  "|: cdef gabc' | cedf gbac' :|"
+        expected_output = ["\repeat volta 2 {",
+                           "    c''8 d''8 e''8 f''8 g''8 a''8 b''8 c'''8 |",
+                           "    c''8 e''8 d''8 f''8 g''8 b''8 a''8 c'''8",
+                           "}"]
+        self.translate_and_test(abc_notes, expected_output)
+
+    def test_e_minor(self):
+        self.tc.default_note_duration = get_default_note_duration("6/8")
+        self.tc.key_signature = "\key e \minor"
+        abc_notes = "GEF G2A"
+        expected_output = ["g'8 e'8 fis'8 g'4 a'8"]
+        self.translate_and_test(abc_notes, expected_output)
 
 class TestTranslateNotesSyntaxError(unittest.TestCase):
 
@@ -288,11 +302,11 @@ class TestOutput(unittest.TestCase):
         # Check that a blank rythm (abc) does not generate a meter (ly) field
         self.check_output("hello_world_empty_rythm")
 
-#    def test_brid_harper_s(self):
-#        self.check_output("brid_harper_s")
-
     def test_hello_repeated(self):
         self.check_output("hello_repeated")
+
+#    def test_brid_harper_s(self):
+#        self.check_output("brid_harper_s")
 
 
 if __name__ == '__main__':

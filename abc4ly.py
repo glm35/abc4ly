@@ -38,8 +38,11 @@ class TuneContext():
         self.composer = ""
         self.rythm = ""
         self.meter = ""
+        self.key_signature = ""
 
         self.default_note_duration = 0
+
+        self.indent_level = 0
 
         self.output = []
 
@@ -75,6 +78,8 @@ def read_info_line(tc, line):
     elif line[0] == 'M':
         tc.meter = normalize_time_signature(nice_field)
         tc.default_note_duration = get_default_note_duration(tc.meter)
+    elif line[0] == 'K':
+        tc.key_signature = translate_key_signature(line)
 
 def read_line(tc, line):
     print("[rl] line: +", line, "+")
@@ -97,7 +102,8 @@ def read_line(tc, line):
 def write_header(tc, ly_file):
     ly_file.write("\n" r'''\header {''' "\n")
     ly_file.write('    title = "{0}"\n'.format(tc.title))
-    ly_file.write('    composer = "{0}"\n'.format(tc.composer))
+    if tc.composer <>"":
+        ly_file.write('    composer = "{0}"\n'.format(tc.composer))
     if tc.rythm <> "":
         ly_file.write('    meter = "{0}"\n'.format(tc.rythm))
     ly_file.write("}\n")
@@ -263,11 +269,13 @@ def translate_notes(tc, abc_line):
 
             if bar == "|:":
                 tc.output.append("\repeat volta 2 {")
+                tc.indent_level += 1
             elif bar == ":|":
-                tc.output.append("    " + ly_line)
+                tc.output.append("    " * tc.indent_level + ly_line)
                 tc.output.append("}")
+                tc.indent_level -= 1
             elif bar == "|":
-                tc.output.append(ly_line + " |")
+                tc.output.append("    " * tc.indent_level + ly_line + " |")
 
             if bar != "":
                 ly_line = ""
@@ -283,6 +291,8 @@ def translate_notes(tc, abc_line):
             al = al[1:]
             e.colno += 1
             note.pitch = abc_pitch.lower()
+            if tc.key_signature == "\key e \minor" and note.pitch == "f":
+                note.pitch = "fis"
             note.duration = tc.default_note_duration
             if abc_pitch.lower() == abc_pitch:
                 note.octaver = "''"
@@ -320,7 +330,7 @@ def translate_notes(tc, abc_line):
             state = "done"
 
     if ly_line != "":
-        tc.output.append(ly_line)
+        tc.output.append("    " * tc.indent_level + ly_line)
 
 # ------------------------------------------------------------------------
 #     The main program
@@ -356,17 +366,24 @@ def convert(abc_filename, ly_filename):
         ly_file.write(r'''
 melody = {
     \clef treble
-    \key c \major
 ''')
+        ly_file.write("    " + tc.key_signature + "\n")
         write_time_signature(ly_file, tc.meter)
 
         print("tc output:")
         print(tc.output)
         ly_file.write("\n")
         for line in tc.output:
-            #ly_file.writelines("    " + line + "\n")
-            ly_file.write(r'''    {0}'''.format(line))
-            ly_file.write("\n")
+            # First, we must escape the special caracters (such as "\r")
+            # that can occur in some lilypond commands (such as
+            # "\repeat"). To do this, we use the canonical
+            # representation of the string and we remove the leading and
+            # trailing quotes
+            line = repr(line)
+            line = line[1:len(line)-1]
+
+            # Then we can write the line safely...
+            ly_file.write("    " + line + "\n")
 
         ly_file.write(r'''}
 
