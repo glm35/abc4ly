@@ -39,12 +39,14 @@ class TuneContext():
         self.rythm = ""
         self.meter = ""
         self.key_signature = ""
+        self.pitch_dico = create_pitch_dico("\key c \major")
 
         self.default_note_duration = 0
 
         self.indent_level = 0
 
         self.output = []
+
 
 # ------------------------------------------------------------------------
 #     The logical representation of a LilyPond note
@@ -80,6 +82,7 @@ def read_info_line(tc, line):
         tc.default_note_duration = get_default_note_duration(tc.meter)
     elif line[0] == 'K':
         tc.key_signature = translate_key_signature(line)
+        tc.pitch_dico = create_pitch_dico(tc.key_signature)
 
 def read_line(tc, line):
     print("[rl] line: +", line, "+")
@@ -192,6 +195,34 @@ def translate_key_signature(abc_key_signature):
     lily_signature = "\key " + pitch + alteration + " " + "\\" + mode
     return lily_signature
 
+# Create a dictionary that contains the pitch alterations (sharps,
+# flats) implied by the key signature.
+
+def create_pitch_dico(ly_key_signature):
+    # example: ly_key_signature = "\key c \major"
+    (foo, key, mode) = ly_key_signature.split()
+    mode = mode[1:]
+    pitch_dico = {}
+
+    # Find the major scale relative to the mode
+    if ly_key_signature == "\key e \minor":
+        key = 'g'
+
+    # Next
+    nsharp_dico = {'g':1, 'd':2, 'a':3, 'e':4, 'b':5, 'fis':6, 'cis':7}
+    sharp_order = "fcgdaeb"
+
+    for note in "cdefgab":
+        pitch_dico[note] = note
+
+    if key in nsharp_dico.keys():
+        nsharp = nsharp_dico[key]
+        sharps = sharp_order[0:nsharp]
+        for pitch in sharps:
+            pitch_dico[pitch] = pitch + "is"
+
+    return pitch_dico
+
 def get_leading_digits(string):
     leading_digits = ""
     for char in string:
@@ -290,9 +321,7 @@ def translate_notes(tc, abc_line):
                 raise e
             al = al[1:]
             e.colno += 1
-            note.pitch = abc_pitch.lower()
-            if tc.key_signature == "\key e \minor" and note.pitch == "f":
-                note.pitch = "fis"
+            note.pitch = tc.pitch_dico[abc_pitch.lower()]
             note.duration = tc.default_note_duration
             if abc_pitch.lower() == abc_pitch:
                 note.octaver = "''"

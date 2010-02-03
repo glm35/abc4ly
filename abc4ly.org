@@ -2,8 +2,9 @@
 ** P0
 Gérer les alterations liées à la tonalité du morceau
 	mi mineur => besoin de refactoring!
-	sol majeur
-	ré majeur
+	+ré majeur+
+	toutes les tonalités avec des dièses
+	toutes les tonalités avec des bémols
 
 Morceau:
 	+c_major+

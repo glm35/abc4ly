@@ -222,11 +222,18 @@ class TestTranslateNotes(unittest.TestCase):
         self.translate_and_test(abc_notes, expected_output)
 
     def test_e_minor(self):
-        self.tc.default_note_duration = get_default_note_duration("6/8")
-        self.tc.key_signature = "\key e \minor"
+        read_info_line(self.tc, "M:6/8")
+        read_info_line(self.tc, "K:Em")
         abc_notes = "GEF G2A"
         expected_output = ["g'8 e'8 fis'8 g'4 a'8"]
         self.translate_and_test(abc_notes, expected_output)
+
+    def test_d_major(self):
+        read_info_line(self.tc, "K:D")
+        abc_notes =  "DEFG ABcd"
+        expected_output = ["d'8 e'8 fis'8 g'8 a'8 b'8 cis''8 d''8"]
+        self.translate_and_test(abc_notes, expected_output)
+
 
 class TestTranslateNotesSyntaxError(unittest.TestCase):
 
