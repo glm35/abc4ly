@@ -62,6 +62,22 @@ class Note():
         self.duration = ""
 
 # ------------------------------------------------------------------------
+#     Music computing stuff
+# ------------------------------------------------------------------------
+
+mc_modes = [ "ionian", "dorian", "phrygian", "lydian", "mixolydian",
+             "aeolian", "minor", "locrian" ]
+
+# Number of semi-tones between the fundamental note of a mode and the
+# fundamental note of its relative major key.  (e.g. there are 9
+# semi-tones between the c in C major and the a in A minor)
+mc_mode_offsets = {"major":0, "ionian":0, "dorian":2, "phrygian":4, "lydian":5,
+                   "mixolydian":7, "aeolian":9, "minor":9, "locrian":11}
+
+mc_sharp_chromatic_scale = [ 'c', 'cis', 'd', 'dis', 'e', 'f', 'fis', 'g',
+                             'gis', 'a', 'ais', 'b' ]
+
+# ------------------------------------------------------------------------
 #     Read and process the input file
 # ------------------------------------------------------------------------
 
@@ -179,10 +195,8 @@ def translate_key_signature(abc_key_signature):
                 raise AbcSyntaxError
             else:
                 ks = ks.lower()
-                modes = [ "ionian", "dorian", "phrygian", "lydian", "mixolydian",
-                          "aeolian", "minor", "locrian" ]
                 mode = ""
-                for m in modes:
+                for m in mc_modes:
                     if m[0:3] == ks[0:3]:
                         mode = m
                         break
@@ -195,6 +209,16 @@ def translate_key_signature(abc_key_signature):
     lily_signature = "\key " + pitch + alteration + " " + "\\" + mode
     return lily_signature
 
+def get_relative_major_scale(key, mode):
+    mode_interval = mc_mode_offsets[mode]
+    n_semi_tones_to_fundamental = 12 - mode_interval
+    mode_chrom_index = mc_sharp_chromatic_scale.index(key)
+    major_key_index = mode_chrom_index + n_semi_tones_to_fundamental
+    if major_key_index >= 12:
+        major_key_index -= 12
+    key = mc_sharp_chromatic_scale[major_key_index]
+    return key
+
 # Create a dictionary that contains the pitch alterations (sharps,
 # flats) implied by the key signature.
 
@@ -204,11 +228,8 @@ def create_pitch_dico(ly_key_signature):
     mode = mode[1:]
     pitch_dico = {}
 
-    # Find the major scale relative to the mode
-    if ly_key_signature == "\key e \minor":
-        key = 'g'
+    key = get_relative_major_scale(key, mode)
 
-    # Next
     nsharp_dico = {'g':1, 'd':2, 'a':3, 'e':4, 'b':5, 'fis':6, 'cis':7}
     sharp_order = "fcgdaeb"
 

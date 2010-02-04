@@ -147,6 +147,20 @@ class TestNoteDuration(unittest.TestCase):
         self.assertEqual(get_default_note_duration("2/4"), 16)
 
 
+class TestMusicComputer(unittest.TestCase):
+
+    def test_get_relative_major_scale(self):
+        # A selection of modes widely used for Irish music
+        self.assert_('c' == get_relative_major_scale('c', 'major'))
+        self.assert_('c' == get_relative_major_scale('a', 'minor'))
+        self.assert_('d' == get_relative_major_scale('b', 'minor'))
+        self.assert_('d' == get_relative_major_scale('e', 'dorian'))
+        self.assert_('d' == get_relative_major_scale('a', 'mixolydian'))
+        self.assert_('g' == get_relative_major_scale('e', 'minor'))
+        self.assert_('g' == get_relative_major_scale('d', 'mixolydian'))
+        self.assert_('a' == get_relative_major_scale('fis', 'minor'))
+
+
 class TestTranslateNotes(unittest.TestCase):
 
     def setUp(self):
