@@ -149,7 +149,11 @@ class TestNoteDuration(unittest.TestCase):
 
 class TestMusicComputer(unittest.TestCase):
 
-    def test_get_relative_major_scale(self):
+    def setUp(self):
+        self.dico = {'a': 'a', 'b': 'b', 'c': 'c', 'd': 'd',
+                     'e': 'e', 'f': 'f', 'g': 'g'}
+
+    def test_get_relative_major_scale_sharp(self):
         # A selection of modes widely used for Irish music
         self.assert_('c' == get_relative_major_scale('c', 'major'))
         self.assert_('c' == get_relative_major_scale('a', 'minor'))
@@ -160,6 +164,45 @@ class TestMusicComputer(unittest.TestCase):
         self.assert_('g' == get_relative_major_scale('d', 'mixolydian'))
         self.assert_('a' == get_relative_major_scale('fis', 'minor'))
 
+    def test_get_relative_major_scale_flat(self):
+        self.assert_('f' == get_relative_major_scale('f', 'major'))
+        self.assert_('ees' == get_relative_major_scale('ees', 'major'))
+        self.assert_('bes' == get_relative_major_scale('g', 'minor'))
+
+    def test_pitch_dico_cmaj(self):
+        self.assert_(self.dico == create_pitch_dico("\key c \major"))
+
+    def test_pitch_dico_dmaj(self):
+        self.dico['f'] = 'fis'
+        self.dico['c'] = 'cis'
+        self.assert_(self.dico == create_pitch_dico("\key d \major"))
+
+    def test_pitch_dico_cismaj(self):
+        for n in "fcgdaeb":
+            self.dico[n] = n + 'is'
+        self.assert_(self.dico == create_pitch_dico("\key cis \major"))
+
+    def test_pitch_dico_besmaj(self):
+        self.dico['b'] = 'bes'
+        self.dico['e'] = 'ees'
+        self.assert_(self.dico == create_pitch_dico("\key bes \major"))
+
+    def test_pitch_dico_fmaj(self):
+        self.dico['b'] = 'bes'
+        self.assert_(self.dico == create_pitch_dico("\key f \major"))
+
+    def test_pitch_dico_gesmaj(self):
+        for f in "beadgc":
+            self.dico[f] = f + 'es'
+        self.assert_(self.dico == create_pitch_dico("\key ges \major"))
+
+#    def test_pitch_dico_cesmaj(self):
+#        for f in "beadgcf":
+#            self.dico[f] = f + 'es'
+#        self.assert_(self.dico == create_pitch_dico("\key ces \major"))
+
+
+# Base class to test the  translate_notes() function
 
 class TestTranslateNotes(unittest.TestCase):
 
@@ -172,7 +215,19 @@ class TestTranslateNotes(unittest.TestCase):
 
     def translate_and_test(self, abc_notes, expected_output):
         translate_notes(self.tc, abc_notes)
-        self.assertEqual(self.tc.output, expected_output)
+        self.assertEqual(expected_output, self.tc.output)
+
+    def translate_and_check_exception(self, abc_notes, exception_text):
+        try:
+            translate_notes(self.tc, abc_notes)
+        except (AbcSyntaxError), e:
+            print e.__str__()
+            self.assertEqual(e.__str__(), exception_text)
+        else:
+            self.assert_(False)
+
+
+class TestTranslateNotesBasic(TestTranslateNotes):
 
     def test_one_bar(self):
         abc_notes = "C2 D2 E2 F2"
@@ -199,20 +254,15 @@ class TestTranslateNotes(unittest.TestCase):
         expected_output = ["c'8 d'8 e'8 f'8 g'8 a'8 b'8 c''8"]
         self.translate_and_test(abc_notes, expected_output)
 
+
+# Test the translation of the structure: bar delimiters, repetitions
+
+class TestTranslateNotesStructure(TestTranslateNotes):
+
     def test_two_bars(self):
         abc_notes = "C2 D2 E2 F2 | G2 A2 B2 c2"
         expected_output = ["c'4 d'4 e'4 f'4 |"]
         expected_output.append("g'4 a'4 b'4 c''4")
-        self.translate_and_test(abc_notes, expected_output)
-
-    def test_lower_c_major(self):
-        abc_notes =  "C,D,E,F, G,A,B,C"
-        expected_output = ["c8 d8 e8 f8 g8 a8 b8 c'8"]
-        self.translate_and_test(abc_notes, expected_output)
-
-    def test_upper_c_major(self):
-        abc_notes =  "cdef gabc'"
-        expected_output = ["c''8 d''8 e''8 f''8 g''8 a''8 b''8 c'''8"]
         self.translate_and_test(abc_notes, expected_output)
 
     def test_empty_note_line(self):
@@ -235,6 +285,19 @@ class TestTranslateNotes(unittest.TestCase):
                            "}"]
         self.translate_and_test(abc_notes, expected_output)
 
+
+class TestTranslateNotesKeys(TestTranslateNotes):
+
+    def test_lower_c_major(self):
+        abc_notes =  "C,D,E,F, G,A,B,C"
+        expected_output = ["c8 d8 e8 f8 g8 a8 b8 c'8"]
+        self.translate_and_test(abc_notes, expected_output)
+
+    def test_upper_c_major(self):
+        abc_notes =  "cdef gabc'"
+        expected_output = ["c''8 d''8 e''8 f''8 g''8 a''8 b''8 c'''8"]
+        self.translate_and_test(abc_notes, expected_output)
+
     def test_e_minor(self):
         read_info_line(self.tc, "M:6/8")
         read_info_line(self.tc, "K:Em")
@@ -249,23 +312,40 @@ class TestTranslateNotes(unittest.TestCase):
         self.translate_and_test(abc_notes, expected_output)
 
 
-class TestTranslateNotesSyntaxError(unittest.TestCase):
+class TestTranslateNotesDuration(TestTranslateNotes):
 
-    def setUp(self):
-        self.tc = TuneContext()
-        self.tc.default_note_duration = get_default_note_duration("2/2")
+    def test_quarter_notes(self):
+        read_info_line(self.tc, "M:4/4")
+        abc_notes = "C2 D2 E2 F2"
+        expected_output = ["c'4 d'4 e'4 f'4"]
+        self.translate_and_test(abc_notes, expected_output)
 
-    def tearDown(self):
-        del self.tc
+    def test_half_notes(self):
+        read_info_line(self.tc, "M:4/4")
+        abc_notes = "C4 D4"
+        expected_output = ["c'2 d'2"]
+        self.translate_and_test(abc_notes, expected_output)
 
-    def translate_and_check_exception(self, abc_notes, exception_text):
-        try:
-            translate_notes(self.tc, abc_notes)
-        except (AbcSyntaxError), e:
-            print e.__str__()
-            self.assertEqual(e.__str__(), exception_text)
-        else:
-            self.assert_(False)
+    def test_whole_notes(self):
+        read_info_line(self.tc, "M:4/4")
+        abc_notes = "C8"
+        expected_output = ["c'1"]
+        self.translate_and_test(abc_notes, expected_output)
+
+    def test_dotted_quarter_notes(self):
+        read_info_line(self.tc, "M:6/8")
+        abc_notes = "CDE C3"
+        expected_output = ["c'8 d'8 e'8 c'4."]
+        self.translate_and_test(abc_notes, expected_output)
+
+    def test_dotted_half_notes(self):
+        read_info_line(self.tc, "M:2/2")
+        abc_notes = "C6 F2"
+        expected_output = ["c'2. d'4"]
+        self.translate_and_test(abc_notes, expected_output)
+
+
+class TestTranslateNotesSyntaxError(TestTranslateNotes):
 
     def test_octaver_error_down(self):
         abc_notes = "c,D,E,F, G,A,B,C"
@@ -326,8 +406,8 @@ class TestOutput(unittest.TestCase):
     def test_hello_repeated(self):
         self.check_output("hello_repeated")
 
-#    def test_brid_harper_s(self):
-#        self.check_output("brid_harper_s")
+    def test_brid_harper_s(self):
+        self.check_output("brid_harper_s")
 
 
 if __name__ == '__main__':

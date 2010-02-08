@@ -29,11 +29,11 @@ melody = {
         b'8 d''8 b'8 g''4 d''8 |
         e''8 d''8 b'8 a'8 g'8 a'8 |
         b'8 g'8 e'8 e'4.
-    }   
+    }
 }
 
 \score {
-  \new Staff \melody
-  \layout { }
-  \midi { }
+    \new Staff \melody
+    \layout { }
+    \midi { }
 }

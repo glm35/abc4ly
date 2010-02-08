@@ -60,6 +60,7 @@ class Note():
         self.pitch = ""
         self.octaver = ""
         self.duration = ""
+        self.dotted = ""
 
 # ------------------------------------------------------------------------
 #     Music computing stuff
@@ -74,8 +75,15 @@ mc_modes = [ "ionian", "dorian", "phrygian", "lydian", "mixolydian",
 mc_mode_offsets = {"major":0, "ionian":0, "dorian":2, "phrygian":4, "lydian":5,
                    "mixolydian":7, "aeolian":9, "minor":9, "locrian":11}
 
-mc_sharp_chromatic_scale = [ 'c', 'cis', 'd', 'dis', 'e', 'f', 'fis', 'g',
-                             'gis', 'a', 'ais', 'b' ]
+mc_sharp_chromatic_scale = ['c', 'cis', 'd', 'dis', 'e', 'f', 'fis', 'g',
+                             'gis', 'a', 'ais', 'b']
+mc_nsharp_dico = {'g':1, 'd':2, 'a':3, 'e':4, 'b':5, 'fis':6, 'cis':7}
+mc_sharp_order = "fcgdaeb"
+
+mc_flat_chromatic_scale = ['c', 'des', 'd', 'ees', 'e', 'f', 'ges', 'g',
+                             'aes', 'a', 'bes', 'b']
+mc_nflat_dico = {'f':1, 'bes':2, 'ees':3, 'aes':4, 'des':5, 'ges':6, 'ces':7}
+mc_flat_order = "beadgcf"
 
 # ------------------------------------------------------------------------
 #     Read and process the input file
@@ -212,12 +220,26 @@ def translate_key_signature(abc_key_signature):
 def get_relative_major_scale(key, mode):
     mode_interval = mc_mode_offsets[mode]
     n_semi_tones_to_fundamental = 12 - mode_interval
-    mode_chrom_index = mc_sharp_chromatic_scale.index(key)
+
+    try:
+        mode_chrom_index = mc_sharp_chromatic_scale.index(key)
+        system = 'sharp'
+    except:
+        mode_chrom_index = mc_flat_chromatic_scale.index(key)
+        system = 'flat'
+
     major_key_index = mode_chrom_index + n_semi_tones_to_fundamental
     if major_key_index >= 12:
         major_key_index -= 12
-    key = mc_sharp_chromatic_scale[major_key_index]
-    return key
+
+    if system == 'sharp':
+        maj_key = mc_sharp_chromatic_scale[major_key_index]
+        if not maj_key in mc_nsharp_dico.keys():
+            system = 'flat'
+    if system == 'flat':
+        maj_key = mc_flat_chromatic_scale[major_key_index]
+
+    return maj_key
 
 # Create a dictionary that contains the pitch alterations (sharps,
 # flats) implied by the key signature.
@@ -230,17 +252,19 @@ def create_pitch_dico(ly_key_signature):
 
     key = get_relative_major_scale(key, mode)
 
-    nsharp_dico = {'g':1, 'd':2, 'a':3, 'e':4, 'b':5, 'fis':6, 'cis':7}
-    sharp_order = "fcgdaeb"
-
     for note in "cdefgab":
         pitch_dico[note] = note
 
-    if key in nsharp_dico.keys():
-        nsharp = nsharp_dico[key]
-        sharps = sharp_order[0:nsharp]
+    if key in mc_nsharp_dico.keys():
+        nsharp = mc_nsharp_dico[key]
+        sharps = mc_sharp_order[0:nsharp]
         for pitch in sharps:
             pitch_dico[pitch] = pitch + "is"
+    elif key in mc_nflat_dico.keys():
+        nflat = mc_nflat_dico[key]
+        flats = mc_flat_order[0:nflat]
+        for pitch in flats:
+            pitch_dico[pitch] = pitch + "es"
 
     return pitch_dico
 
@@ -310,7 +334,7 @@ def translate_notes(tc, abc_line):
                 ly_line += " "
             else:
                 first_note = False
-            ly_line += note.pitch + note.octaver + str(note.duration)
+            ly_line += note.pitch + note.octaver + str(note.duration) + note.dotted
             note.clear()
             state = start_state
 
@@ -373,11 +397,19 @@ def translate_notes(tc, abc_line):
         elif state == "duration":
             lm = get_leading_digits(al)
             if lm != "":
+                abc_duration = int(lm)
+                if abc_duration % 2 == 0:
+                    note.duration /= abc_duration
+                elif abc_duration % 1.5 == 0:
+                    note.duration /= int(abc_duration / 1.5)
+                    note.dotted = "."
                 al = al[len(lm):]
                 e.colno += len(lm)
-                note.duration /= int(lm)
             # Else use default note length
             state = "done"
+
+            # d+0,5d=2n
+            # 1.5d = 2n
 
     if ly_line != "":
         tc.output.append("    " * tc.indent_level + ly_line)

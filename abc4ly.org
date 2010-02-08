@@ -1,35 +1,15 @@
 * Feuille de route
 ** P0
-Gérer les alterations liées à la tonalité du morceau
-	+mi mineur+
-	+ré majeur+
-	+toutes les tonalités avec des dièses+
-	toutes les tonalités avec des bémols
-
-Morceau:
-	+c_major+
-	+hello_world & friends+
-	+hello_repeated+
-	brid_harper_s (jig, mi mineur, répétition simple)
-		+informations de contexte avec AbcSyntaxError: nom du+
-        +fichier, numéro de ligne, contenu de la ligne, position de+
-        +l'erreur (^), raison de l'erreur+
-		répétition |: ... :|
-	        altération: Em => fa dièse
-		noire pointée (E3 => e'4.)
-
-Répétitions et barres de mesures:
-	+_"|: notes :|"_+
-	+_"|: notes | autres notes :|"_+
-        "|: notes :| + |: autres notes :|" (syntaxe valide?)
-	notes + |: autres notes :|
-	"|: notes :: autres notes :|"
-	" notes :|" (début de répétition implicite au début du morceau)
-	"| notes | autres notes |"
-	erreur: répétition pas refermée
-	erreur(?): répétitions impriquées
-
 Traiter la durée des notes:
+	Pas de modificateur (durée de base)
+	Modificateur multiple de 2 => durée simple
+		Croche
+		Noire
+		Blanche
+		Ronde
+	Modificateur de durée pas multiple de 2 => durée composée:
+		Note pointée
+		Note liée
 	Supprimer la duplication de l'appel à normalize_time_signature()
 	+Calculer la durée des notes par défaut (default note length)+
 	Gérer le coefficient multiplicateur (e.g. A2) => rallonger la durée par défaut
@@ -41,6 +21,46 @@ Traiter la durée des notes:
 		Dans l'entête
 		A l'improviste dans le morceau
 	Gérer les notes liées
+
+Morceau:
+	+c_major+
+	+hello_world & friends+
+	+hello_repeated+
+	brid_harper_s (jig, mi mineur, répétition simple)
+		+informations de contexte avec AbcSyntaxError: nom du+
+        +fichier, numéro de ligne, contenu de la ligne, position de+
+        +l'erreur (^), raison de l'erreur+
+		+répétition |: ... :|+
+	        +altération: Em => fa dièse+
+		noire pointée (E3 => e'4.)
+
+Gérer une mesure à cheval sur 2 lignes ABC 
+	continuation de la mesure à la ligne
+	barre de mesure à la ligne
+
+	(idée 1: translate_notes() retourne le résidu analysé (ok si une
+        note n'est pas sur 2 lignes); idée 2:
+        fusion de toutes les lignes pour n'en faire qu'une seule avant
+        passage à translate_notes())
+
+Gérer les alterations liées à la tonalité du morceau
+	+mi mineur+
+	+ré majeur+
+	+toutes les tonalités avec des dièses+
+	+toutes les tonalités avec des bémols+
+	est-ce que "Do bémol majeur" est une gamme valide?
+	get_relative_major_scale: tester tous les modes de toutes les gammes
+
+Répétitions et barres de mesures:
+	+_"|: notes :|"_+
+	+_"|: notes | autres notes :|"_+
+        "|: notes :| + |: autres notes :|" (syntaxe valide?)
+	notes + |: autres notes :|
+	"|: notes :: autres notes :|"
+	" notes :|" (début de répétition implicite au début du morceau)
+	"| notes | autres notes |"
+	erreur: répétition pas refermée
+	erreur(?): répétitions impriquées
 
 <Reconnaître la hauteur des notes:
 	+Majuscules / minuscules / apostrophe / virgule+
@@ -58,6 +78,10 @@ En cas d'erreur de syntaxe ABC, donner du contexte à l'utilisateur
 	+erreur: not a pitch+
 	+erreur: "c," invalid construct+
 	+erreur: "C'" invalid construct+
+
+Style:
+	Dans le ly, faire apparaître les groupements de notes du ABC: e.g
+        notes groupées => 1 espace, notes séparées => 4 espaces.
 
 ** P1
 Reconnaître le champ tempo
