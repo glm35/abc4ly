@@ -1,18 +1,17 @@
 * Feuille de route
 ** P0
 Traiter la durée des notes:
-	Pas de modificateur (durée de base)
+	+Pas de modificateur (durée de base)+
 	Modificateur multiple de 2 => durée simple
 		Croche
-		Noire
-		Blanche
-		Ronde
+		+Noire+
+		+Blanche+
+		+Ronde+
 	Modificateur de durée pas multiple de 2 => durée composée:
-		Note pointée
+		+Note pointée+
 		Note liée
 	Supprimer la duplication de l'appel à normalize_time_signature()
 	+Calculer la durée des notes par défaut (default note length)+
-	Gérer le coefficient multiplicateur (e.g. A2) => rallonger la durée par défaut
 	Gérer le coefficient diviseur => diminuer la durée par défaut
 	Gérer les marqueurs de rythme brisé (broken rythms markers: a>b, etc.)
 	Gérer les triolets de croche. Exemple en 4/4: "(3 abc"
@@ -26,13 +25,13 @@ Morceau:
 	+c_major+
 	+hello_world & friends+
 	+hello_repeated+
-	brid_harper_s (jig, mi mineur, répétition simple)
+	+brid_harper_s (jig, mi mineur, répétition simple)+
 		+informations de contexte avec AbcSyntaxError: nom du+
         +fichier, numéro de ligne, contenu de la ligne, position de+
         +l'erreur (^), raison de l'erreur+
 		+répétition |: ... :|+
 	        +altération: Em => fa dièse+
-		noire pointée (E3 => e'4.)
+		+noire pointée (E3 => e'4.)+
 
 Gérer une mesure à cheval sur 2 lignes ABC 
 	continuation de la mesure à la ligne

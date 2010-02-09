@@ -398,11 +398,14 @@ def translate_notes(tc, abc_line):
             lm = get_leading_digits(al)
             if lm != "":
                 abc_duration = int(lm)
-                if abc_duration % 2 == 0:
-                    note.duration /= abc_duration
-                elif abc_duration % 1.5 == 0:
+                if abc_duration % 1.5 == 0:
                     note.duration /= int(abc_duration / 1.5)
                     note.dotted = "."
+                elif abc_duration % 2 == 0:
+                    note.duration /= abc_duration
+                else:
+                    e.what = "Unhandled duration multiplier"
+                    raise e
                 al = al[len(lm):]
                 e.colno += len(lm)
             # Else use default note length

@@ -340,9 +340,16 @@ class TestTranslateNotesDuration(TestTranslateNotes):
 
     def test_dotted_half_notes(self):
         read_info_line(self.tc, "M:2/2")
-        abc_notes = "C6 F2"
+        abc_notes = "C6 D2"
         expected_output = ["c'2. d'4"]
         self.translate_and_test(abc_notes, expected_output)
+
+    def test_unhandled_multiplier(self):
+        abc_notes = "C5 D3"
+        self.translate_and_check_exception(abc_notes, """In "", line 1, column 1:
+C5 D3
+ ^
+ Unhandled duration multiplier""")
 
 
 class TestTranslateNotesSyntaxError(TestTranslateNotes):
@@ -412,3 +419,7 @@ class TestOutput(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+#suite = unittest.TestLoader().loadTestsFromTestCase(TestTranslateNotesDuration)
+#unittest.TextTestRunner(verbosity=2).run(suite)
+
