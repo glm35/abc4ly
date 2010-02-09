@@ -416,6 +416,9 @@ class TestOutput(unittest.TestCase):
     def test_brid_harper_s(self):
         self.check_output("brid_harper_s")
 
+    def test_yellow_tinker(self):
+        self.check_output("yellow_tinker")
+
 
 if __name__ == '__main__':
     unittest.main()

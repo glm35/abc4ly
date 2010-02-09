@@ -1,5 +1,10 @@
 * Feuille de route
 ** P0
+Morceau:
+	yellow_tinker
+		doubles croches
+		altération non diatonique
+
 Traiter la durée des notes:
 	+Pas de modificateur (durée de base)+
 	Modificateur multiple de 2 => durée simple
@@ -20,18 +25,6 @@ Traiter la durée des notes:
 		Dans l'entête
 		A l'improviste dans le morceau
 	Gérer les notes liées
-
-Morceau:
-	+c_major+
-	+hello_world & friends+
-	+hello_repeated+
-	+brid_harper_s (jig, mi mineur, répétition simple)+
-		+informations de contexte avec AbcSyntaxError: nom du+
-        +fichier, numéro de ligne, contenu de la ligne, position de+
-        +l'erreur (^), raison de l'erreur+
-		+répétition |: ... :|+
-	        +altération: Em => fa dièse+
-		+noire pointée (E3 => e'4.)+
 
 Gérer une mesure à cheval sur 2 lignes ABC 
 	continuation de la mesure à la ligne
@@ -155,6 +148,18 @@ Translation de la tonalité du morceau "Partie 1": "K:..." => "\key ..."
 	K:DMix
 	K:Dmix
 	les 7 modes
+
+Morceau:
+	c_major
+	hello_world & friends
+	hello_repeated
+	brid_harper_s (jig, mi mineur, répétition simple)
+		informations de contexte avec AbcSyntaxError: nom du
+        fichier, numéro de ligne, contenu de la ligne, position de
+        l'erreur (^), raison de l'erreur
+		répétition |: ... :|
+	        altération: Em => fa dièse
+		noire pointée (E3 => e'4.)
 
 ** Wontdo
 
