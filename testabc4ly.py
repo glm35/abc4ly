@@ -316,24 +316,33 @@ class TestTranslateNotesAccidentals(TestTranslateNotes):
 
     def test_accidental_natural(self):
         read_info_line(self.tc, "K:G")
-        abc_notes =  "=FGA"
+        abc_notes =  "=F=GA"
         expected_output = ["f'8 g'8 a'8"]
         self.translate_and_test(abc_notes, expected_output)
 
     def test_accidental_sharp(self):
-        read_info_line(self.tc, "K:G")
-        abc_notes =  "FG^A"
-        expected_output = ["fis'8 g'8 ais'8"]
+        read_info_line(self.tc, "K:C")
+        abc_notes =  "C^DE"
+        expected_output = ["c'8 dis'8 e'8"]
         self.translate_and_test(abc_notes, expected_output)
 
     def test_accidental_flat(self):
-        read_info_line(self.tc, "K:G")
-        abc_notes =  "F_GA"
-        expected_output = ["fis'8 ges'8 a'8"]
+        read_info_line(self.tc, "K:C")
+        abc_notes =  "CD_E"
+        expected_output = ["c'8 d'8 ees'8"]
         self.translate_and_test(abc_notes, expected_output)
 
-    def test_double_accidentals(self):
-        pass
+    def test_accidental_double_sharp(self):
+        read_info_line(self.tc, "K:C")
+        abc_notes =  "C^^DE"
+        expected_output = ["c'8 disis'8 e'8"]
+        self.translate_and_test(abc_notes, expected_output)
+
+    def test_accidental_double_flat(self):
+        read_info_line(self.tc, "K:C")
+        abc_notes =  "CD__E"
+        expected_output = ["c'8 d'8 eeses'8"]
+        self.translate_and_test(abc_notes, expected_output)
 
 
 # Test notes longer than the default note length

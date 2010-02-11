@@ -364,12 +364,22 @@ def translate_notes(tc, abc_line):
             state = "accidental"
 
         elif state == "accidental":
-            abc_acc = al[0]
             acc_dico = {"^":"is", "_":"es", "=":"nat"}
-            if abc_acc in acc_dico.keys():
-                note.accidental = acc_dico[abc_acc]
-                al = al[1:]
-                e.colno += 1
+            for step in [1, 2]:
+                # In step 1, we look for simple accidentals (e.g. "^")
+                # In step 2, we look for double accidentals (e.g. "__")
+                if len(al) == 0:
+                    break
+                abc_acc = al[0]
+                if abc_acc in acc_dico.keys():
+                    if step == 2:
+                        if abc_acc == "=":
+                            break
+                        if acc_dico[abc_acc] != note.accidental:
+                            break
+                    note.accidental += acc_dico[abc_acc]
+                    al = al[1:]
+                    e.colno += 1
             state = "pitch"
         
         elif state == "pitch":
