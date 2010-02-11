@@ -360,10 +360,23 @@ class TestTranslateNotesShorterDuration(TestTranslateNotes):
 
     def test_sixteenth_notes_shorthand_representation(self):
         read_info_line(self.tc, "M:4/4")
-        abc_notes = "C/D/E/D/ C/D/E/D/ C/D/E/D/ C/D/C"
-        expected_output = ["c'16 d'16 e'16 d'16 " "c'16 d'16 e'16 d'16 "
-                           "c'16 d'16 e'16 d'16 " "c'16 d'16 e'16 c'8"]
+        abc_notes = "C/D/E"
+        expected_output = ["c'16 d'16 e'8"]
         self.translate_and_test(abc_notes, expected_output)
+
+    def test_short_notes(self):
+        read_info_line(self.tc, "M:4/4")
+        abc_notes = "C/2 D/4 E/8"
+        expected_output = ["c'16 d'32 e'64"]
+        self.translate_and_test(abc_notes, expected_output)
+
+    def test_invalid_divisor(self):
+        read_info_line(self.tc, "M:4/4")
+        abc_notes = "C/3"
+        self.translate_and_check_exception(abc_notes, """In "", line 1, column 2:
+C/3
+  ^
+  Invalid note duration divisor""")
 
 
 class TestTranslateNotesSyntaxError(TestTranslateNotes):

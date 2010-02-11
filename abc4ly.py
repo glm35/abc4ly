@@ -4,6 +4,7 @@
 from __future__ import print_function
 import string
 import sys
+import math
 
 # ------------------------------------------------------------------------
 #     Exceptions
@@ -270,9 +271,11 @@ def create_pitch_dico(ly_key_signature):
 
 def get_leading_digits(string):
     leading_digits = ""
+    i = 0
     for char in string:
-        if char.isdigit():
+        if (i == 0 and char == '/') or char.isdigit():
             leading_digits += char
+            i += 1
         else:
             break
     return leading_digits
@@ -397,15 +400,29 @@ def translate_notes(tc, abc_line):
         elif state == "duration":
             lm = get_leading_digits(al)
             if lm != "":
-                abc_duration = int(lm)
-                if abc_duration % 1.5 == 0:
-                    note.duration /= int(abc_duration / 1.5)
-                    note.dotted = "."
-                elif abc_duration % 2 == 0:
-                    note.duration /= abc_duration
+                if lm[0] == '/':
+                    if len(lm) == 1:
+                        note.duration *= 2
+                    else:
+                        divisor = int(lm[1:])
+                        exponent = math.log(divisor, 2)
+                        if exponent != 0 and int(exponent) == exponent:
+                            # divisor is a power of 2
+                            note.duration *= divisor
+                        else:
+                            e.colno += 1 # pass the slash
+                            e.what = "Invalid note duration divisor"
+                            raise e
                 else:
-                    e.what = "Unhandled duration multiplier"
-                    raise e
+                    abc_duration = int(lm)
+                    if abc_duration % 1.5 == 0:
+                        note.duration /= int(abc_duration / 1.5)
+                        note.dotted = "."
+                    elif abc_duration % 2 == 0:
+                        note.duration /= abc_duration
+                    else:
+                        e.what = "Unhandled duration multiplier"
+                        raise e
                 al = al[len(lm):]
                 e.colno += len(lm)
             # Else use default note length

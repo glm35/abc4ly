@@ -16,8 +16,10 @@ Traiter la durée des notes:
 		+Note pointée+
 		Note liée
 	Gérer le coefficient diviseur => diminuer la durée par défaut
-		"A/" synonyme de "A/2"
-		"A/2", "A/4"
+		+_"A/" synonyme de "A/2"_+
+		+_"A/2", "A/4", ..., "A/2^n"_+
+		+Erreur si le coef est différent de 2^n+
+		Est-ce que ces coeff peuvent ne pas être de la forme 2^n?
 	Gérer les marqueurs de rythme brisé (broken rythms markers: a>b, etc.)
 	Gérer les triolets de croche. Exemple en 4/4: "(3 abc"
 	Gérer les n-uplets (avec n variant de 2 à 9)
