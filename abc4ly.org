@@ -1,9 +1,12 @@
 * Feuille de route
 ** P0
 Morceau:
-	yellow_tinker
-		doubles croches
-		altération non diatonique
+
+Reconnaître la hauteur des notes:
+	+Majuscules / minuscules / apostrophe / virgule+
+	+Altérations 1: dièse, bémol, naturel+
+	Altérations 2: double dièse, double bémol
+	Silences (rests)
 
 Traiter la durée des notes:
 	+Calculer la durée des notes par défaut (default note length)+
@@ -51,11 +54,6 @@ Répétitions et barres de mesures:
 	"| notes | autres notes |"
 	erreur: répétition pas refermée
 	erreur(?): répétitions impriquées
-
-<Reconnaître la hauteur des notes:
-	+Majuscules / minuscules / apostrophe / virgule+
-	Altérations (dièse, bémol, naturel, ...)
-	Silences (rests)
 
 Reconnaître la structure du morceau (barres de mesure, répétitions, ...):
 	+Séparateur de mesures+
@@ -158,6 +156,9 @@ Morceau:
 		répétition |: ... :|
 	        altération: Em => fa dièse
 		noire pointée (E3 => e'4.)
+	yellow_tinker
+		doubles croches
+		altération non diatonique
 
 ** Wontdo
 

@@ -58,6 +58,7 @@ class Note():
         self.clear()
 
     def clear(self):
+        self.accidental = ""
         self.pitch = ""
         self.octaver = ""
         self.duration = ""
@@ -360,6 +361,15 @@ def translate_notes(tc, abc_line):
                 ly_line = ""
                 first_note = True
 
+            state = "accidental"
+
+        elif state == "accidental":
+            abc_acc = al[0]
+            acc_dico = {"^":"is", "_":"es", "=":"nat"}
+            if abc_acc in acc_dico.keys():
+                note.accidental = acc_dico[abc_acc]
+                al = al[1:]
+                e.colno += 1
             state = "pitch"
         
         elif state == "pitch":
@@ -369,7 +379,12 @@ def translate_notes(tc, abc_line):
                 raise e
             al = al[1:]
             e.colno += 1
-            note.pitch = tc.pitch_dico[abc_pitch.lower()]
+            if note.accidental == "":
+                note.pitch = tc.pitch_dico[abc_pitch.lower()]
+            else:
+                note.pitch = abc_pitch.lower()
+                if note.accidental != "nat":
+                    note.pitch += note.accidental
             note.duration = tc.default_note_duration
             if abc_pitch.lower() == abc_pitch:
                 note.octaver = "''"

@@ -312,6 +312,30 @@ class TestTranslateNotesKeys(TestTranslateNotes):
         self.translate_and_test(abc_notes, expected_output)
 
 
+class TestTranslateNotesAccidentals(TestTranslateNotes):
+
+    def test_accidental_natural(self):
+        read_info_line(self.tc, "K:G")
+        abc_notes =  "=FGA"
+        expected_output = ["f'8 g'8 a'8"]
+        self.translate_and_test(abc_notes, expected_output)
+
+    def test_accidental_sharp(self):
+        read_info_line(self.tc, "K:G")
+        abc_notes =  "FG^A"
+        expected_output = ["fis'8 g'8 ais'8"]
+        self.translate_and_test(abc_notes, expected_output)
+
+    def test_accidental_flat(self):
+        read_info_line(self.tc, "K:G")
+        abc_notes =  "F_GA"
+        expected_output = ["fis'8 ges'8 a'8"]
+        self.translate_and_test(abc_notes, expected_output)
+
+    def test_double_accidentals(self):
+        pass
+
+
 # Test notes longer than the default note length
 
 class TestTranslateNotesLongerDuration(TestTranslateNotes):
@@ -443,7 +467,7 @@ class TestOutput(unittest.TestCase):
     def test_brid_harper_s(self):
         self.check_output("brid_harper_s")
 
-    def xtest_yellow_tinker(self):
+    def test_yellow_tinker(self):
         self.check_output("yellow_tinker")
 
 
