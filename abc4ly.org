@@ -1,11 +1,18 @@
 * Feuille de route
 ** P0
 Morceau:
+	Ecrire un Makefile qui passe à la moulinette abc4ly tous mes .abc
+
+	Pouvoir invoquer abc4ly depuis la ligne de commande (même
+        comportement que abc2ly)
+
+	Enrichir le Makefile pour que quand les conversions abc4ly
+        fonctionnent, les .ly soient compilés avec lilypond.
 
 Reconnaître la hauteur des notes:
 	+Majuscules / minuscules / apostrophe / virgule+
 	+Altérations 1: dièse, bémol, naturel+
-	Altérations 2: double dièse, double bémol
+	+Altérations 2: double dièse, double bémol+
 	Silences (rests)
 
 Traiter la durée des notes:
