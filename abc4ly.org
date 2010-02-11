@@ -6,25 +6,21 @@ Morceau:
 		altération non diatonique
 
 Traiter la durée des notes:
-	+Pas de modificateur (durée de base)+
-	Modificateur multiple de 2 => durée simple
-		Croche
-		+Noire+
-		+Blanche+
-		+Ronde+
-	Modificateur de durée pas multiple de 2 => durée composée:
-		+Note pointée+
-		Note liée
-	Supprimer la duplication de l'appel à normalize_time_signature()
 	+Calculer la durée des notes par défaut (default note length)+
-	Gérer le coefficient diviseur => diminuer la durée par défaut
-	Gérer les marqueurs de rythme brisé (broken rythms markers: a>b, etc.)
-	Gérer les triolets de croche. Exemple en 4/4: "(3 abc"
-	Gérer les n-uplets (avec n variant de 2 à 9)
 	Gérer le champ informatif "default note length" (L:) qui permet de changer la durée des notes par défaut:
 		Dans l'entête
 		A l'improviste dans le morceau
-	Gérer les notes liées
+	+Pas de modificateur (durée de base)+
+	+Modificateur multiple de 2 => durée simple+
+	Modificateur de durée pas multiple de 2 => durée composée:
+		+Note pointée+
+		Note liée
+	Gérer le coefficient diviseur => diminuer la durée par défaut
+		"A/" synonyme de "A/2"
+		"A/2", "A/4"
+	Gérer les marqueurs de rythme brisé (broken rythms markers: a>b, etc.)
+	Gérer les triolets de croche. Exemple en 4/4: "(3 abc"
+	Gérer les n-uplets (avec n variant de 2 à 9)
 
 Gérer une mesure à cheval sur 2 lignes ABC 
 	continuation de la mesure à la ligne
