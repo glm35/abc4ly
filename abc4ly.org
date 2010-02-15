@@ -1,13 +1,18 @@
 * Feuille de route
 ** P0
-Morceau:
-	Ecrire un Makefile qui passe à la moulinette abc4ly tous mes .abc
+Implémentations des fonctionalités manquantes pour le tunebook:
+	Accords entre guillemets avant une note
+	? dans translate_key_signature (cailleach_reel, garrevaques)
+	1ère et 2ème répétition
+	Pause (z)
+	triolets (the_boys_of_malin)
+	Barre double "||"
+	Répétitions echaînées "::"
+	Durée des notes "3/2" (the_headless_turkey)
+	Durée des notes ">"
+	Notes liées "-" (the_roaring_barmaid)
 
-	Pouvoir invoquer abc4ly depuis la ligne de commande (même
-        comportement que abc2ly)
-		Sans option (juste un fichier abc)
-		+Avec option -o+
-
+Test Suite:
 	Enrichir le Makefile pour que quand les conversions abc4ly
         fonctionnent, les .ly soient compilés avec lilypond.
 
@@ -79,6 +84,12 @@ En cas d'erreur de syntaxe ABC, donner du contexte à l'utilisateur
 Style:
 	Dans le ly, faire apparaître les groupements de notes du ABC: e.g
         notes groupées => 1 espace, notes séparées => 4 espaces.
+
+Ligne de commande:
+	Pouvoir invoquer abc4ly depuis la ligne de commande (même
+        comportement que abc2ly)
+		Sans option (juste un fichier abc)
+		+Avec option -o+
 
 ** P1
 Reconnaître le champ tempo
@@ -168,6 +179,9 @@ Morceau:
 	yellow_tinker
 		doubles croches
 		altération non diatonique
+
+Test suite:
+	+Ecrire un Makefile qui passe à la moulinette abc4ly tous mes .abc+
 
 ** Wontdo
 
