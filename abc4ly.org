@@ -5,6 +5,8 @@ Morceau:
 
 	Pouvoir invoquer abc4ly depuis la ligne de commande (même
         comportement que abc2ly)
+		Sans option (juste un fichier abc)
+		+Avec option -o+
 
 	Enrichir le Makefile pour que quand les conversions abc4ly
         fonctionnent, les .ly soient compilés avec lilypond.

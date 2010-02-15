@@ -90,6 +90,8 @@ chdir ${ABC4LY_BASE_DIR}/regression-ref
 screen -t regression-ref
 chdir ${ABC4LY_BASE_DIR}/regression-out
 screen -t regression-out
+chdir ${ABC4LY_BASE_DIR}/iot
+screen -t iot
 select 1
 EOF
 

@@ -3,6 +3,7 @@
 
 import unittest
 import filecmp
+import os
 
 import abc4ly
 from abc4ly import *
@@ -449,6 +450,10 @@ class TestOutput(unittest.TestCase):
         test = "regression/" + basename + ".abc"
         out = "regression-out/" + basename + ".ly"
         ref = "regression-ref/" + basename + ".ly"
+        try:
+            os.remove(out)
+        except:
+            pass
         convert(test, out)
         self.assert_(filecmp.cmp(ref, out),
                      "Files " + ref + " and " + out + " differ")
@@ -480,9 +485,27 @@ class TestOutput(unittest.TestCase):
         self.check_output("yellow_tinker")
 
 
+class TestCommandLineOptions(unittest.TestCase):
+
+    def test_no_option(self):
+        pass
+
+    def test_output(self):
+        test = "regression/hello_world.abc"
+        out = "regression-out/hello_test_dash_o.ly"
+        ref = "regression-ref/hello_world.ly"
+        try:
+            os.remove(out)
+        except:
+            pass
+        ret = os.system("./abc4ly.py -o  {0} {1}".format(out, test))
+        self.assert_(0 == ret)
+        self.assert_(filecmp.cmp(ref, out),
+                     "Files " + ref + " and " + out + " differ")
+
+
 if __name__ == '__main__':
     unittest.main()
 
-#suite = unittest.TestLoader().loadTestsFromTestCase(TestTranslateNotesDuration)
-#unittest.TextTestRunner(verbosity=2).run(suite)
-
+    #suite = unittest.TestLoader().loadTestsFromTestCase(TestCommandLineOptions)
+    #unittest.TextTestRunner(verbosity=2).run(suite)

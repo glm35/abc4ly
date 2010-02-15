@@ -5,6 +5,8 @@ from __future__ import print_function
 import string
 import sys
 import math
+import optparse
+
 
 # ------------------------------------------------------------------------
 #     Exceptions
@@ -111,17 +113,13 @@ def read_info_line(tc, line):
         tc.pitch_dico = create_pitch_dico(tc.key_signature)
 
 def read_line(tc, line):
-    print("[rl] line: +", line, "+")
     if line[0] in string.ascii_uppercase and line[1] == ":":
         read_info_line(tc, line)
     elif line.isspace() or line.lstrip()[0] == "%":
         # Silently ignore comments (lines starting with '%') and empty lines
         pass
     else:
-        print("translating +" + line + "+")
         translate_notes(tc, line)
-    print("[rl] tc.output:")
-    print(tc.output)
     tc.lineno += 1
 
 # ------------------------------------------------------------------------
@@ -453,8 +451,9 @@ def translate_notes(tc, abc_line):
     if ly_line != "":
         tc.output.append("    " * tc.indent_level + ly_line)
 
+
 # ------------------------------------------------------------------------
-#     The main program
+#     The high-level conversion function
 # ------------------------------------------------------------------------
 
 def open_abc(abc_filename):
@@ -474,7 +473,7 @@ def convert(abc_filename, ly_filename):
     for line in abc_file.readlines():
         read_line(tc, line)
 
-    if ly_filename == '':
+    if ly_filename == None or ly_filename == '':
         ly_file = sys.stdout
     else:
         ly_file = open(ly_filename, 'w')
@@ -491,8 +490,6 @@ melody = {
         ly_file.write("    " + tc.key_signature + "\n")
         write_time_signature(ly_file, tc.meter)
 
-        print("tc output:")
-        print(tc.output)
         ly_file.write("\n")
         for line in tc.output:
             # First, we must escape the special caracters (such as "\r")
@@ -520,3 +517,17 @@ melody = {
 
     return tc
 
+
+# ------------------------------------------------------------------------
+#     The main program
+#
+#     (not executed when abc4ly.py is imported: needed for unitary
+#     tests)
+# ------------------------------------------------------------------------
+
+if __name__ == '__main__':
+    parser = optparse.OptionParser()
+    parser.add_option("-o", "--output", dest="filename",
+                      help="write output to FILE (default: standard output)", metavar="FILE")
+    (options, args) = parser.parse_args()
+    convert(args[0], options.filename)
