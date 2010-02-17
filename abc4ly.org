@@ -4,9 +4,9 @@ Implémentations des fonctionalités manquantes pour le tunebook:
 	+Accords entre guillemets avant une note+
 	+? dans translate_key_signature (cailleach_reel, garrevaques)+
 	+Pause (z)+
-	+1ère et 2ème répétition+
 	Barre double "||" et "|]"
 	Répétitions echaînées "::"
+	Alternatives bizarres (the_twelve_pins)
 	triolets (the_boys_of_malin)
 	Durée des notes "3/2" (the_headless_turkey)
 	Durée des notes ">"
