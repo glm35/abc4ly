@@ -107,37 +107,92 @@ class TestTimeSignature(unittest.TestCase):
 
 class TestKeySignature(unittest.TestCase):
 
-    def test_major_keys(self):
-        self.assertEqual(translate_key_signature("K:C"), "\key c \major")
+    def setUp(self):
+        self.tc = TuneContext()
 
-    def test_invalid_key(self):
-        self.assertRaises(AbcSyntaxError, translate_key_signature, "K:s")
-        self.assertRaises(AbcSyntaxError, translate_key_signature, "K:")
-        self.assertRaises(AbcSyntaxError, translate_key_signature, "K:ceolien")
-        self.assertRaises(AbcSyntaxError, translate_key_signature, "K:cio")
+    def tearDown(self):
+        del self.tc
 
-    def test_accidentals(self):
-        self.assertEqual(translate_key_signature("K:Bb"), "\key bes \major")
-        self.assertEqual(translate_key_signature("K:F#"), "\key fis \major")
+    def translate_and_check_exception(self, tc, abc_snippet, exception_text):
+        try:
+            translate_key_signature(tc, abc_snippet)
+        except (AbcSyntaxError), e:
+            print e.__str__()
+            self.assertEqual(exception_text, e.__str__())
+        else:
+            self.assert_(False)
+
+    def test_implicit_major(self):
+        self.assertEqual("\key c \major",
+                         translate_key_signature(self.tc, "K:C"))
+
+    def test_accidental_flat(self):
+        self.assertEqual("\key bes \major",
+                         translate_key_signature(self.tc, "K:Bb"))
+
+    def test_accidental_sharp(self):
+        self.assertEqual("\key fis \major",
+                         translate_key_signature(self.tc, "K:F#"))
+
+    def test_minor_compact(self):
+        self.assertEqual("\key a \minor",
+                         translate_key_signature(self.tc, "K:Am"))
+
+    def test_minor(self):
+        self.assertEqual("\key g \minor",
+                         translate_key_signature(self.tc, "K:G minor"))
 
     def test_modes(self):
-        self.assertEqual(translate_key_signature("K:Am"), "\key a \minor")
-        self.assertEqual(translate_key_signature("K:G minor"),
-                         "\key g \minor")
-        self.assertEqual(translate_key_signature("K:Eb minor"),
-                         "\key ees \minor")
-        self.assertEqual(translate_key_signature("K:D mixolydian"),
-                         "\key d \mixolydian")
-        self.assertEqual(translate_key_signature("K:DMix"),
-                         "\key d \mixolydian")
-        self.assertEqual(translate_key_signature("K:Dmix"),
-                         "\key d \mixolydian")
-        for mode in [ "ionian", "dorian", "phrygian", "lydian", "mixolydian",
-                          "aeolian", "minor", "locrian" ]:
-            abc_signature = "K:D {0}".format(mode)
+        for mode in [ "major", "ionian", "dorian", "phrygian", "lydian",
+                      "mixolydian", "aeolian", "minor", "locrian" ]:
             ly_signature = "\key d \{0}".format(mode)
-            self.assertEqual(translate_key_signature(abc_signature),
-                             ly_signature)
+            abc_signature = "K:D {0}".format(mode)
+            self.assertEqual(ly_signature,
+                             translate_key_signature(self.tc, abc_signature))
+
+    def test_mode_compact(self):
+        self.assertEqual("\key d \mixolydian",
+                         translate_key_signature(self.tc, "K:Dmix"))
+
+    def test_mode_compact_mixed_case(self):
+        self.assertEqual("\key d \mixolydian",
+                         translate_key_signature(self.tc, "K:DMix"))
+
+    def test_trailing_white_spaces(self):
+        self.assertEqual("\key e \minor",
+                         translate_key_signature(self.tc, "K:Em   "))
+
+    def test_alteration_and_mode(self):
+        self.assertEqual("\key ees \minor",
+                         translate_key_signature(self.tc, "K:Eb minor"))
+
+    def test_error_empty_key_signature(self):
+        self.translate_and_check_exception(self.tc, "K:",
+                                           """In "", line 1, column 2:
+K:
+  ^
+  Empty key signature""")
+
+    def test_error_invalid_pitch(self):
+        self.translate_and_check_exception(self.tc, "K:s",
+                                           """In "", line 1, column 2:
+K:s
+  ^
+  Invalid pitch""")
+
+    def test_invalid_mode_1(self):
+        self.translate_and_check_exception(self.tc, "K:ceolien",
+                                           """In "", line 1, column 3:
+K:ceolien
+   ^
+   Invalid mode""")
+
+    def test_invalid_mode_2(self):
+        self.translate_and_check_exception(self.tc, "K:cio",
+                                           """In "", line 1, column 3:
+K:cio
+   ^
+   Invalid mode""")
 
 
 class TestNoteDuration(unittest.TestCase):
@@ -413,6 +468,29 @@ C/3
   Invalid note duration divisor""")
 
 
+class TestTranslateNotesGuitarChords(TestTranslateNotes):
+
+    def test_basic(self):
+        read_info_line(self.tc, "M:4/4")
+        abc_notes = '"C" C2 E2 G4'
+        expected_output = ["c'4" ' ^"C"' " e'4 g'2"]
+        self.translate_and_test(abc_notes, expected_output)
+
+    def test_basic2(self):
+        read_info_line(self.tc, "M:4/4")
+        abc_notes = '"C" C2 E2 "Em" G4'
+        expected_output = ['''c'4 ^"C" e'4 g'2 ^"Em"''']
+        self.translate_and_test(abc_notes, expected_output)
+
+    def test_error_unclosed_quote(self):
+        read_info_line(self.tc, "M:4/4")
+        abc_notes = '"C C2 E2 G4'
+        self.translate_and_check_exception(abc_notes, """In "", line 1, column 11:
+"C C2 E2 G4
+           ^
+           Missing the guitar chord closing inverted commas""")
+        
+
 class TestTranslateNotesSyntaxError(TestTranslateNotes):
 
     def test_octaver_error_down(self):
@@ -477,6 +555,10 @@ class TestOutput(unittest.TestCase):
 
     def test_hello_repeated(self):
         self.check_output("hello_repeated")
+
+    def test_hello_chords(self):
+        # Guitar chords mixed with e.g. "c'" require a special handling
+        self.check_output("hello_chords")
 
     def test_brid_harper_s(self):
         self.check_output("brid_harper_s")

@@ -1,20 +1,21 @@
 * Feuille de route
 ** P0
+translate_key_signature: afficher des messages d'erreur:
+	+Empty key signature+
+	+Invalid pitch+
+	+Invalid mode+
+
 Implémentations des fonctionalités manquantes pour le tunebook:
-	Accords entre guillemets avant une note
-	? dans translate_key_signature (cailleach_reel, garrevaques)
-	1ère et 2ème répétition
+	+Accords entre guillemets avant une note+
+	+? dans translate_key_signature (cailleach_reel, garrevaques)+
 	Pause (z)
+	1ère et 2ème répétition
 	triolets (the_boys_of_malin)
 	Barre double "||"
 	Répétitions echaînées "::"
 	Durée des notes "3/2" (the_headless_turkey)
 	Durée des notes ">"
 	Notes liées "-" (the_roaring_barmaid)
-
-Test Suite:
-	Enrichir le Makefile pour que quand les conversions abc4ly
-        fonctionnent, les .ly soient compilés avec lilypond.
 
 Reconnaître la hauteur des notes:
 	+Majuscules / minuscules / apostrophe / virgule+
@@ -43,7 +44,7 @@ Traiter la durée des notes:
 
 Gérer une mesure à cheval sur 2 lignes ABC 
 	continuation de la mesure à la ligne
-	barre de mesure à la ligne
+	barre de mesure à la ligne (e.g. brian_o_lynn)
 
 	(idée 1: translate_notes() retourne le résidu analysé (ok si une
         note n'est pas sur 2 lignes); idée 2:
@@ -97,9 +98,8 @@ Reconnaître le champ tempo
 Vérifier que les champs informatifs réservés à l'entête ne se retrouvent
 pas ailleurs dans le morceau.
 
-Reconnaître les accords
-
-Si un nom de fichier lilypond n'est pas spécifié, sortir sur stdout
+Accords de guitare
+	(2) Utilisation de chordmode
 
 Translation de la tonalité du morceau "Partie 2": "K:..." => "\key ..."
 	Highland bagpipe keys (HP et Hp)
@@ -165,6 +165,12 @@ Translation de la tonalité du morceau "Partie 1": "K:..." => "\key ..."
 	K:Dmix
 	les 7 modes
 
+Accords de guitare
+	(1) Simple quoted text indications (idem abc2ly)
+		Cas nominal
+		Erreur: guillemets non fermés sur la ligne dans le .abc
+		conver() + chords
+
 Morceau:
 	c_major
 	hello_world & friends
@@ -181,7 +187,10 @@ Morceau:
 		altération non diatonique
 
 Test suite:
-	+Ecrire un Makefile qui passe à la moulinette abc4ly tous mes .abc+
+	Ecrire un Makefile qui passe à la moulinette abc4ly tous mes .abc
+
+	Enrichir le Makefile pour que quand les conversions abc4ly
+        fonctionnent, les .ly soient compilés avec lilypond.
 
 ** Wontdo
 
@@ -313,6 +322,9 @@ Durée des notes par défaut:
            croche = 16). Sinon (dts >= 0.75): default note length = eighth
            note (croche = 8)
 
+Accords de guitare: entre guillemets doubles (") avant la note au dessu
+de laquelle se produit le changement d'accord.
+
 ** Grammaire ABC
 Qu'est-ce qu'une note?
 
@@ -347,6 +359,11 @@ Pour exprimer la durée des notes en lilypond:
 Exemples réels de musique écrite avec lilypond: http://www.mutopiaproject.org/
 
 Répétition: \repeat volta 2 { ... }
+
+Ecriture des accords "à la abc2ly" en utilisant la syntaxe "simple
+quoted text indications": un accord de guitare est (simplement)
+représenté avec e.g. ^"Am" après la note où se produit le changement
+d'accord. => utilisation
 
 * Equivalence ABC <=> lilypond
 ** Hauteur des notes

@@ -65,13 +65,14 @@ class Note():
         self.octaver = ""
         self.duration = ""
         self.dotted = ""
+        self.chord = ""
 
 # ------------------------------------------------------------------------
 #     Music computing stuff
 # ------------------------------------------------------------------------
 
-mc_modes = [ "ionian", "dorian", "phrygian", "lydian", "mixolydian",
-             "aeolian", "minor", "locrian" ]
+mc_modes = [ "major", "ionian", "dorian", "phrygian", "lydian",
+             "mixolydian", "aeolian", "minor", "locrian" ]
 
 # Number of semi-tones between the fundamental note of a mode and the
 # fundamental note of its relative major key.  (e.g. there are 9
@@ -109,7 +110,7 @@ def read_info_line(tc, line):
         tc.meter = normalize_time_signature(nice_field)
         tc.default_note_duration = get_default_note_duration(tc.meter)
     elif line[0] == 'K':
-        tc.key_signature = translate_key_signature(line)
+        tc.key_signature = translate_key_signature(tc, line)
         tc.pitch_dico = create_pitch_dico(tc.key_signature)
 
 def read_line(tc, line):
@@ -161,58 +162,74 @@ def write_time_signature(ly_file, meter):
 #
 # input: abc_key_signature: contents of the "K:" line with the "K:" prefix
 
-def translate_key_signature(abc_key_signature):
-    # Strip the leading "K:", remove any space, and substititue any
-    # occurence of more than one space by just one space
+def translate_key_signature(tc, abc_key_signature):
+    # Prepare an exception (just in case)
+    e = AbcSyntaxError()
+    e.filename = tc.filename
+    e.abc_line = abc_key_signature.rstrip()
+    e.lineno = tc.lineno
+    e.colno = 0
+
+    # Strip the leading "K:" and the trailing white spaces
     ks = abc_key_signature[2:]
-    ks = string.join(ks.split(), "")
+    e.colno += 2
+    ks = ks.rstrip()
+
     pitch = ""
     alteration = ""
     mode = "major"
 
     state = "pitch"
 
-    if len(ks) == 0:
-        raise AbcSyntaxError
+    while True:
 
-    while len(ks) != 0:
+        len_before = len(ks)
+        ks = ks.lstrip()
+        e.colno += len_before - len(ks)
+        if len(ks) == 0:
+            break
 
         if state == "pitch":
             # The first char should be the pitch
             pitch = ks[0].lower()
             if not pitch in "cdefgab":
-                raise AbcSyntaxError
+                e.what = "Invalid pitch"
+                raise e
             ks = ks[1:]
+            e.colno += 1
             state = "alteration"
 
         elif state == "alteration":
             # Then optional alteration (sharp or flat)
-            if ks[0] == "#":
-                alteration = "is"
+            alterations = {"#":"is", "b":"es"}
+            if ks[0] in alterations.keys():
+                alteration = alterations[ks[0]]
                 ks = ks[1:]
-            elif ks[0] == "b":
-                alteration = "es"
-                ks = ks[1:]
+                e.colno += 1
             state = "mode"
 
         elif state == "mode":
             # Then optional mode
             if ks == "m":
                 mode = "minor"
-            elif len(ks) < 3:
-                raise AbcSyntaxError
             else:
-                ks = ks.lower()
                 mode = ""
-                for m in mc_modes:
-                    if m[0:3] == ks[0:3]:
-                        mode = m
-                        break
+                if len(ks) >= 3:
+                    ks = ks.lower()
+                    for m in mc_modes:
+                        if m[0:3] == ks[0:3]:
+                            mode = m
+                            break
                 if mode == "":
-                    raise AbcSyntaxError
+                    e.what = "Invalid mode"
+                    raise e
 
             # Forget the rest
             break
+
+    if state == "pitch":
+        e.what = "Empty key signature"
+        raise e
 
     lily_signature = "\key " + pitch + alteration + " " + "\\" + mode
     return lily_signature
@@ -337,6 +354,8 @@ def translate_notes(tc, abc_line):
             else:
                 first_note = False
             ly_line += note.pitch + note.octaver + str(note.duration) + note.dotted
+            if note.chord != "":
+                ly_line += ' ^"{0}"'.format(note.chord)
             note.clear()
             state = start_state
 
@@ -359,6 +378,22 @@ def translate_notes(tc, abc_line):
                 ly_line = ""
                 first_note = True
 
+            state = "chord"
+
+        elif state == "chord":
+            if al[0] == '"':
+                al = al[1:]
+                e.colno += 1
+                while len(al) >= 1 and al[0] != '"':
+                    note.chord += al[0]
+                    al = al[1:]
+                    e.colno += 1
+                if len(al) >= 1 and al[0] == '"':
+                    al = al[1:]
+                    e.colno += 1
+                else:
+                    e.what = "Missing the guitar chord closing inverted commas"
+                    raise e
             state = "accidental"
 
         elif state == "accidental":
@@ -495,10 +530,13 @@ melody = {
             # First, we must escape the special caracters (such as "\r")
             # that can occur in some lilypond commands (such as
             # "\repeat"). To do this, we use the canonical
-            # representation of the string and we remove the leading and
-            # trailing quotes
+            # representation of the string and we remove:
+            # - the leading and quotes
+            # - the spurious backslashes inserted when we mix chords
+            #    with apostrophe
             line = repr(line)
             line = line[1:len(line)-1]
+            line = line.replace("\\\'", "\'")
 
             # Then we can write the line safely...
             ly_file.write("    " + line + "\n")

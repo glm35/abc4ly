@@ -4,7 +4,7 @@ SHELL=/bin/bash
 # stdout+stderr IO redirection with "&>" does not work with dash.
 
 LILY_PREFIX=/usr/local/bin
-LILYPOND_BOOK=${LILY_PREFIX}/lilypond-book
+LILYPOND=${LILY_PREFIX}/lilypond
 #ABC2LY=${LILY_PREFIX}/abc2ly
 ABC2LY=../abc4ly.py
 CONVERT_LY=${LILY_PREFIX}/convert-ly
@@ -17,7 +17,16 @@ ly_outdir=ly-out
 lyfiles := $(patsubst ${src}/%.abc,${ly_outdir}/%.ly,$(wildcard ${src}/*.abc))
 lyfiles2 := $(patsubst ${src2}/%.abc,${ly_outdir}/%.ly,$(wildcard ${src2}/*.abc))
 
+pdffiles := $(patsubst ${src}/%.abc,${ly_outdir}/%.pdf,$(wildcard ${src}/*.abc))
+pdffiles2 := $(patsubst ${src2}/%.abc,${ly_outdir}/%.pdf,$(wildcard ${src2}/*.abc))
+
 all : ${ly_outdir} ${lyfiles} ${lyfiles2} ${ABC2LY}
+
+pdf : ${ly_outdir} ${pdffiles} ${pdffiles2} ${ABC2LY}
+
+${ly_outdir}/%.pdf : ${ly_outdir}/%.ly
+	@echo [LILYPOND] $<
+	${LILYPOND} -o ${ly_outdir}/$* $<
 
 ${ly_outdir}/%.ly : ${src}/%.abc
 	@echo [ABC2LY] $<
@@ -36,6 +45,14 @@ ${ly_outdir}/%.ly : ${src2}/%.abc
 ${ly_outdir} :
 	@echo [MKDIR] ${ly_outdir}
 	@mkdir ${ly_outdir}
+
+stats: ${ly_outdir}
+	@echo -n "Number of ABC files: "
+	@find ${src} -name "*.abc" |wc -l
+	@echo -n "Number of generated ly files: "
+	@find ${ly_outdir} -name "*.ly" |wc -l
+	@echo -n "Number of compiled ly files: "
+	@find ${ly_outdir} -name "*.pdf" |wc -l
 
 clean :
 	@echo [CLEANING]
