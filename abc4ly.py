@@ -389,6 +389,7 @@ def translate_notes(tc, abc_line):
                                      "{ " + ly_line + " }")
                     tc.output.append("}")
                     tc.indent_level -= 1
+                    tc.alternative = 0
                 else:
                     tc.output.append("    " * tc.indent_level + ly_line + " |")
 
