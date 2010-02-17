@@ -407,7 +407,17 @@ def translate_notes(tc, abc_line):
                 note.accidental = acc_dico[abc_acc]
                 al = al[len(abc_acc):]
                 e.colno += len(abc_acc)
-            state = "pitch"
+            state = "rest"
+
+        elif state == "rest":
+            if al[0] == "z":
+                note.pitch = "r"
+                note.duration = tc.default_note_duration
+                al = al[1:]
+                e.colno += 1
+                state = "duration"
+            else:
+                state = "pitch"
         
         elif state == "pitch":
             abc_pitch = al[0]

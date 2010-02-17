@@ -117,7 +117,7 @@ class TestKeySignature(unittest.TestCase):
         try:
             translate_key_signature(tc, abc_snippet)
         except (AbcSyntaxError), e:
-            print e.__str__()
+            #print e.__str__()
             self.assertEqual(exception_text, e.__str__())
         else:
             self.assert_(False)
@@ -277,7 +277,7 @@ class TestTranslateNotes(unittest.TestCase):
         try:
             translate_notes(self.tc, abc_notes)
         except (AbcSyntaxError), e:
-            print e.__str__()
+            #print e.__str__()
             self.assertEqual(e.__str__(), exception_text)
         else:
             self.assert_(False)
@@ -491,6 +491,15 @@ class TestTranslateNotesGuitarChords(TestTranslateNotes):
            Missing the guitar chord closing inverted commas""")
         
 
+class TestTranslateNotesRests(TestTranslateNotes):
+
+    def test_basic(self):
+        read_info_line(self.tc, "M:4/4")
+        abc_notes = "C2 D2 z2 E2"
+        expected_output = ["c'4 d'4 r4 e'4"]
+        self.translate_and_test(abc_notes, expected_output)
+
+
 class TestTranslateNotesSyntaxError(TestTranslateNotes):
 
     def test_octaver_error_down(self):
@@ -589,5 +598,5 @@ class TestCommandLineOptions(unittest.TestCase):
 if __name__ == '__main__':
     unittest.main()
 
-    #suite = unittest.TestLoader().loadTestsFromTestCase(TestCommandLineOptions)
+    #suite = unittest.TestLoader().loadTestsFromTestCase(TestTimeSignature)
     #unittest.TextTestRunner(verbosity=2).run(suite)

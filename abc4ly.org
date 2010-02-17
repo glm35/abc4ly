@@ -1,27 +1,16 @@
 * Feuille de route
 ** P0
-translate_key_signature: afficher des messages d'erreur:
-	+Empty key signature+
-	+Invalid pitch+
-	+Invalid mode+
-
 Implémentations des fonctionalités manquantes pour le tunebook:
 	+Accords entre guillemets avant une note+
 	+? dans translate_key_signature (cailleach_reel, garrevaques)+
-	Pause (z)
+	+Pause (z)+
 	1ère et 2ème répétition
 	triolets (the_boys_of_malin)
-	Barre double "||"
+	Barre double "||" et "|]"
 	Répétitions echaînées "::"
 	Durée des notes "3/2" (the_headless_turkey)
 	Durée des notes ">"
 	Notes liées "-" (the_roaring_barmaid)
-
-Reconnaître la hauteur des notes:
-	+Majuscules / minuscules / apostrophe / virgule+
-	+Altérations 1: dièse, bémol, naturel+
-	+Altérations 2: double dièse, double bémol+
-	Silences (rests)
 
 Traiter la durée des notes:
 	+Calculer la durée des notes par défaut (default note length)+
@@ -91,6 +80,13 @@ Ligne de commande:
         comportement que abc2ly)
 		Sans option (juste un fichier abc)
 		+Avec option -o+
+
+Divers:
+	Donner du contexte à toutes les exceptions AbcSyntaxError
+
+	Vérifier la présence d'une "time signature" valide au moment de
+        commencer à faire du translate_notes() plutôt que implicitement
+        dans write_time_signature()
 
 ** P1
 Reconnaître le champ tempo
@@ -164,6 +160,12 @@ Translation de la tonalité du morceau "Partie 1": "K:..." => "\key ..."
 	K:DMix
 	K:Dmix
 	les 7 modes
+
+Reconnaître la hauteur des notes:
+	Majuscules / minuscules / apostrophe / virgule
+	Altérations 1: dièse, bémol, naturel
+	Altérations 2: double dièse, double bémol
+	Silences (rests)
 
 Accords de guitare
 	(1) Simple quoted text indications (idem abc2ly)
