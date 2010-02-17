@@ -4,13 +4,19 @@ Implémentations des fonctionalités manquantes pour le tunebook:
 	+Accords entre guillemets avant une note+
 	+? dans translate_key_signature (cailleach_reel, garrevaques)+
 	+Pause (z)+
-	1ère et 2ème répétition
-	triolets (the_boys_of_malin)
+	+1ère et 2ème répétition+
 	Barre double "||" et "|]"
 	Répétitions echaînées "::"
+	triolets (the_boys_of_malin)
 	Durée des notes "3/2" (the_headless_turkey)
 	Durée des notes ">"
 	Notes liées "-" (the_roaring_barmaid)
+
+Alternatives:
+	+Deux alternatives, une mesure par alternative+
+	Deux (et plus) mesures par alternatives
+	Alternatives au milieu d'une mesure
+	Forme "|[1" etc.
 
 Traiter la durée des notes:
 	+Calculer la durée des notes par défaut (default note length)+

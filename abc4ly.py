@@ -48,6 +48,8 @@ class TuneContext():
 
         self.indent_level = 0
 
+        self.alternative = 0
+
         self.output = []
 
 
@@ -311,7 +313,9 @@ def get_default_note_duration(time_signature):
 # Given a snippet of ABC music, try to recognize a repeat or bar pattern
 
 def get_bar(abc_snippet):
-    bars = [ '|:', ':|', '|' ] # longest first, please
+    bars = [ '|[1', '|[2', ':|2',
+             '|1', '|2', '|:', ':|',
+             '|' ] # longest first, please
     bar = ""
 
     for b in bars:
@@ -367,12 +371,26 @@ def translate_notes(tc, abc_line):
             if bar == "|:":
                 tc.output.append("\repeat volta 2 {")
                 tc.indent_level += 1
+            elif bar == "|1":
+                tc.output.append("    " * tc.indent_level + ly_line)
+                tc.output.append("}")
+                tc.output.append(r"\alternative {")
+                # Remark: No way not to use raw strings with this crazy "\a"
+            elif bar == ":|2":
+                tc.output.append("    " * tc.indent_level + "{ " + ly_line + " }")
+                tc.alternative = 2
             elif bar == ":|":
                 tc.output.append("    " * tc.indent_level + ly_line)
                 tc.output.append("}")
                 tc.indent_level -= 1
             elif bar == "|":
-                tc.output.append("    " * tc.indent_level + ly_line + " |")
+                if tc.alternative == 2:
+                    tc.output.append("    " * tc.indent_level +
+                                     "{ " + ly_line + " }")
+                    tc.output.append("}")
+                    tc.indent_level -= 1
+                else:
+                    tc.output.append("    " * tc.indent_level + ly_line + " |")
 
             if bar != "":
                 ly_line = ""
@@ -544,9 +562,11 @@ melody = {
             # - the leading and quotes
             # - the spurious backslashes inserted when we mix chords
             #    with apostrophe
+            # - the spurious backslash inserted when we use raw strings with "\a"
             line = repr(line)
             line = line[1:len(line)-1]
             line = line.replace("\\\'", "\'")
+            line = line.replace("\\\\", "\\")
 
             # Then we can write the line safely...
             ly_file.write("    " + line + "\n")
