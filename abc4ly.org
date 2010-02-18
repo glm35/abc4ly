@@ -95,6 +95,15 @@ Ligne de commande:
 		Sans option (juste un fichier abc)
 		+Avec option -o+
 
+Bar check:
+	Est-ce qu'il faut les préciser explicitement:
+	- à la fin du morceau?
+	- avec les répétitions?
+	- avec les alternatives?
+	ou est-ce que lilypond fait le test?
+	Est-ce qu'une barre spéciale e.g. \bar "||" est utilisée pour le
+        bar-checking, ou est-ce qu'il faut ajouter un bar check en plus?
+
 Divers:
 	Donner du contexte à toutes les exceptions AbcSyntaxError
 
