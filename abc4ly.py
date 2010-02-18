@@ -313,8 +313,8 @@ def get_default_note_duration(time_signature):
 # Given a snippet of ABC music, try to recognize a repeat or bar pattern
 
 def get_bar(abc_snippet):
-    bars = [ '|[1', '|[2', ':|2',
-             '|1', '|2', '|:', ':|',
+    bars = [ ':|2', #'|[1', '|[2',
+             '|1', '|:', ':|', '||', '|]', #'|2', '[|'
              '|' ] # longest first, please
     bar = ""
 
@@ -383,7 +383,7 @@ def translate_notes(tc, abc_line):
                 tc.output.append("    " * tc.indent_level + ly_line)
                 tc.output.append("}")
                 tc.indent_level -= 1
-            elif bar == "|":
+            elif bar == "|" or bar == "||" or bar == "|]":
                 if tc.alternative == 2:
                     tc.output.append("    " * tc.indent_level +
                                      "{ " + ly_line + " }")
@@ -391,7 +391,13 @@ def translate_notes(tc, abc_line):
                     tc.indent_level -= 1
                     tc.alternative = 0
                 else:
-                    tc.output.append("    " * tc.indent_level + ly_line + " |")
+                    if bar == "||":
+                        bar_glyph = r'\bar "||"'
+                    elif bar == "|]":
+                        bar_glyph = r'\bar "|."'
+                    else:
+                        bar_glyph = "|"
+                    tc.output.append("    " * tc.indent_level + ly_line + " " + bar_glyph)
 
             if bar != "":
                 ly_line = ""

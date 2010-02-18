@@ -4,9 +4,13 @@ Implémentations des fonctionalités manquantes pour le tunebook:
 	+Accords entre guillemets avant une note+
 	+? dans translate_key_signature (cailleach_reel, garrevaques)+
 	+Pause (z)+
-	Barre double "||" et "|]"
+	+Barres doubles:+
+		+|] thin-thick double bar line => \bar "|."_+
+		+|| thin-thin double bar line => \bar "||"_+
 	Répétitions echaînées "::"
-	Alternatives bizarres (the_twelve_pins)
+	Alternatives:
+		[2 (kitty_lie_over)
+		bizarres (the_twelve_pins)
 	triolets (the_boys_of_malin)
 	Durée des notes "3/2" (the_headless_turkey)
 	Durée des notes ">"
@@ -17,6 +21,10 @@ Alternatives:
 	Deux (et plus) mesures par alternatives
 	Alternatives au milieu d'une mesure
 	Forme "|[1" etc.
+
+Barres doubes (suite):
+		[| thick-thin double bar line => \bar ".|"
+		Barre double au milieu d'une alternative
 
 Traiter la durée des notes:
 	+Calculer la durée des notes par défaut (default note length)+
@@ -332,6 +340,9 @@ Durée des notes par défaut:
 
 Accords de guitare: entre guillemets doubles (") avant la note au dessu
 de laquelle se produit le changement d'accord.
+
+Barres:
+	:|| => pas dans le bestiaire abc.txt => illégal
 
 ** Grammaire ABC
 Qu'est-ce qu'une note?
