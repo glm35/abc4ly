@@ -52,6 +52,41 @@ class TuneContext():
 
         self.output = []
 
+    def dump_bar(self, notes, abc_bar):
+        if abc_bar == "||":
+            bar_glyph = r'\bar "||"'
+        elif abc_bar == "|]":
+            bar_glyph = r'\bar "|."'
+        else:
+            bar_glyph = "|"
+        self.output.append("    " * self.indent_level + notes + " " + bar_glyph)
+
+    def dump_note_block(self, notes):
+        self.output.append("    " * self.indent_level + "{ " + notes + " }")
+
+    def open_repeat(self):
+        self.output.append("\repeat volta 2 {")
+        self.indent_level += 1
+
+    def close_repeat(self, ly_line):
+        self.output.append("    " * self.indent_level + ly_line)
+        self.output.append("}")
+        self.indent_level -= 1
+
+    def begin_alternative_1(self):
+        self.output.append(r"\alternative {")
+        self.alternative = 1
+        self.indent_level += 1
+        # Remark: No way not to use raw strings with this crazy "\a"
+    
+    def begin_alternative_2(self):
+        self.alternative = 2
+
+    def end_alternative(self):
+        self.output.append("}")
+        self.indent_level -= 1
+        self.alternative = 0
+
 
 # ------------------------------------------------------------------------
 #     The logical representation of a LilyPond note
@@ -314,7 +349,7 @@ def get_default_note_duration(time_signature):
 
 def get_bar(abc_snippet):
     bars = [ ':|2', #'|[1', '|[2',
-             '|1', '|:', ':|', '||', '|]', #'|2', '[|'
+             '|1', '|:', ':|', '||', '|]', '::', '[2', #'|2', '[|'
              '|' ] # longest first, please
     bar = ""
 
@@ -369,41 +404,35 @@ def translate_notes(tc, abc_line):
             e.colno += len(bar)
 
             if bar == "|:":
-                tc.output.append("\repeat volta 2 {")
-                tc.indent_level += 1
-            elif bar == "|1":
-                tc.output.append("    " * tc.indent_level + ly_line)
-                tc.output.append("}")
-                tc.output.append(r"\alternative {")
-                # Remark: No way not to use raw strings with this crazy "\a"
-            elif bar == ":|2":
-                tc.output.append("    " * tc.indent_level + "{ " + ly_line + " }")
-                tc.alternative = 2
+                tc.open_repeat()
             elif bar == ":|":
-                tc.output.append("    " * tc.indent_level + ly_line)
-                tc.output.append("}")
-                tc.indent_level -= 1
+                if tc.alternative == 0:
+                    tc.close_repeat(ly_line)
+                elif tc.alternative == 1:
+                    tc.dump_note_block(ly_line)
+            elif bar == "::":
+                tc.close_repeat(ly_line)
+                tc.open_repeat()
+            elif bar == "|1":
+                tc.close_repeat(ly_line)
+                tc.begin_alternative_1()
+            elif bar == ":|2":
+                tc.dump_note_block(ly_line)
+                tc.begin_alternative_2()
+            elif bar == "[2":
+                tc.begin_alternative_2()
             elif bar == "|" or bar == "||" or bar == "|]":
                 if tc.alternative == 2:
-                    tc.output.append("    " * tc.indent_level +
-                                     "{ " + ly_line + " }")
-                    tc.output.append("}")
-                    tc.indent_level -= 1
-                    tc.alternative = 0
+                    tc.dump_note_block(ly_line)
+                    tc.end_alternative()
                 else:
-                    if bar == "||":
-                        bar_glyph = r'\bar "||"'
-                    elif bar == "|]":
-                        bar_glyph = r'\bar "|."'
-                    else:
-                        bar_glyph = "|"
-                    tc.output.append("    " * tc.indent_level + ly_line + " " + bar_glyph)
+                    tc.dump_bar(ly_line, bar)
 
             if bar != "":
                 ly_line = ""
                 first_note = True
-
-            state = "chord"
+            else:
+                state = "chord"
 
         elif state == "chord":
             if al[0] == '"':

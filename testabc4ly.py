@@ -272,6 +272,7 @@ class TestTranslateNotes(unittest.TestCase):
     def translate_and_test(self, abc_notes, expected_output):
         translate_notes(self.tc, abc_notes)
         self.assertEqual(expected_output, self.tc.output)
+                         #"\n".join(self.tc.output))
 
     def translate_and_check_exception(self, abc_notes, exception_text):
         try:
@@ -341,6 +342,17 @@ class TestTranslateNotesStructure(TestTranslateNotes):
                            "}"]
         self.translate_and_test(abc_notes, expected_output)
 
+    def test_chained_repeats(self):
+        abc_notes =  "|: CDEF GABc :: cBAG FEDC :|"
+        expected_output = ["\repeat volta 2 {",
+                           "    c'8 d'8 e'8 f'8 g'8 a'8 b'8 c''8",
+                           "}",
+                           "\repeat volta 2 {",
+                           "    c''8 b'8 a'8 g'8 f'8 e'8 d'8 c'8",
+                           "}"
+                           ]
+        self.translate_and_test(abc_notes, expected_output)
+
     def test_simple_alternative(self):
         abc_notes = "|: C2 D2 E2 F2 |1 G2 A2 B2 c2 :|2 G2 E2 D2 C2 |"
         expected_output = ["\repeat volta 2 {",
@@ -362,6 +374,17 @@ class TestTranslateNotesStructure(TestTranslateNotes):
                            "    { g'4 e'4 d'4 c'4 }",
                            "}",
                            "c'4 d'4 e'4 f'4 |"]
+        self.translate_and_test(abc_notes, expected_output)
+
+    def test_alternatives_long_form(self):
+        abc_notes = "|: C2 D2 E2 F2 |1 G2 A2 B2 c2 :| [2 G2 E2 D2 C2 |"
+        expected_output = ["\repeat volta 2 {",
+                           "    c'4 d'4 e'4 f'4",
+                           "}",
+                           r"\alternative {",
+                           "    { g'4 a'4 b'4 c''4 }",
+                           "    { g'4 e'4 d'4 c'4 }",
+                           "}"]
         self.translate_and_test(abc_notes, expected_output)
 
     def test_thin_thin_double_bar_line(self):

@@ -7,20 +7,21 @@ Implémentations des fonctionalités manquantes pour le tunebook:
 	+Barres doubles:+
 		+|] thin-thick double bar line => \bar "|."_+
 		+|| thin-thin double bar line => \bar "||"_+
-	Répétitions echaînées "::"
-	Alternatives:
-		[2 (kitty_lie_over)
-		bizarres (the_twelve_pins)
-	triolets (the_boys_of_malin)
-	Durée des notes "3/2" (the_headless_turkey)
+	+Répétitions echaînées "::"_+
+	Notes liées "-" (the_roaring_barmaid) (3/11)
+	triolets (the_boys_of_malin) (4/11)
+	Durée des notes "3/2" (the_headless_turkey) (3/11)
 	Durée des notes ">"
-	Notes liées "-" (the_roaring_barmaid)
+	Alternatives:
+		+[2 (kitty_lie_over)+
+		bizarres (the_twelve_pins)
 
 Alternatives:
 	+Deux alternatives, une mesure par alternative+
 	Deux (et plus) mesures par alternatives
 	Alternatives au milieu d'une mesure
 	Forme "|[1" etc.
+		+Forme ":| |2"_+
 
 Barres doubes (suite):
 		[| thick-thin double bar line => \bar ".|"
