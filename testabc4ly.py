@@ -526,6 +526,16 @@ C/3
   Invalid note duration divisor""")
 
 
+class TestTranslateNotesTies(TestTranslateNotes):
+
+    def test_ties(self):
+        read_info_line(self.tc, "M:4/4")
+        abc_notes = "C4- C2 D2- | D4 E4 |"
+        expected_output = ["c'2 ~ c'4 d'4 ~ |",
+                           "d'2 e'2 |"]
+        self.translate_and_test(abc_notes, expected_output)
+
+
 class TestTranslateNotesGuitarChords(TestTranslateNotes):
 
     def test_basic(self):
@@ -632,6 +642,9 @@ class TestOutput(unittest.TestCase):
     def test_hello_chords(self):
         # Guitar chords mixed with e.g. "c'" require a special handling
         self.check_output("hello_chords")
+
+    def test_hello_ties(self):
+        self.check_output("hello_ties")
 
     def test_brid_harper_s(self):
         self.check_output("brid_harper_s")

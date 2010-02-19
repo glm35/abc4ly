@@ -8,7 +8,10 @@ Implémentations des fonctionalités manquantes pour le tunebook:
 		+|] thin-thick double bar line => \bar "|."_+
 		+|| thin-thin double bar line => \bar "||"_+
 	+Répétitions echaînées "::"_+
-	Notes liées "-" (the_roaring_barmaid) (3/11)
+	Ties: Notes liées "-" (the_roaring_barmaid) (3/11)
+		Les deux notes liées doivent avoir la même hauteur
+		Dans une mesure ou entre deux mesures.
+		Symbole ly: "~"
 	triolets (the_boys_of_malin) (4/11)
 	Durée des notes "3/2" (the_headless_turkey) (3/11)
 	Durée des notes ">"
