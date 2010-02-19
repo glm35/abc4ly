@@ -595,6 +595,15 @@ class TestTranslateNotesRests(TestTranslateNotes):
         self.translate_and_test(abc_notes, expected_output)
 
 
+class TestTranslateNotesTuplets(TestTranslateNotes):
+
+    def test_triplets(self):
+        read_info_line(self.tc, "M:4/4")
+        abc_notes = "(3 CDE F2 G2 A2"
+        expected_output = ["\times 2/3 { c'8 d'8 e'8 } f'4 g'4 a'4"]
+        self.translate_and_test(abc_notes, expected_output)
+
+
 class TestTranslateNotesSyntaxError(TestTranslateNotes):
 
     def test_octaver_error_down(self):
@@ -672,6 +681,9 @@ class TestOutput(unittest.TestCase):
 
     def test_hello_ties(self):
         self.check_output("hello_ties")
+
+    def test_hello_triplets(self):
+        self.check_output("hello_triplets")
 
     def test_brid_harper_s(self):
         self.check_output("brid_harper_s")
