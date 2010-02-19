@@ -8,10 +8,7 @@ Implémentations des fonctionalités manquantes pour le tunebook:
 		+|] thin-thick double bar line => \bar "|."_+
 		+|| thin-thin double bar line => \bar "||"_+
 	+Répétitions echaînées "::"_+
-	Ties: Notes liées "-" (the_roaring_barmaid) (3/11)
-		Les deux notes liées doivent avoir la même hauteur
-		Dans une mesure ou entre deux mesures.
-		Symbole ly: "~"
+	+Ties+
 	triolets (the_boys_of_malin) (4/11)
 	Durée des notes "3/2" (the_headless_turkey) (3/11)
 	Durée des notes ">"
@@ -25,6 +22,11 @@ Alternatives:
 	Alternatives au milieu d'une mesure
 	Forme "|[1" etc.
 		+Forme ":| |2"_+
+
+Ties: Notes liées "-"
+	+Dans une mesure ou entre deux mesures.+
+	+Les deux notes liées doivent avoir la même hauteur+
+	Notes source et destination pas sur la même ligne ABC
 
 Barres doubes (suite):
 		[| thick-thin double bar line => \bar ".|"
@@ -224,12 +226,32 @@ Test suite:
 ** Wontdo
 
 * But du jeu
-Avoir un abc2ly qui marche pour tous les .abc du tunebook. Vérifier la
-syntaxe du fichier .abc: si problème bloquant: arrêt, sinon: warning.
+Avoir un abc2ly qui marche pour tous les .abc du tunebook.
 
 Prendre en main la méthode TDD.
 
 Améliorer ma maîtrise de Python. Code compatible Python 2.6 et Python 3.
+
+* Les grands principes
+abc2ly doit toujours générer du code lilypond valide.
+
+abc2ly doit générer du code qui correspond musicalement à ce que
+l'utilisateur a spécifié dans le .abc.
+
+Mais abc2ly n'est pas un vérificateur de la bonne syntaxe des fichiers
+.abc (sorte de lint pour du abc): une certaine tolérance aux erreurs de
+saisie du .abc est possible, à condition que le code lilypond généré
+soit valide.
+
+Idée: quand un problème est détecté:
+- si il génèrerait du code lilypond qui ne compile pas: erreur
+- si il génère du code qui compile (même si il implique que la sortie
+  papier n'est sans doute pas ce que voulait l'utilisateur): warning
+Un mode strict permettrait de traiter les warning comme des erreurs.
+
+C'est une idée. En ce qui me concerne: je veux que si le code généré
+n'est peut être pas ce que je voulais en écrivant le .abc, je veux une
+erreur.
 
 * Stratégie
 Ré-écrire abc2ly en Python en utilisant la méthode TDD et en se
@@ -396,6 +418,12 @@ Ecriture des accords "à la abc2ly" en utilisant la syntaxe "simple
 quoted text indications": un accord de guitare est (simplement)
 représenté avec e.g. ^"Am" après la note où se produit le changement
 d'accord. => utilisation
+
+Une note liée (tie) permet d'augmenter la durée d'une note de même
+hauteur dans une même mesure ou entre deux mesures. Notation: la
+première note est suivie par un tilde "~". Si la note finale n'est pas à
+la même hauteur, lilypond 2.13.7 n'émet pas d'avertissement ou d'erreur
+mais n'affiche pas de liaison entre les deux notes.
 
 * Equivalence ABC <=> lilypond
 ** Hauteur des notes

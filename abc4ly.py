@@ -6,6 +6,7 @@ import string
 import sys
 import math
 import optparse
+import copy
 
 
 # ------------------------------------------------------------------------
@@ -47,8 +48,8 @@ class TuneContext():
         self.default_note_duration = 0
 
         self.indent_level = 0
-
         self.alternative = 0
+        self.prev_note = None
 
         self.output = []
 
@@ -102,7 +103,20 @@ class Note():
         self.octaver = ""
         self.duration = ""
         self.dotted = ""
+        self.tied = ""
         self.chord = ""
+
+    def same_pitch(self, note):
+        return (self.pitch == note.pitch
+                and self.octaver == note.octaver)
+
+        # Remark: self.accidental only stores explicit accidentals set
+        # with _, ^ and = in the abc file, and not diatonic
+        # accidentals. same_pitch() is intended for being called when
+        # explicit and implicit accidentals have been included into
+        # self.pitch. So self.accidental is not used in the comparison
+        # of note pitches.
+
 
 # ------------------------------------------------------------------------
 #     Music computing stuff
@@ -393,8 +407,11 @@ def translate_notes(tc, abc_line):
             else:
                 first_note = False
             ly_line += note.pitch + note.octaver + str(note.duration) + note.dotted
+            if note.tied:
+                ly_line += " ~"
             if note.chord != "":
                 ly_line += ' ^"{0}"'.format(note.chord)
+            tc.prev_note = copy.copy(note)
             note.clear()
             state = start_state
 
@@ -469,7 +486,7 @@ def translate_notes(tc, abc_line):
                 note.duration = tc.default_note_duration
                 al = al[1:]
                 e.colno += 1
-                state = "duration"
+                state = "check_ties"
             else:
                 state = "pitch"
         
@@ -511,6 +528,14 @@ def translate_notes(tc, abc_line):
             if octaver == "'" or octaver == ",":
                 al = al[1:]
                 e.colno += 1
+            state = "check_ties"
+
+        elif state == "check_ties":
+            # Check that two tied notes have the same pitch
+            if tc.prev_note != None and tc.prev_note.tied == True:
+                if not note.same_pitch(tc.prev_note):
+                    e.what = "The tied notes do not have the same pitch"
+                    raise e
             state = "duration"
 
         elif state == "duration":
@@ -542,10 +567,14 @@ def translate_notes(tc, abc_line):
                 al = al[len(lm):]
                 e.colno += len(lm)
             # Else use default note length
-            state = "done"
+            state = "tie"
 
-            # d+0,5d=2n
-            # 1.5d = 2n
+        elif state == "tie":
+            if al[0] == '-':
+                al = al[1:]
+                e.colno += 1
+                note.tied = True
+            state = "done"
 
     if ly_line != "":
         tc.output.append("    " * tc.indent_level + ly_line)

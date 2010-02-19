@@ -535,6 +535,33 @@ class TestTranslateNotesTies(TestTranslateNotes):
                            "d'2 e'2 |"]
         self.translate_and_test(abc_notes, expected_output)
 
+    def test_error_different_pitches(self):
+        read_info_line(self.tc, "M:4/4")
+        abc_notes = "C4- D2 E2"
+        self.translate_and_check_exception(abc_notes,
+                                           """In "", line 1, column 5:
+C4- D2 E2
+     ^
+     The tied notes do not have the same pitch""")
+
+    def test_error_different_pitches_2(self):
+        read_info_line(self.tc, "M:4/4")
+        abc_notes = "C4- C,2 E2"
+        self.translate_and_check_exception(abc_notes,
+                                           """In "", line 1, column 6:
+C4- C,2 E2
+      ^
+      The tied notes do not have the same pitch""")
+
+    def test_error_different_pitches_3(self):
+        read_info_line(self.tc, "M:4/4")
+        abc_notes = "C4- ^C2 E2"
+        self.translate_and_check_exception(abc_notes,
+                                           """In "", line 1, column 6:
+C4- ^C2 E2
+      ^
+      The tied notes do not have the same pitch""")
+
 
 class TestTranslateNotesGuitarChords(TestTranslateNotes):
 
