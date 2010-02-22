@@ -20,7 +20,7 @@ Implémentations des fonctionalités manquantes pour le tunebook:
 	+Répétitions echaînées "::"_+
 	+Ties+
 	+triolets simples (3 notes de même durée)+
-	Durée des notes "3/2" (the_headless_turkey) (3/11)
+	+Croche pointée avec L=1/8: "C3/"_+
 	Durée des notes ">"
 	Alternatives:
 		+[2 (kitty_lie_over)+

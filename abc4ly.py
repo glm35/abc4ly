@@ -560,30 +560,38 @@ def translate_notes(tc, abc_line):
             state = "duration"
 
         elif state == "duration":
+            state = "duration_multiplier"
+
+        elif state == "duration_multiplier":
             lm = get_leading_digits(al)
-            if lm != "":
-                if lm[0] == '/':
-                    if len(lm) == 1:
-                        note.duration *= 2
-                    else:
-                        divisor = int(lm[1:])
-                        exponent = math.log(divisor, 2)
-                        if exponent != 0 and int(exponent) == exponent:
-                            # divisor is a power of 2
-                            note.duration *= divisor
-                        else:
-                            e.colno += 1 # pass the slash
-                            e.what = "Invalid note duration divisor"
-                            raise e
+            if lm != "" and lm[0] != '/':
+                abc_duration = int(lm)
+                if abc_duration % 1.5 == 0:
+                    note.duration /= int(abc_duration / 1.5)
+                    note.dotted = "."
+                elif abc_duration % 2 == 0:
+                    note.duration /= abc_duration
                 else:
-                    abc_duration = int(lm)
-                    if abc_duration % 1.5 == 0:
-                        note.duration /= int(abc_duration / 1.5)
-                        note.dotted = "."
-                    elif abc_duration % 2 == 0:
-                        note.duration /= abc_duration
+                    e.what = "Unhandled duration multiplier"
+                    raise e
+                al = al[len(lm):]
+                e.colno += len(lm)
+            state = "duration_divider"
+
+        elif state == "duration_divider":
+            lm = get_leading_digits(al)
+            if lm != "" and lm[0] == '/':
+                if len(lm) == 1:
+                    note.duration *= 2
+                else:
+                    divisor = int(lm[1:])
+                    exponent = math.log(divisor, 2)
+                    if exponent != 0 and int(exponent) == exponent:
+                        # divisor is a power of 2
+                        note.duration *= divisor
                     else:
-                        e.what = "Unhandled duration multiplier"
+                        e.colno += 1 # pass the slash
+                        e.what = "Invalid note duration divisor"
                         raise e
                 al = al[len(lm):]
                 e.colno += len(lm)
