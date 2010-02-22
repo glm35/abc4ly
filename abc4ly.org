@@ -1,5 +1,15 @@
 * Feuille de route
 ** P0
+Triolets: 3 notes dans la durée de 2 notes
+	+3 notes de même durée+
+	+Idem avec un silence parmi les 3 notes+
+	2 notes (dont une deux fois plus longue)
+	4 notes (dont deux deux fois plus courtes)
+	Généralisation: somme des durées = durée de 2 notes
+
+	Changement d'accord sur la première note d'un triolet marqué
+        après le symbole "début de triolet"
+
 Implémentations des fonctionalités manquantes pour le tunebook:
 	+Accords entre guillemets avant une note+
 	+? dans translate_key_signature (cailleach_reel, garrevaques)+
@@ -9,7 +19,7 @@ Implémentations des fonctionalités manquantes pour le tunebook:
 		+|| thin-thin double bar line => \bar "||"_+
 	+Répétitions echaînées "::"_+
 	+Ties+
-	triolets (the_boys_of_malin) (4/11)
+	+triolets simples (3 notes de même durée)+
 	Durée des notes "3/2" (the_headless_turkey) (3/11)
 	Durée des notes ">"
 	Alternatives:

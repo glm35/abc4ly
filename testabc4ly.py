@@ -603,6 +603,12 @@ class TestTranslateNotesTuplets(TestTranslateNotes):
         expected_output = ["\times 2/3 { c'8 d'8 e'8 } f'4 g'4 a'4"]
         self.translate_and_test(abc_notes, expected_output)
 
+    def test_triplets_with_a_rest(self):
+        read_info_line(self.tc, "M:4/4")
+        abc_notes = "(3 CzE F2 G2 A2"
+        expected_output = ["\times 2/3 { c'8 r8 e'8 } f'4 g'4 a'4"]
+        self.translate_and_test(abc_notes, expected_output)
+
 
 class TestTranslateNotesSyntaxError(TestTranslateNotes):
 

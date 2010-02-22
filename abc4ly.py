@@ -50,6 +50,8 @@ class TuneContext():
         self.indent_level = 0
         self.alternative = 0
         self.prev_note = None
+        self.in_triplet = False
+        self.triplet_count = 0
 
         self.output = []
 
@@ -411,6 +413,9 @@ def translate_notes(tc, abc_line):
                 ly_line += " ~"
             if note.chord != "":
                 ly_line += ' ^"{0}"'.format(note.chord)
+            if tc.in_triplet and tc.triplet_count == 3:
+                ly_line += " }"
+                tc.in_triplet = False
             tc.prev_note = copy.copy(note)
             note.clear()
             state = start_state
@@ -465,6 +470,18 @@ def translate_notes(tc, abc_line):
                 else:
                     e.what = "Missing the guitar chord closing inverted commas"
                     raise e
+            state = "triplet"
+
+        elif state == "triplet":
+            # My Own Interpretation: a chord change can occur during a
+            # triplet. But a chord change on the first note of a triplet
+            # should be written before the triplet marker.
+            if len(al) >= 2 and al[0:2] == "(3":
+                al = al[2:]
+                e.colno += 2
+                ly_line += "\times 2/3 { "
+                tc.in_triplet = True
+                tc.triplet_count = 0
             state = "accidental"
 
         elif state == "accidental":
@@ -486,6 +503,8 @@ def translate_notes(tc, abc_line):
                 note.duration = tc.default_note_duration
                 al = al[1:]
                 e.colno += 1
+                if tc.in_triplet:
+                    tc.triplet_count += 1
                 state = "check_ties"
             else:
                 state = "pitch"
@@ -508,6 +527,8 @@ def translate_notes(tc, abc_line):
                 note.octaver = "''"
             else:
                 note.octaver = "'"
+            if tc.in_triplet:
+                tc.triplet_count += 1
             state = "octaver"
 
         elif state == "octaver":
