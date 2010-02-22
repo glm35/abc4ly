@@ -47,33 +47,57 @@ class TuneContext():
 
         self.default_note_duration = 0
 
+        self.state = "start"
         self.indent_level = 0
         self.alternative = 0
+        self.first_note = True # 1st not in the bar
+        self.note = Note()
         self.prev_note = None
         self.in_triplet = False
         self.triplet_count = 0
         self.in_broken_rythm = False
 
+        self.ly_line = ""
         self.output = []
 
-    def dump_bar(self, notes, abc_bar):
-        if abc_bar == "||":
-            bar_glyph = r'\bar "||"'
-        elif abc_bar == "|]":
-            bar_glyph = r'\bar "|."'
+    def dump_note(self):
+        if not self.first_note:
+            self.ly_line += " "
         else:
-            bar_glyph = "|"
-        self.output.append("    " * self.indent_level + notes + " " + bar_glyph)
+            self.first_note = False
+        if self.in_triplet and self.triplet_count == 1:
+            self.ly_line += "\times 2/3 { "
+        self.ly_line += self.note.lilyfy()
+        if self.in_triplet and self.triplet_count == 3:
+            self.ly_line += " }"
+            self.in_triplet = False
+        self.prev_note = copy.copy(self.note)
+        self.note.clear()
 
-    def dump_note_block(self, notes):
-        self.output.append("    " * self.indent_level + "{ " + notes + " }")
+    def flush_line(self, abc_bar="", block=False):
+        line_to_flush = "    " * self.indent_level
+        if block:
+            line_to_flush += "{ "
+        line_to_flush += self.ly_line
+        if block:
+            line_to_flush += " }"
+        if abc_bar != "":
+            if abc_bar == "||":
+                bar_glyph = r'\bar "||"'
+            elif abc_bar == "|]":
+                bar_glyph = r'\bar "|."'
+            else:
+                bar_glyph = "|"
+            line_to_flush += " " + bar_glyph
+
+        self.output.append(line_to_flush)
 
     def open_repeat(self):
         self.output.append("\repeat volta 2 {")
         self.indent_level += 1
 
-    def close_repeat(self, ly_line):
-        self.output.append("    " * self.indent_level + ly_line)
+    def close_repeat(self):
+        self.flush_line()
         self.output.append("}")
         self.indent_level -= 1
 
@@ -119,6 +143,15 @@ class Note():
         # explicit and implicit accidentals have been included into
         # self.pitch. So self.accidental is not used in the comparison
         # of note pitches.
+
+    def lilyfy(self):
+        ly_note = self.pitch + self.octaver
+        ly_note += str(self.duration) + self.dotted
+        if self.tied:
+            ly_note += " ~"
+        if self.chord != "":
+            ly_note += ' ^"{0}"'.format(self.chord)
+        return ly_note
 
 
 # ------------------------------------------------------------------------
@@ -174,7 +207,7 @@ def read_line(tc, line):
         # Silently ignore comments (lines starting with '%') and empty lines
         pass
     else:
-        translate_notes(tc, line)
+        translate_notes(tc, line, last_line=False)
     tc.lineno += 1
 
 # ------------------------------------------------------------------------
@@ -380,7 +413,7 @@ def get_bar(abc_snippet):
 
 # Given a line of ABC music, translate the line to lilypond
 
-def translate_notes(tc, abc_line):
+def translate_notes(tc, abc_line, last_line=True):
     # Prepare an exception (just in case)
     e = AbcSyntaxError()
     e.filename = tc.filename
@@ -390,38 +423,24 @@ def translate_notes(tc, abc_line):
 
     pitches = "abcdefgABCDEFG"
 
-    al = abc_line
-    start_state = "bar"
-    state = start_state
-    ly_line = ""
-    first_note = True
-    note = Note()
+    al = abc_line.rstrip()
 
-    while len(al) != 0 or state != start_state:
+    while len(al) != 0:
+
+        #print("=== abc_line: '{0}'".format(e.abc_line))
+        #print("= al: '{0}'".format(al))
+        #print("= state: '{0}'".format(tc.state))
 
         len_before = len(al)
         al = al.lstrip()
         e.colno += len_before - len(al)
 
-        if len(al) == 0 or state == "done":
-            # Dump note
-            if not first_note:
-                ly_line += " "
-            else:
-                first_note = False
-            ly_line += note.pitch + note.octaver + str(note.duration) + note.dotted
-            if note.tied:
-                ly_line += " ~"
-            if note.chord != "":
-                ly_line += ' ^"{0}"'.format(note.chord)
-            if tc.in_triplet and tc.triplet_count == 3:
-                ly_line += " }"
-                tc.in_triplet = False
-            tc.prev_note = copy.copy(note)
-            note.clear()
-            state = start_state
+        # Here, we always have at least one non-whitespace character
 
-        elif state == "bar":
+        if tc.state == "start":
+            tc.state = "bar"
+
+        elif tc.state == "bar":
             bar = get_bar(al)
             al = al[len(bar):]
             e.colno += len(bar)
@@ -430,39 +449,39 @@ def translate_notes(tc, abc_line):
                 tc.open_repeat()
             elif bar == ":|":
                 if tc.alternative == 0:
-                    tc.close_repeat(ly_line)
+                    tc.close_repeat()
                 elif tc.alternative == 1:
-                    tc.dump_note_block(ly_line)
+                    tc.flush_line(block=True)
             elif bar == "::":
-                tc.close_repeat(ly_line)
+                tc.close_repeat()
                 tc.open_repeat()
             elif bar == "|1":
-                tc.close_repeat(ly_line)
+                tc.close_repeat()
                 tc.begin_alternative_1()
             elif bar == ":|2":
-                tc.dump_note_block(ly_line)
+                tc.flush_line(block=True)
                 tc.begin_alternative_2()
             elif bar == "[2":
                 tc.begin_alternative_2()
             elif bar == "|" or bar == "||" or bar == "|]":
                 if tc.alternative == 2:
-                    tc.dump_note_block(ly_line)
+                    tc.flush_line(block=True)
                     tc.end_alternative()
                 else:
-                    tc.dump_bar(ly_line, bar)
+                    tc.flush_line(abc_bar=bar)
 
             if bar != "":
-                ly_line = ""
-                first_note = True
+                tc.ly_line = ""
+                tc.first_note = True
             else:
-                state = "chord"
+                tc.state = "chord"
 
-        elif state == "chord":
+        elif tc.state == "chord":
             if al[0] == '"':
                 al = al[1:]
                 e.colno += 1
                 while len(al) >= 1 and al[0] != '"':
-                    note.chord += al[0]
+                    tc.note.chord += al[0]
                     al = al[1:]
                     e.colno += 1
                 if len(al) >= 1 and al[0] == '"':
@@ -471,21 +490,20 @@ def translate_notes(tc, abc_line):
                 else:
                     e.what = "Missing the guitar chord closing inverted commas"
                     raise e
-            state = "triplet"
+            tc.state = "triplet"
 
-        elif state == "triplet":
+        elif tc.state == "triplet":
             # My Own Interpretation: a chord change can occur during a
             # triplet. But a chord change on the first note of a triplet
             # should be written before the triplet marker.
             if len(al) >= 2 and al[0:2] == "(3":
                 al = al[2:]
                 e.colno += 2
-                ly_line += "\times 2/3 { "
                 tc.in_triplet = True
                 tc.triplet_count = 0
-            state = "accidental"
+            tc.state = "accidental"
 
-        elif state == "accidental":
+        elif tc.state == "accidental":
             acc_dico = {"^":"is", "^^":"isis", "_":"es", "__":"eses", "=":"nat"}
             abc_acc = ""
             if len(al) >= 2 and al[0:2] in acc_dico.keys():
@@ -493,114 +511,114 @@ def translate_notes(tc, abc_line):
             elif al[0] in acc_dico.keys():
                 abc_acc = al[0]
             if abc_acc != "":
-                note.accidental = acc_dico[abc_acc]
+                tc.note.accidental = acc_dico[abc_acc]
                 al = al[len(abc_acc):]
                 e.colno += len(abc_acc)
-            state = "rest"
+            tc.state = "rest"
 
-        elif state == "rest":
+        elif tc.state == "rest":
             if al[0] == "z":
-                note.pitch = "r"
-                note.duration = tc.default_note_duration
+                tc.note.pitch = "r"
+                tc.note.duration = tc.default_note_duration
                 al = al[1:]
                 e.colno += 1
                 if tc.in_triplet:
                     tc.triplet_count += 1
-                state = "check_ties"
+                tc.state = "check_ties"
             else:
-                state = "pitch"
+                tc.state = "pitch"
         
-        elif state == "pitch":
+        elif tc.state == "pitch":
             abc_pitch = al[0]
             if not abc_pitch in pitches:
                 e.what = "'{0}' is not a pitch".format(abc_pitch)
                 raise e
             al = al[1:]
             e.colno += 1
-            if note.accidental == "":
-                note.pitch = tc.pitch_dico[abc_pitch.lower()]
+            if tc.note.accidental == "":
+                tc.note.pitch = tc.pitch_dico[abc_pitch.lower()]
             else:
-                note.pitch = abc_pitch.lower()
-                if note.accidental != "nat":
-                    note.pitch += note.accidental
-            note.duration = tc.default_note_duration
+                tc.note.pitch = abc_pitch.lower()
+                if tc.note.accidental != "nat":
+                    tc.note.pitch += tc.note.accidental
+            tc.note.duration = tc.default_note_duration
             if abc_pitch.lower() == abc_pitch:
-                note.octaver = "''"
+                tc.note.octaver = "''"
             else:
-                note.octaver = "'"
+                tc.note.octaver = "'"
             if tc.in_triplet:
                 tc.triplet_count += 1
-            state = "octaver"
+            tc.state = "octaver"
 
-        elif state == "octaver":
+        elif tc.state == "octaver":
             # Look for "," or "'"
             octaver = al[0]
             if octaver == ",":
-                if note.octaver == "''":
+                if tc.note.octaver == "''":
                     # "c," etc is an invalid ABC construct
                     e.what = "'{0}{1}' is not syntactically correct".format(abc_pitch, octaver)
                     raise e
-                note.octaver = ""
+                tc.note.octaver = ""
             elif octaver == "'":
-                if note.octaver == "'":
+                if tc.note.octaver == "'":
                     # "C'" etc is an invalid ABC construct
                     e.what = '"{0}{1}" is not syntactically correct'.format(abc_pitch, octaver)
                     raise e
-                note.octaver += "'"
+                tc.note.octaver += "'"
             if octaver == "'" or octaver == ",":
                 al = al[1:]
                 e.colno += 1
-            state = "check_ties"
+            tc.state = "check_ties"
 
-        elif state == "check_ties":
+        elif tc.state == "check_ties":
             # Check that two tied notes have the same pitch
             if tc.prev_note != None and tc.prev_note.tied == True:
-                if not note.same_pitch(tc.prev_note):
+                if not tc.note.same_pitch(tc.prev_note):
                     e.what = "The tied notes do not have the same pitch"
                     raise e
-            state = "duration"
+            tc.state = "duration"
 
-        elif state == "duration":
+        elif tc.state == "duration":
             if al[0] == '>':
-                note.dotted = "."
+                tc.note.dotted = "."
                 tc.in_broken_rythm = True
                 al = al[1:]
                 e.colno += 1
-                state = "tie"
+                tc.state = "tie"
             elif tc.in_broken_rythm:
-                note.duration *= 2
+                tc.note.duration *= 2
                 tc.in_broken_rythm = False
-                state = "tie"
+                tc.state = "tie"
             else:
-                state = "duration_multiplier"
+                tc.state = "duration_multiplier"
 
-        elif state == "duration_multiplier":
+        elif tc.state == "duration_multiplier":
             lm = get_leading_digits(al)
             if lm != "" and lm[0] != '/':
                 abc_duration = int(lm)
                 if abc_duration % 1.5 == 0:
-                    note.duration /= int(abc_duration / 1.5)
-                    note.dotted = "."
+                    tc.note.duration /= int(abc_duration / 1.5)
+                    tc.note.dotted = "."
                 elif abc_duration % 2 == 0:
-                    note.duration /= abc_duration
+                    tc.note.duration /= abc_duration
                 else:
                     e.what = "Unhandled duration multiplier"
                     raise e
                 al = al[len(lm):]
                 e.colno += len(lm)
-            state = "duration_divider"
+            tc.state = "duration_divider"
 
-        elif state == "duration_divider":
+        elif tc.state == "duration_divider":
             lm = get_leading_digits(al)
             if lm != "" and lm[0] == '/':
                 if len(lm) == 1:
-                    note.duration *= 2
+                    tc.note.duration *= 2
                 else:
                     divisor = int(lm[1:])
                     exponent = math.log(divisor, 2)
                     if exponent != 0 and int(exponent) == exponent:
                         # divisor is a power of 2
-                        note.duration *= divisor
+                        tc.note.duration *= divisor
                     else:
                         e.colno += 1 # pass the slash
                         e.what = "Invalid note duration divisor"
@@ -608,17 +626,23 @@ def translate_notes(tc, abc_line):
                 al = al[len(lm):]
                 e.colno += len(lm)
             # Else use default note length
-            state = "tie"
+            tc.state = "tie"
 
-        elif state == "tie":
+        elif tc.state == "tie":
             if al[0] == '-':
                 al = al[1:]
                 e.colno += 1
-                note.tied = True
-            state = "done"
+                tc.note.tied = True
+            tc.state = "done"
 
-    if ly_line != "":
-        tc.output.append("    " * tc.indent_level + ly_line)
+        elif tc.state == "done":
+            tc.dump_note()
+            tc.state = "start"
+
+    if last_line:
+        tc.dump_note()
+        if tc.ly_line:
+            tc.flush_line()
 
 
 # ------------------------------------------------------------------------
@@ -641,6 +665,7 @@ def convert(abc_filename, ly_filename):
 
     for line in abc_file.readlines():
         read_line(tc, line)
+    translate_notes(tc, "", last_line = True) # flush the ly_line remnant
 
     if ly_filename == None or ly_filename == '':
         ly_file = sys.stdout

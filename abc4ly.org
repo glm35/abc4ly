@@ -1,14 +1,10 @@
 * Feuille de route
 ** P0
-Gérer une mesure à cheval sur 2 lignes ABC 
-	barre de mesure à la ligne (e.g. brian_o_lynn)
-	continuation de la mesure à la ligne
-	dernière barre de mesure manquante
-
-	(idée: translate_notes() stocke dans tc le début de la ligne
-        convertie (ly_line) et tout le contexte (note, ...). Et il faut
-	ajouter une notion de translate_notes_finalize() pour le cas où
-        la dernière barre de mesure est manquante.
+Alternatives
+	enchaînement: repeat w/alternatives + repeat
+	alternative de plus de n mesure
+	alternative au milieu d'une mesure
+	alternative pas fermée (manque une barre simple) en fin de morceau
 
 Corriger les .ly du tunebook qui ne compilent pas:
 	kalyana: pagaille dans les alternatives à cause d'une barre à la
@@ -264,6 +260,11 @@ Test suite:
 
 	Enrichir le Makefile pour que quand les conversions abc4ly
         fonctionnent, les .ly soient compilés avec lilypond.
+
+Gérer une mesure à cheval sur 2 lignes ABC
+	barre de mesure à la ligne (e.g. brian_o_lynn)
+	continuation de la mesure à la ligne
+	dernière barre de mesure manquante
 
 ** Wontdo
 

@@ -275,8 +275,15 @@ class TestTranslateNotes(unittest.TestCase):
                          #"\n".join(self.tc.output))
 
     def translate_and_test2(self, abc_lines, expected_output):
+        n = len(abc_lines)
+        i = 0
         for abc_notes in abc_lines:
-            translate_notes(self.tc, abc_notes)
+            i += 1
+            if i == n:
+                last_line = True
+            else:
+                last_line = False
+            translate_notes(self.tc, abc_notes, last_line)
         self.assertEqual(expected_output, self.tc.output)
                          #"\n".join(self.tc.output))
 
@@ -333,6 +340,30 @@ class TestTranslateNotesStructure(TestTranslateNotes):
         expected_output = []
         self.translate_and_test(abc_notes, expected_output)
 
+    def test_line_break(self):
+        abc_notes = ["C2 D2", "E2 F2 |"]
+        expected_output = ["c'4 d'4 e'4 f'4 |"]
+        self.translate_and_test2(abc_notes, expected_output)
+
+    def test_line_break2(self):
+        abc_notes = ["C2 D2 E2 F2", " |"]
+        expected_output = ["c'4 d'4 e'4 f'4 |"]
+        self.translate_and_test2(abc_notes, expected_output)
+
+    def test_line_break3(self):
+        abc_notes = ["C2 D2 E2 F2", " | G2 A2 B2 c2"]
+        expected_output = ["c'4 d'4 e'4 f'4 |"]
+        expected_output.append("g'4 a'4 b'4 c''4")
+        self.translate_and_test2(abc_notes, expected_output)
+
+    def test_line_break4(self):
+        abc_notes = ["|: C2 D2 E2 F2 :|", "G2 A2 B2 c2 |"]
+        expected_output = ["\repeat volta 2 {",
+                           "    c'4 d'4 e'4 f'4",
+                           "}",
+                           "g'4 a'4 b'4 c''4 |"]
+        self.translate_and_test2(abc_notes, expected_output)
+
     def test_one_bar_repeat(self):
         abc_notes =  "|: cdef gabc' :|"
         expected_output = ["\repeat volta 2 {",
@@ -355,10 +386,18 @@ class TestTranslateNotesStructure(TestTranslateNotes):
                            "}",
                            "\repeat volta 2 {",
                            "    c''8 b'8 a'8 g'8 f'8 e'8 d'8 c'8",
-                           "}"
-                           ]
+                           "}"]
         self.translate_and_test(abc_notes, expected_output)
 
+    def test_chained_repeats2(self):
+        abc_notes =  "|: CDEF GABc :||: cBAG FEDC :|"
+        expected_output = ["\repeat volta 2 {",
+                           "    c'8 d'8 e'8 f'8 g'8 a'8 b'8 c''8",
+                           "}",
+                           "\repeat volta 2 {",
+                           "    c''8 b'8 a'8 g'8 f'8 e'8 d'8 c'8",
+                           "}"]
+        self.translate_and_test(abc_notes, expected_output)
     def test_alternative(self):
         abc_notes = "|: C2 D2 E2 F2 |1 G2 A2 B2 c2 :|2 G2 E2 D2 C2 |"
         expected_output = ["\repeat volta 2 {",
@@ -381,6 +420,21 @@ class TestTranslateNotesStructure(TestTranslateNotes):
                            "}",
                            "c'4 d'4 e'4 f'4 |"]
         self.translate_and_test(abc_notes, expected_output)
+
+    def test_chained_repeats_with_alternative(self):
+        abc_notes = ["|: C2 D2 E2 F2 |1 G2 A2 B2 c2 :|2 G2 E2 D2 C2",
+                     "|: C2 D2 E2 F2 :|"]
+        expected_output = ["\repeat volta 2 {",
+                           "    c'4 d'4 e'4 f'4",
+                           "}",
+                           r"\alternative {",
+                           "    { g'4 a'4 b'4 c''4 }",
+                           "    { g'4 e'4 d'4 c'4 }",
+                           "}",
+                           "\repeat volta 2 {",
+                           "    c'4 d'4 e'4 f'4",
+                           "}"]
+        self.translate_and_test2(abc_notes, expected_output)
 
     def test_alternatives_with_line_break(self):
         abc_notes = ["|: C2 D2 E2 F2 |1 G2 A2 B2 c2 :|2 G2 E2 D2 C2",
@@ -672,7 +726,7 @@ cdef XYZK
         'X' is not a pitch""")
 
 
-class TestOutput(unittest.TestCase):
+class TestOutputFramework(unittest.TestCase):
 
     def check_output(self, basename):
         test = "regression/" + basename + ".abc"
@@ -685,6 +739,9 @@ class TestOutput(unittest.TestCase):
         convert(test, out)
         self.assert_(filecmp.cmp(ref, out),
                      "Files " + ref + " and " + out + " differ")
+
+
+class TestOutput(TestOutputFramework):
 
     def test_c_major(self):
         # The C major scale
@@ -751,5 +808,5 @@ class TestCommandLineOptions(unittest.TestCase):
 if __name__ == '__main__':
     unittest.main()
 
-    #suite = unittest.TestLoader().loadTestsFromTestCase(TestTimeSignature)
+    #suite = unittest.TestLoader().loadTestsFromTestCase(TestCurrent)
     #unittest.TextTestRunner(verbosity=2).run(suite)
