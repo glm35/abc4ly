@@ -1,15 +1,5 @@
 * Feuille de route
 ** P0
-Triolets: 3 notes dans la durée de 2 notes
-	+3 notes de même durée+
-	+Idem avec un silence parmi les 3 notes+
-	2 notes (dont une deux fois plus longue)
-	4 notes (dont deux deux fois plus courtes)
-	Généralisation: somme des durées = durée de 2 notes
-
-	Changement d'accord sur la première note d'un triolet marqué
-        après le symbole "début de triolet"
-
 Implémentations des fonctionalités manquantes pour le tunebook:
 	+Accords entre guillemets avant une note+
 	+? dans translate_key_signature (cailleach_reel, garrevaques)+
@@ -25,6 +15,23 @@ Implémentations des fonctionalités manquantes pour le tunebook:
 	Alternatives:
 		+[2 (kitty_lie_over)+
 		bizarres (the_twelve_pins)
+
+Rythmes brisés:
+	+>: dotted / half (e.g. "a>b")+
+	Erreur: rythme brisé incomplet (e.g. "a>b>c")
+	<: half / dotted
+	>> et <<
+	>>> et <<<
+
+Triolets: 3 notes dans la durée de 2 notes
+	+3 notes de même durée+
+	+Idem avec un silence parmi les 3 notes+
+	2 notes (dont une deux fois plus longue)
+	4 notes (dont deux deux fois plus courtes)
+	Généralisation: somme des durées = durée de 2 notes
+
+	Changement d'accord sur la première note d'un triolet marqué
+        après le symbole "début de triolet"
 
 Alternatives:
 	+Deux alternatives, une mesure par alternative+

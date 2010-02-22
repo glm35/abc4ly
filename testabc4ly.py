@@ -499,6 +499,12 @@ class TestTranslateNotesLongerDuration(TestTranslateNotes):
         expected_output = ["c'8. d'16 e'8. f'16 g'4 a'4"]
         self.translate_and_test(abc_notes, expected_output)
 
+    def test_broken_rythm(self):
+        read_info_line(self.tc, "M:4/4")
+        abc_notes = "C>D E>F G2 A2"
+        expected_output = ["c'8. d'16 e'8. f'16 g'4 a'4"]
+        self.translate_and_test(abc_notes, expected_output)
+
     def test_unhandled_multiplier(self):
         abc_notes = "C5 D3"
         self.translate_and_check_exception(abc_notes, """In "", line 1, column 1:

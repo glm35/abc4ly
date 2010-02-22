@@ -52,6 +52,7 @@ class TuneContext():
         self.prev_note = None
         self.in_triplet = False
         self.triplet_count = 0
+        self.in_broken_rythm = False
 
         self.output = []
 
@@ -560,7 +561,18 @@ def translate_notes(tc, abc_line):
             state = "duration"
 
         elif state == "duration":
-            state = "duration_multiplier"
+            if al[0] == '>':
+                note.dotted = "."
+                tc.in_broken_rythm = True
+                al = al[1:]
+                e.colno += 1
+                state = "tie"
+            elif tc.in_broken_rythm:
+                note.duration *= 2
+                tc.in_broken_rythm = False
+                state = "tie"
+            else:
+                state = "duration_multiplier"
 
         elif state == "duration_multiplier":
             lm = get_leading_digits(al)
