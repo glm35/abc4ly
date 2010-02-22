@@ -1,20 +1,54 @@
 * Feuille de route
 ** P0
-Implémentations des fonctionalités manquantes pour le tunebook:
-	+Accords entre guillemets avant une note+
-	+? dans translate_key_signature (cailleach_reel, garrevaques)+
-	+Pause (z)+
-	+Barres doubles:+
-		+|] thin-thick double bar line => \bar "|."_+
-		+|| thin-thin double bar line => \bar "||"_+
-	+Répétitions echaînées "::"_+
-	+Ties+
-	+triolets simples (3 notes de même durée)+
-	+Croche pointée avec L=1/8: "C3/"_+
-	Durée des notes ">"
-	Alternatives:
-		+[2 (kitty_lie_over)+
-		bizarres (the_twelve_pins)
+Gérer une mesure à cheval sur 2 lignes ABC 
+	barre de mesure à la ligne (e.g. brian_o_lynn)
+	continuation de la mesure à la ligne
+	dernière barre de mesure manquante
+
+	(idée: translate_notes() stocke dans tc le début de la ligne
+        convertie (ly_line) et tout le contexte (note, ...). Et il faut
+	ajouter une notion de translate_notes_finalize() pour le cas où
+        la dernière barre de mesure est manquante.
+
+Corriger les .ly du tunebook qui ne compilent pas:
+	kalyana: pagaille dans les alternatives à cause d'une barre à la
+        ligne et d'un enchainement d'alternatives
+
+	bill_harte_s:
+		alternative de 2 mesures
+		barre de mesure à la ligne pour fermer une (autre) alternative 
+
+	cailleach_reel:
+		alternative de plus de 1 mesure qui démarre au milieu d'une mesure
+
+	father_o_flynn: pagaille dans les alternatives
+
+	kitty_lie_over: idem kalyana
+
+	les_ridess_de_lanvaudan: alternatives
+
+	reel_amix: alternatives
+
+	road_to_thales, the_boys_of_malin, 
+
+	the_tinkerman_s_wife
+		blocs de répétition pas identés
+		manque un espace avant les triolets
+		compile pas
+
+	toss_the_feathers: alternative pas fermée en fin de morceau
+        (manque une barre de mesure qui pourrait être ajoutée
+        automatiquement par abc4ly... ou pas) => erreur abc4ly ou
+        fermeture de l'alternative.
+
+	the_flight_of_the_butterfly: alternatives
+
+	the_goat_island_reel: alternatives
+
+	the_woods_of_the_old_limerick: alternatives
+
+Corriger les .ly du tunebook qui ont des avertissements:
+	air_moving (prb bar check, prb formation alternative)
 
 Rythmes brisés:
 	+>: dotted / half (e.g. "a>b")+
@@ -67,15 +101,6 @@ Traiter la durée des notes:
 	Gérer les marqueurs de rythme brisé (broken rythms markers: a>b, etc.)
 	Gérer les triolets de croche. Exemple en 4/4: "(3 abc"
 	Gérer les n-uplets (avec n variant de 2 à 9)
-
-Gérer une mesure à cheval sur 2 lignes ABC 
-	continuation de la mesure à la ligne
-	barre de mesure à la ligne (e.g. brian_o_lynn)
-
-	(idée 1: translate_notes() retourne le résidu analysé (ok si une
-        note n'est pas sur 2 lignes); idée 2:
-        fusion de toutes les lignes pour n'en faire qu'une seule avant
-        passage à translate_notes())
 
 Gérer les alterations liées à la tonalité du morceau
 	+mi mineur+

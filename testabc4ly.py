@@ -274,6 +274,12 @@ class TestTranslateNotes(unittest.TestCase):
         self.assertEqual(expected_output, self.tc.output)
                          #"\n".join(self.tc.output))
 
+    def translate_and_test2(self, abc_lines, expected_output):
+        for abc_notes in abc_lines:
+            translate_notes(self.tc, abc_notes)
+        self.assertEqual(expected_output, self.tc.output)
+                         #"\n".join(self.tc.output))
+
     def translate_and_check_exception(self, abc_notes, exception_text):
         try:
             translate_notes(self.tc, abc_notes)
@@ -353,7 +359,7 @@ class TestTranslateNotesStructure(TestTranslateNotes):
                            ]
         self.translate_and_test(abc_notes, expected_output)
 
-    def test_simple_alternative(self):
+    def test_alternative(self):
         abc_notes = "|: C2 D2 E2 F2 |1 G2 A2 B2 c2 :|2 G2 E2 D2 C2 |"
         expected_output = ["\repeat volta 2 {",
                            "    c'4 d'4 e'4 f'4",
@@ -364,7 +370,7 @@ class TestTranslateNotesStructure(TestTranslateNotes):
                            "}"]
         self.translate_and_test(abc_notes, expected_output)
 
-    def test_simple_alternative_continued(self):
+    def test_alternatives_with_continuation(self):
         abc_notes = "|: C2 D2 E2 F2 |1 G2 A2 B2 c2 :|2 G2 E2 D2 C2 | C2 D2 E2 F2 |"
         expected_output = ["\repeat volta 2 {",
                            "    c'4 d'4 e'4 f'4",
@@ -375,6 +381,19 @@ class TestTranslateNotesStructure(TestTranslateNotes):
                            "}",
                            "c'4 d'4 e'4 f'4 |"]
         self.translate_and_test(abc_notes, expected_output)
+
+    def test_alternatives_with_line_break(self):
+        abc_notes = ["|: C2 D2 E2 F2 |1 G2 A2 B2 c2 :|2 G2 E2 D2 C2",
+                     "|"]
+        expected_output = ["\repeat volta 2 {",
+                           "    c'4 d'4 e'4 f'4",
+                           "}",
+                           r"\alternative {",
+                           "    { g'4 a'4 b'4 c''4 }",
+                           "    { g'4 e'4 d'4 c'4 }",
+                           "}"]
+        self.translate_and_test2(abc_notes, expected_output)
+        # TODO: conserver le contexte lié aux répétitions entre deux lignes
 
     def test_alternatives_long_form(self):
         abc_notes = "|: C2 D2 E2 F2 |1 G2 A2 B2 c2 :| [2 G2 E2 D2 C2 |"
