@@ -99,7 +99,7 @@ class TuneContext():
         self.indent_level += 1
 
     def close_repeat(self):
-        self.flush_line()
+        #self.flush_line()
         self.output.append("}")
         self.indent_level -= 1
 
@@ -456,13 +456,17 @@ def translate_notes(tc, abc_line, last_line=True):
             close_repeat = False
             begin_alternative = False
             close_alternative_1 = False
-            end_alternative = False
+            begin_alternative_2 = False
+            maybe_end_alternative = False
 
             if bar == "|:":
-                end_alternative = True
+                maybe_end_alternative = True
                 open_repeat = True
+                if tc.alternative != 2: #FIXME
+                    flush_bar = False
             elif bar == ":|":
-                close_repeat = True
+                if tc.alternative == 0:
+                    close_repeat = True
                 close_alternative_1 = True
             elif bar == "::":
                 close_repeat = True
@@ -473,74 +477,62 @@ def translate_notes(tc, abc_line, last_line=True):
             elif bar == ":|2":
                 # TODO: error if not in alternative
                 close_alternative_1 = True
+                begin_alternative_2 = True
             elif bar == "[2":
                 flush_bar = False
-
-
-            if bar == "|:":
-                if tc.alternative == 2:
+                begin_alternative_2 = True
+            else:
+                maybe_end_alternative = True
+                
+            # flush bar
+            if flush_bar:
+                if tc.alternative == 0: # not in alternative
+                    if bar == "|" or bar == "||" or bar == "|]":
+                        tc.flush_line(abc_bar=bar)
+                    else:
+                        tc.flush_line()
+                elif tc.alternative == 1: # in a 1st alternative
+                    tc.alternative_bar_count += 1
+                    if close_alternative_1:
+                        if tc.alternative_bar_count == 1:
+                            tc.flush_line(block=True)
+                        else:
+                            tc.flush_line(block_end=True)
+                    else:
+                        if tc.alternative_bar_count == 1:
+                            tc.flush_line(block_begin=True, abc_bar=bar)
+                elif tc.alternative == 2: # in a 2nd alternative
                     if 1 == tc.alternative_bar_count:
                         tc.flush_line(block=True)
-                        tc.end_alternative()
                     else:
                         if tc.alternative_bar_count == tc.alternative_count_down:
                             tc.flush_line(block_begin=True, abc_bar=bar)
-                            tc.alternative_count_down -= 1
                         else:
                             tc.flush_line(block_end=True)
-                            tc.alternative_count_down -= 1
-                            tc.end_alternative()
+                    tc.alternative_count_down -= 1
 
-                    #tc.flush_line(block=True)
-                    #tc.end_alternative()
-                tc.open_repeat()
-            elif bar == ":|":
-                if tc.alternative == 0:
-                    tc.close_repeat()
-                elif tc.alternative == 1:
-                    tc.alternative_bar_count += 1
-                    tc.flush_line(block=True)
-            elif bar == "::":
+            # close repeat
+            if close_repeat:
                 tc.close_repeat()
-                tc.open_repeat()
-            elif bar == "|1":
-                tc.close_repeat()
+
+            # begin alternative
+            if begin_alternative:
                 tc.begin_alternative_1()
                 tc.alternative_bar_count = 0
                 tc.alternative_count_down = 0
-            elif bar == ":|2":
-                # TODO: error if not in alternative
-                tc.alternative_bar_count += 1
-                if tc.alternative_bar_count == 1:
-                    tc.flush_line(block=True)
-                else:
-                    tc.flush_line(block_end=True)
+
+            if begin_alternative_2:
                 tc.begin_alternative_2()
                 tc.alternative_count_down = tc.alternative_bar_count
-            elif bar == "[2":
-                tc.begin_alternative_2()
-                tc.alternative_count_down = tc.alternative_bar_count
-            elif bar == "|" or bar == "||" or bar == "|]":
-                if tc.alternative == 1:
-                    tc.alternative_bar_count += 1
-                    if tc.alternative_bar_count == 1:
-                        tc.flush_line(block_begin=True, abc_bar=bar)
-                    #else:
-                    #    tc.flush_line(in_block=True)
-                elif tc.alternative == 2:
-                    if 1 == tc.alternative_bar_count:
-                        tc.flush_line(block=True)
-                        tc.end_alternative()
-                    else:
-                        if tc.alternative_bar_count == tc.alternative_count_down:
-                            tc.flush_line(block_begin=True, abc_bar=bar)
-                            tc.alternative_count_down -= 1
-                        else:
-                            tc.flush_line(block_end=True)
-                            tc.alternative_count_down -= 1
-                            tc.end_alternative()
-                else:
-                    tc.flush_line(abc_bar=bar)
+
+            # end alternative
+            if maybe_end_alternative:
+                if tc.alternative == 2 and tc.alternative_count_down == 0:
+                    tc.end_alternative()
+
+            # open repeat
+            if open_repeat:
+                tc.open_repeat()
 
             tc.ly_line = ""
             tc.first_note = True

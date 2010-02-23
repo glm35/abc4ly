@@ -10,6 +10,7 @@ Alternatives
 	alternative pas fermée (manque une barre simple) en fin de morceau
 	seconde alternative plus courte que la première
 	":|2" && ! alternative == 1 => syntax error
+	1 mesure + répétition
 
 Corriger les .ly du tunebook qui ne compilent pas:
 	cailleach_reel
