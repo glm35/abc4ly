@@ -1,12 +1,30 @@
 * Feuille de route
 ** P0
 Alternatives
-	enchaînement: repeat w/alternatives + repeat
-	alternative de plus de n mesure
+	+enchaînement: repeat w/alternatives + repeat+
+	alternative de plus de n mesure:
+		+2 mesures+
+		3 mesures
+		avec forme ":| [2" sur 2 et 3 mesures
 	alternative au milieu d'une mesure
 	alternative pas fermée (manque une barre simple) en fin de morceau
+	seconde alternative plus courte que la première
+	":|2" && ! alternative == 1 => syntax error
 
 Corriger les .ly du tunebook qui ne compilent pas:
+	cailleach_reel
+	dublin_reel
+	kitty_lie_over
+	les_ridees_de_lanvaudan
+	reel_amix
+	road_to_thales
+	the_tinkerman_s_wife
+	toss_the_feathers
+	the_flight_of_the_butterfly
+	the_goat_island_reel
+	the_woods_of_the_old_limerick
+
+
 	kalyana: pagaille dans les alternatives à cause d'une barre à la
         ligne et d'un enchainement d'alternatives
 

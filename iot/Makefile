@@ -20,15 +20,15 @@ lyfiles2 := $(patsubst ${src2}/%.abc,${ly_outdir}/%.ly,$(wildcard ${src2}/*.abc)
 pdffiles := $(patsubst ${src}/%.abc,${ly_outdir}/%.pdf,$(wildcard ${src}/*.abc))
 pdffiles2 := $(patsubst ${src2}/%.abc,${ly_outdir}/%.pdf,$(wildcard ${src2}/*.abc))
 
-all : ${ly_outdir} ${lyfiles} ${lyfiles2} ${ABC2LY}
+all : ${ly_outdir} ${lyfiles} ${lyfiles2}
 
-pdf : ${ly_outdir} ${pdffiles} ${pdffiles2} ${ABC2LY}
+pdf : ${ly_outdir} ${pdffiles} ${pdffiles2}
 
 ${ly_outdir}/%.pdf : ${ly_outdir}/%.ly
 	@echo [LILYPOND] $<
 	${LILYPOND} -o ${ly_outdir}/$* $<
 
-${ly_outdir}/%.ly : ${src}/%.abc
+${ly_outdir}/%.ly : ${src}/%.abc ${ABC2LY}
 	@echo [ABC2LY] $<
 	${ABC2LY} -o $@ $<
 #	@${ABC2LY} -o $@ $< 2>${ly_outdir}/abc2ly.log

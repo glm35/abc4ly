@@ -74,12 +74,14 @@ class TuneContext():
         self.prev_note = copy.copy(self.note)
         self.note.clear()
 
-    def flush_line(self, abc_bar="", block=False):
+    def flush_line(self, abc_bar="", block=False, block_begin=False, block_end=False):
         line_to_flush = "    " * self.indent_level
-        if block:
+        if block or block_begin:
             line_to_flush += "{ "
+        if block_end:
+            line_to_flush += "  "
         line_to_flush += self.ly_line
-        if block:
+        if block or block_end:
             line_to_flush += " }"
         if abc_bar != "":
             if abc_bar == "||":
@@ -445,12 +447,58 @@ def translate_notes(tc, abc_line, last_line=True):
             al = al[len(bar):]
             e.colno += len(bar)
 
+            if bar == "":
+                tc.state = "chord"
+                continue
+
+            flush_bar = True
+            open_repeat = False
+            close_repeat = False
+            begin_alternative = False
+            close_alternative_1 = False
+            end_alternative = False
+
             if bar == "|:":
+                end_alternative = True
+                open_repeat = True
+            elif bar == ":|":
+                close_repeat = True
+                close_alternative_1 = True
+            elif bar == "::":
+                close_repeat = True
+                open_repeat = True
+            elif bar == "|1":
+                close_repeat = True
+                begin_alternative = True
+            elif bar == ":|2":
+                # TODO: error if not in alternative
+                close_alternative_1 = True
+            elif bar == "[2":
+                flush_bar = False
+
+
+            if bar == "|:":
+                if tc.alternative == 2:
+                    if 1 == tc.alternative_bar_count:
+                        tc.flush_line(block=True)
+                        tc.end_alternative()
+                    else:
+                        if tc.alternative_bar_count == tc.alternative_count_down:
+                            tc.flush_line(block_begin=True, abc_bar=bar)
+                            tc.alternative_count_down -= 1
+                        else:
+                            tc.flush_line(block_end=True)
+                            tc.alternative_count_down -= 1
+                            tc.end_alternative()
+
+                    #tc.flush_line(block=True)
+                    #tc.end_alternative()
                 tc.open_repeat()
             elif bar == ":|":
                 if tc.alternative == 0:
                     tc.close_repeat()
                 elif tc.alternative == 1:
+                    tc.alternative_bar_count += 1
                     tc.flush_line(block=True)
             elif bar == "::":
                 tc.close_repeat()
@@ -458,23 +506,44 @@ def translate_notes(tc, abc_line, last_line=True):
             elif bar == "|1":
                 tc.close_repeat()
                 tc.begin_alternative_1()
+                tc.alternative_bar_count = 0
+                tc.alternative_count_down = 0
             elif bar == ":|2":
-                tc.flush_line(block=True)
+                # TODO: error if not in alternative
+                tc.alternative_bar_count += 1
+                if tc.alternative_bar_count == 1:
+                    tc.flush_line(block=True)
+                else:
+                    tc.flush_line(block_end=True)
                 tc.begin_alternative_2()
+                tc.alternative_count_down = tc.alternative_bar_count
             elif bar == "[2":
                 tc.begin_alternative_2()
+                tc.alternative_count_down = tc.alternative_bar_count
             elif bar == "|" or bar == "||" or bar == "|]":
-                if tc.alternative == 2:
-                    tc.flush_line(block=True)
-                    tc.end_alternative()
+                if tc.alternative == 1:
+                    tc.alternative_bar_count += 1
+                    if tc.alternative_bar_count == 1:
+                        tc.flush_line(block_begin=True, abc_bar=bar)
+                    #else:
+                    #    tc.flush_line(in_block=True)
+                elif tc.alternative == 2:
+                    if 1 == tc.alternative_bar_count:
+                        tc.flush_line(block=True)
+                        tc.end_alternative()
+                    else:
+                        if tc.alternative_bar_count == tc.alternative_count_down:
+                            tc.flush_line(block_begin=True, abc_bar=bar)
+                            tc.alternative_count_down -= 1
+                        else:
+                            tc.flush_line(block_end=True)
+                            tc.alternative_count_down -= 1
+                            tc.end_alternative()
                 else:
                     tc.flush_line(abc_bar=bar)
 
-            if bar != "":
-                tc.ly_line = ""
-                tc.first_note = True
-            else:
-                tc.state = "chord"
+            tc.ly_line = ""
+            tc.first_note = True
 
         elif tc.state == "chord":
             if al[0] == '"':
