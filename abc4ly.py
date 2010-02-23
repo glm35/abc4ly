@@ -198,6 +198,9 @@ def read_info_line(tc, line):
     elif line[0] == 'M':
         tc.meter = normalize_time_signature(nice_field)
         tc.default_note_duration = get_default_note_duration(tc.meter)
+    elif line[0] == 'L':
+        tab = nice_field.split("/")
+        tc.default_note_duration = int(tab[1])
     elif line[0] == 'K':
         tc.key_signature = translate_key_signature(tc, line)
         tc.pitch_dico = create_pitch_dico(tc.key_signature)

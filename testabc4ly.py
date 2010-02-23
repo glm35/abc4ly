@@ -579,6 +579,12 @@ class TestTranslateNotesAccidentals(TestTranslateNotes):
         self.translate_and_test(abc_notes, expected_output)
 
 
+# ------------------------------------------------------------------------
+#
+#       Rythm (note duration) tests
+#
+# ------------------------------------------------------------------------
+
 # Test notes longer than the default note length
 
 class TestTranslateNotesLongerDuration(TestTranslateNotes):
@@ -658,6 +664,23 @@ C/3
   Invalid note duration divisor""")
 
 
+class TestDefaultNoteLengthInformationField(TestTranslateNotes):
+
+    def test_at_the_beginning(self):
+        read_info_line(self.tc, "M:4/4") # => L=1/8
+        read_info_line(self.tc, "L:1/4")
+        abc_notes = "C D E F"
+        expected_output = ["c'4 d'4 e'4 f'4"]
+        self.translate_and_test(abc_notes, expected_output)
+
+    def test_at_the_beginning_2(self):
+        read_info_line(self.tc, "M:4/4") # => L=1/8
+        read_info_line(self.tc, "L:1/16")
+        abc_notes = "C D E F"
+        expected_output = ["c'16 d'16 e'16 f'16"]
+        self.translate_and_test(abc_notes, expected_output)
+
+
 class TestTranslateNotesTies(TestTranslateNotes):
 
     def test_ties(self):
@@ -694,6 +717,12 @@ C4- ^C2 E2
       ^
       The tied notes do not have the same pitch""")
 
+
+# ------------------------------------------------------------------------
+#
+#       Other tests
+#
+# ------------------------------------------------------------------------
 
 class TestTranslateNotesGuitarChords(TestTranslateNotes):
 

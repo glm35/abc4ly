@@ -1,40 +1,48 @@
 * Feuille de route
 ** P0
-Corriger les .ly du tunebook qui ne compilent pas:
-	cailleach_reel (alternative en milieu de mesure)
-	+kitty_lie_over+
-	+les_ridees_de_lanvaudan+
-	+reel_amix+
-	+road_to_thales+
-	+the_tinkerman_s_wife+
-	+toss_the_feathers+
-	+the_flight_of_the_butterfly+
-	+the_goat_island_reel+
-	+the_woods_of_the_old_limerick+
+Corriger les .ly du tunebook qui ont des avertissements:
+	cailleach_reel (anacrouse)
+	+our_kate (bar check)+
+	the_recruiting_sergeant (bar check)
 
 Corriger les .ly du tunebook dont le rendu est incorrect:
 	Anacrouses (reel_amix, the_flight_of_the_butterfly,
-        cailleach_reel, ...)
+        cailleach_reel, air_moving)
 
-Corriger les .ly du tunebook qui ont des avertissements:
-	air_moving (prb bar check, prb formation alternative)
+Traiter la durée des notes:
+	+Calculer la durée des notes par défaut (default note length)+
+	Gérer le champ informatif "default note length" (L:) qui permet de changer la durée des notes par défaut:
+		Dans l'entête
+		A l'improviste dans le morceau
+		Erreur si le champ n'a pas la forme: 1 / "nombre entier"
+		Warning si le dénominateur n'est pas de la forme 2^n?
+	+Pas de modificateur (durée de base)+
+	+Modificateur multiple de 2 => durée simple+
+	Modificateur de durée pas multiple de 2 => durée composée:
+		+Note pointée+
+		Note liée
+	Gérer le coefficient diviseur => diminuer la durée par défaut
+		+_"A/" synonyme de "A/2"_+
+		+_"A/2", "A/4", ..., "A/2^n"_+
+		+Erreur si le coef est différent de 2^n+
+		Est-ce que ces coeff peuvent ne pas être de la forme 2^n?
+	Gérer les marqueurs de rythme brisé (broken rythms markers: a>b, etc.)
+		+>: dotted / half (e.g. "a>b")+
+		Erreur: rythme brisé incomplet (e.g. "a>b>c")
+		<: half / dotted
+		>> et <<
+		>>> et <<<
+	Gérer les triolets de croche (3 notes dans la durée de 2 notes). Exemple en 4/4: "(3 abc"
+		+3 notes de même durée+
+		+Idem avec un silence parmi les 3 notes+
+		2 notes (dont une deux fois plus longue)
+		4 notes (dont deux deux fois plus courtes)
+		Généralisation: somme des durées = durée de 2 notes
 
-Rythmes brisés:
-	+>: dotted / half (e.g. "a>b")+
-	Erreur: rythme brisé incomplet (e.g. "a>b>c")
-	<: half / dotted
-	>> et <<
-	>>> et <<<
+		Changement d'accord sur la première note d'un triolet marqué
+		après le symbole "début de triolet"
 
-Triolets: 3 notes dans la durée de 2 notes
-	+3 notes de même durée+
-	+Idem avec un silence parmi les 3 notes+
-	2 notes (dont une deux fois plus longue)
-	4 notes (dont deux deux fois plus courtes)
-	Généralisation: somme des durées = durée de 2 notes
-
-	Changement d'accord sur la première note d'un triolet marqué
-        après le symbole "début de triolet"
+	Gérer les n-uplets (avec n variant de 2 à 9)
 
 Alternatives:
 	+Deux alternatives, une mesure par alternative+
@@ -51,25 +59,6 @@ Ties: Notes liées "-"
 Barres doubes (suite):
 		[| thick-thin double bar line => \bar ".|"
 		Barre double au milieu d'une alternative
-
-Traiter la durée des notes:
-	+Calculer la durée des notes par défaut (default note length)+
-	Gérer le champ informatif "default note length" (L:) qui permet de changer la durée des notes par défaut:
-		Dans l'entête
-		A l'improviste dans le morceau
-	+Pas de modificateur (durée de base)+
-	+Modificateur multiple de 2 => durée simple+
-	Modificateur de durée pas multiple de 2 => durée composée:
-		+Note pointée+
-		Note liée
-	Gérer le coefficient diviseur => diminuer la durée par défaut
-		+_"A/" synonyme de "A/2"_+
-		+_"A/2", "A/4", ..., "A/2^n"_+
-		+Erreur si le coef est différent de 2^n+
-		Est-ce que ces coeff peuvent ne pas être de la forme 2^n?
-	Gérer les marqueurs de rythme brisé (broken rythms markers: a>b, etc.)
-	Gérer les triolets de croche. Exemple en 4/4: "(3 abc"
-	Gérer les n-uplets (avec n variant de 2 à 9)
 
 Gérer les alterations liées à la tonalité du morceau
 	+mi mineur+
