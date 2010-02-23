@@ -55,27 +55,116 @@ class TuneContext():
         self.prev_note = None
         self.in_triplet = False
         self.triplet_count = 0
+        self.triplet_base = 0
+        self.triplet_mult = 1
         self.in_broken_rythm = False
+
+        self.first_bar = True
+        self.partial_base = 0
+        self.partial_mult = 1
 
         self.ly_line = ""
         self.output = []
 
     def dump_note(self):
+        if self.note.pitch == "":
+            return
+
         if not self.first_note:
             self.ly_line += " "
         else:
             self.first_note = False
+
+        if self.in_triplet:
+            if self.triplet_base == 0:
+                self.triplet_base = self.note.duration
+            elif self.triplet_base == self.note.duration:
+                self.triplet_mult += 1
+            elif self.triplet_base > self.note.duration:
+                assert(self.triplet_base % self.note.duration == 0)
+                q = self.triplet_base / self.note.duration
+                self.triplet_mult += q
+            elif self.triplet_base < self.note.duration:
+                assert(self.note.duration % self.triplet_base == 0)
+                q = self.note.duration / self.triplet_base
+                self.triplet_base = self.note.duration
+                self.triplet_mult *= q
+                self.triplet_mult += 1
+
+        duration = self.note.duration
+        if self.in_triplet and self.triplet_count == 3:
+            print("triplet (base, mult) = ({0}, {1})".format(self.triplet_base, self.triplet_mult))
+            # 8+8+8 (= also 4+8) = 8*3
+            # triplet = \times 2/3
+            # 8*3 / 3 = 8
+            # 8 / 2 = 4
+            assert(self.triplet_mult == 3)
+            assert(self.triplet_base % 2 == 0)
+            duration = self.triplet_base / 2
+            print("triplet duration: {0}".format(duration))
+
         if self.in_triplet and self.triplet_count == 1:
             self.ly_line += "\times 2/3 { "
         self.ly_line += self.note.lilyfy()
+
+        if not self.in_triplet or self.triplet_count == 3:
+            if self.partial_base == 0:
+                self.partial_base = duration
+            elif self.partial_base == duration:
+                self.partial_mult += 1
+            elif self.partial_base > duration:
+                assert(self.partial_base % duration == 0)
+                q = self.partial_base / duration
+                self.partial_mult += q
+            elif self.partial_base < duration:
+                assert(duration % self.partial_base == 0)
+                q = duration / self.partial_base
+                self.partial_base = duration
+                self.partial_mult *= q
+                self.partial_mult += 1
+
         if self.in_triplet and self.triplet_count == 3:
             self.ly_line += " }"
             self.in_triplet = False
+            self.triplet_count = 0
+            self.triplet_base = 0
+            self.triplet_mult = 1
+
         self.prev_note = copy.copy(self.note)
         self.note.clear()
 
+    def get_partial(self):
+        (meter_num, meter_den) = map(int, self.meter.split("/"))
+
+        # Normalize self.partial_x with respect to meter_den
+        # Example: in 4/4, "\partial 8*2" => "\partial 4"
+        if self.partial_base > meter_den:
+            if self.partial_base % meter_den == 0:
+                q = self.partial_base / meter_den
+                if self.partial_mult % q == 0:
+                    self.partial_base = meter_den
+                    self.partial_mult /= q
+        elif self.partial_base < meter_den:
+            if meter_den % self.partial_base == 0:
+                q = meter_den / self.partial_base
+                self.partial_base = meter_den
+                self.partial_mult *= q
+        
+        if meter_num == self.partial_mult and meter_den == self.partial_base:
+            partial_string = ""
+        elif self.partial_mult == 1:
+            partial_string = "\partial {0} ".format(self.partial_base)
+        else:
+            partial_string = "\partial {0}*{1} ".format(self.partial_base, self.partial_mult)
+        return partial_string
+
     def flush_line(self, abc_bar="", block=False, block_begin=False, block_end=False, in_block=False):
         line_to_flush = "    " * self.indent_level
+
+        if self.first_bar:
+            line_to_flush += self.get_partial()
+            self.first_bar = False
+
         if block or block_begin:
             line_to_flush += "{ "
         if block_end or in_block:
@@ -453,6 +542,11 @@ def translate_notes(tc, abc_line, last_line=True):
             if bar == "":
                 tc.state = "chord"
                 continue
+
+#            if tc.first_bar and tc.note.pitch == "":
+#                # There is nothing before the first bar: do not attempt
+#                # to manage anacrusis
+#                tc.first_bar = False
 
             flush_bar = True
             open_repeat = False

@@ -265,6 +265,7 @@ class TestTranslateNotes(unittest.TestCase):
     def setUp(self):
         self.tc = TuneContext()
         self.tc.default_note_duration = get_default_note_duration("2/2")
+        self.tc.first_bar = False
 
     def tearDown(self):
         del self.tc
@@ -724,6 +725,49 @@ class TestAnacrusis(TestTranslateNotes):
         read_info_line(self.tc, "M:4/4")
         abc_notes = "CD | E2 F2 G2 A2 |"
         expected_output = ["\partial 4 c'8 d'8 |", "e'4 f'4 g'4 a'4 |"]
+        self.tc.first_bar = True
+        self.translate_and_test(abc_notes, expected_output)
+
+    def test_anacrusis_2(self):
+        read_info_line(self.tc, "M:4/4")
+        abc_notes = "C4 |"
+        expected_output = ["\partial 4*2 c'2 |"]
+        self.tc.first_bar = True
+        self.translate_and_test(abc_notes, expected_output)
+
+    def test_no_anacrusis_1(self):
+        read_info_line(self.tc, "M:4/4")
+        abc_notes = "C2 D2 E2 F2 | E2 F2 G2 A2 |"
+        expected_output = ["c'4 d'4 e'4 f'4 |", "e'4 f'4 g'4 a'4 |"]
+        self.tc.first_bar = True
+        self.translate_and_test(abc_notes, expected_output)
+
+    def test_no_anacrusis_2(self):
+        read_info_line(self.tc, "M:4/4")
+        abc_notes = "CD EF GA Bc |"
+        expected_output = ["c'8 d'8 e'8 f'8 g'8 a'8 b'8 c''8 |"]
+        self.tc.first_bar = True
+        self.translate_and_test(abc_notes, expected_output)
+
+    def test_no_anacrusis_3(self):
+        read_info_line(self.tc, "M:4/4")
+        abc_notes = "C4 D4 |"
+        expected_output = ["c'2 d'2 |"]
+        self.tc.first_bar = True
+        self.translate_and_test(abc_notes, expected_output)
+
+    def test_no_anacrusis_4(self):
+        read_info_line(self.tc, "M:4/4")
+        abc_notes = "C4 D2 E2 |"
+        expected_output = ["c'2 d'4 e'4 |"]
+        self.tc.first_bar = True
+        self.translate_and_test(abc_notes, expected_output)
+
+    def test_no_anacrusis_5(self):
+        read_info_line(self.tc, "M:4/4")
+        abc_notes = "(3 CDE F2 G2 A2 |"
+        expected_output = ["\times 2/3 { c'8 d'8 e'8 } f'4 g'4 a'4 |"]
+        self.tc.first_bar = True
         self.translate_and_test(abc_notes, expected_output)
         
 
@@ -863,6 +907,9 @@ class TestOutput(TestOutputFramework):
 
     def test_hello_triplets(self):
         self.check_output("hello_triplets")
+
+    def test_hello_partial(self):
+        self.check_output("hello_partial")
 
     def test_brid_harper_s(self):
         self.check_output("brid_harper_s")

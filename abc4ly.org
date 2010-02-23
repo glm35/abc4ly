@@ -1,5 +1,23 @@
 * Feuille de route
 ** P0
+Répétitions et barres de mesures:
+	notes + |: autres notes :| (reel_amix)
+	+_"|: notes :|"_+
+	+_"|: notes | autres notes :|"_+
+        "|: notes :| + |: autres notes :|" (syntaxe valide?)
+	"|: notes :: autres notes :|"
+	" notes :|" (début de répétition implicite au début du morceau)
+	"| notes | autres notes |"
+	erreur: répétition pas refermée
+	erreur(?): répétitions impriquées
+
+Anacrouse
+	2 croches
+	noire pointée
+	triolets et n-uplets
+	Réduction (e.g. 8*2 => 4)
+	4*1 en 12/8
+
 Corriger les .ly du tunebook qui ont des avertissements:
 	cailleach_reel (anacrouse)
 	+our_kate (bar check)+
@@ -67,17 +85,6 @@ Gérer les alterations liées à la tonalité du morceau
 	+toutes les tonalités avec des bémols+
 	est-ce que "Do bémol majeur" est une gamme valide?
 	get_relative_major_scale: tester tous les modes de toutes les gammes
-
-Répétitions et barres de mesures:
-	+_"|: notes :|"_+
-	+_"|: notes | autres notes :|"_+
-        "|: notes :| + |: autres notes :|" (syntaxe valide?)
-	notes + |: autres notes :|
-	"|: notes :: autres notes :|"
-	" notes :|" (début de répétition implicite au début du morceau)
-	"| notes | autres notes |"
-	erreur: répétition pas refermée
-	erreur(?): répétitions impriquées
 
 Alternatives
 	+enchaînement: repeat w/alternatives + repeat+
@@ -447,6 +454,15 @@ mais n'affiche pas de liaison entre les deux notes.
 Anacrouse en début de morceau:
 
 	\partial <durée> <notes>
+
+Exemples d'expression de <durée>:
+
+	\partial 4 c'8 b8
+	\partial 8*2 c'8 b8
+	\partial 4. c'4 b8
+	\partial 8*3 c'4 b8
+
+Mais pas possible d'utiliser '+' ou '~'.
 
 * Equivalence ABC <=> lilypond
 ** Hauteur des notes
