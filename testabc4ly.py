@@ -718,6 +718,15 @@ C4- ^C2 E2
       The tied notes do not have the same pitch""")
 
 
+class TestAnacrusis(TestTranslateNotes):
+
+    def test_anacrusis(self):
+        read_info_line(self.tc, "M:4/4")
+        abc_notes = "CD | E2 F2 G2 A2 |"
+        expected_output = ["\partial 4 c'8 d'8 |", "e'4 f'4 g'4 a'4 |"]
+        self.translate_and_test(abc_notes, expected_output)
+        
+
 # ------------------------------------------------------------------------
 #
 #       Other tests

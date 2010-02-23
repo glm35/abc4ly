@@ -3,7 +3,7 @@
 Corriger les .ly du tunebook qui ont des avertissements:
 	cailleach_reel (anacrouse)
 	+our_kate (bar check)+
-	the_recruiting_sergeant (bar check)
+	+the_recruiting_sergeant (bar check)+
 
 Corriger les .ly du tunebook dont le rendu est incorrect:
 	Anacrouses (reel_amix, the_flight_of_the_butterfly,
@@ -443,6 +443,10 @@ hauteur dans une même mesure ou entre deux mesures. Notation: la
 première note est suivie par un tilde "~". Si la note finale n'est pas à
 la même hauteur, lilypond 2.13.7 n'émet pas d'avertissement ou d'erreur
 mais n'affiche pas de liaison entre les deux notes.
+
+Anacrouse en début de morceau:
+
+	\partial <durée> <notes>
 
 * Equivalence ABC <=> lilypond
 ** Hauteur des notes
