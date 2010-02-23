@@ -479,6 +479,23 @@ class TestTranslateNotesStructure(TestTranslateNotes):
                            "}"]
         self.translate_and_test(abc_notes, expected_output)
 
+    def test_three_bar_alternative(self):
+        abc_notes = ["|: C2 D2 E2 F2",
+                     "|1 G2 A2 B2 c2 | d2 e2 f2 g2 | a2 b2 c'2 d'2 :|",
+                     "[2 c'2 b2 a2 g2 | G2 E2 D2 C2 | C2 D2 E2 F2 |"]
+        expected_output = ["\repeat volta 2 {",
+                           "    c'4 d'4 e'4 f'4",
+                           "}",
+                           r"\alternative {",
+                           "    { g'4 a'4 b'4 c''4 |",
+                           "      d''4 e''4 f''4 g''4 |",
+                           "      a''4 b''4 c'''4 d'''4 }",
+                           "    { c'''4 b''4 a''4 g''4 |",
+                           "      g'4 e'4 d'4 c'4 |",
+                           "      c'4 d'4 e'4 f'4 }",
+                           "}"]
+        self.translate_and_test2(abc_notes, expected_output)
+
     def test_alternatives_long_form(self):
         abc_notes = "|: C2 D2 E2 F2 |1 G2 A2 B2 c2 :| [2 G2 E2 D2 C2 |"
         expected_output = ["\repeat volta 2 {",

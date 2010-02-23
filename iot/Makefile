@@ -38,7 +38,7 @@ ${ly_outdir}/%.ly : ${src}/%.abc ${ABC2LY}
 # the return code
 # - we don't care about grep return code
 
-${ly_outdir}/%.ly : ${src2}/%.abc
+${ly_outdir}/%.ly : ${src2}/%.abc ${ABC2LY}
 	@echo [ABC2LY] $<
 	${ABC2LY} -o $@ $<
 

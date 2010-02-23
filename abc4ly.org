@@ -1,66 +1,20 @@
 * Feuille de route
 ** P0
-Alternatives
-	+enchaînement: repeat w/alternatives + repeat+
-	alternative de plus de n mesure:
-		+2 mesures+
-		3 mesures
-		avec forme ":| [2" sur 2 et 3 mesures
-	alternative au milieu d'une mesure
-	alternative pas fermée (manque une barre simple) en fin de morceau
-	seconde alternative plus courte que la première
-	":|2" && ! alternative == 1 => syntax error
-	1 mesure + répétition
-
 Corriger les .ly du tunebook qui ne compilent pas:
-	cailleach_reel
-	dublin_reel
-	kitty_lie_over
-	les_ridees_de_lanvaudan
-	reel_amix
-	road_to_thales
-	the_tinkerman_s_wife
-	toss_the_feathers
-	the_flight_of_the_butterfly
-	the_goat_island_reel
-	the_woods_of_the_old_limerick
+	cailleach_reel (alternative en milieu de mesure)
+	+kitty_lie_over+
+	+les_ridees_de_lanvaudan+
+	+reel_amix+
+	+road_to_thales+
+	+the_tinkerman_s_wife+
+	+toss_the_feathers+
+	+the_flight_of_the_butterfly+
+	+the_goat_island_reel+
+	+the_woods_of_the_old_limerick+
 
-
-	kalyana: pagaille dans les alternatives à cause d'une barre à la
-        ligne et d'un enchainement d'alternatives
-
-	bill_harte_s:
-		alternative de 2 mesures
-		barre de mesure à la ligne pour fermer une (autre) alternative 
-
-	cailleach_reel:
-		alternative de plus de 1 mesure qui démarre au milieu d'une mesure
-
-	father_o_flynn: pagaille dans les alternatives
-
-	kitty_lie_over: idem kalyana
-
-	les_ridess_de_lanvaudan: alternatives
-
-	reel_amix: alternatives
-
-	road_to_thales, the_boys_of_malin, 
-
-	the_tinkerman_s_wife
-		blocs de répétition pas identés
-		manque un espace avant les triolets
-		compile pas
-
-	toss_the_feathers: alternative pas fermée en fin de morceau
-        (manque une barre de mesure qui pourrait être ajoutée
-        automatiquement par abc4ly... ou pas) => erreur abc4ly ou
-        fermeture de l'alternative.
-
-	the_flight_of_the_butterfly: alternatives
-
-	the_goat_island_reel: alternatives
-
-	the_woods_of_the_old_limerick: alternatives
+Corriger les .ly du tunebook dont le rendu est incorrect:
+	Anacrouses (reel_amix, the_flight_of_the_butterfly,
+        cailleach_reel, ...)
 
 Corriger les .ly du tunebook qui ont des avertissements:
 	air_moving (prb bar check, prb formation alternative)
@@ -136,6 +90,19 @@ Répétitions et barres de mesures:
 	erreur: répétition pas refermée
 	erreur(?): répétitions impriquées
 
+Alternatives
+	+enchaînement: repeat w/alternatives + repeat+
+	alternative de plus de n mesure:
+		+2 mesures+
+		+3 mesures+
+		+avec forme ":| [2" sur 2 et 3 mesures+
+	alternative au milieu d'une mesure
+	alternative pas fermée (manque une barre simple) en fin de morceau
+	seconde alternative plus courte que la première
+	":|2" && ! alternative == 1 => syntax error
+	1 mesure + répétition
+	Erreur (?): pas de seconde alternative
+
 Reconnaître la structure du morceau (barres de mesure, répétitions, ...):
 	+Séparateur de mesures+
 
@@ -159,7 +126,8 @@ Ligne de commande:
 		+Avec option -o+
 
 Bar check:
-	Est-ce qu'il faut les préciser explicitement:
+	A forcer partout où l'auteur du .abc a placé une barre de
+        mesure. Est-ce qu'il faut les préciser explicitement:
 	- à la fin du morceau?
 	- avec les répétitions?
 	- avec les alternatives?

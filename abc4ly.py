@@ -74,11 +74,11 @@ class TuneContext():
         self.prev_note = copy.copy(self.note)
         self.note.clear()
 
-    def flush_line(self, abc_bar="", block=False, block_begin=False, block_end=False):
+    def flush_line(self, abc_bar="", block=False, block_begin=False, block_end=False, in_block=False):
         line_to_flush = "    " * self.indent_level
         if block or block_begin:
             line_to_flush += "{ "
-        if block_end:
+        if block_end or in_block:
             line_to_flush += "  "
         line_to_flush += self.ly_line
         if block or block_end:
@@ -501,14 +501,18 @@ def translate_notes(tc, abc_line, last_line=True):
                     else:
                         if tc.alternative_bar_count == 1:
                             tc.flush_line(block_begin=True, abc_bar=bar)
+                        else:
+                            tc.flush_line(in_block=True, abc_bar=bar)
                 elif tc.alternative == 2: # in a 2nd alternative
                     if 1 == tc.alternative_bar_count:
                         tc.flush_line(block=True)
                     else:
                         if tc.alternative_bar_count == tc.alternative_count_down:
                             tc.flush_line(block_begin=True, abc_bar=bar)
-                        else:
+                        elif tc.alternative_count_down == 1:
                             tc.flush_line(block_end=True)
+                        else:
+                            tc.flush_line(in_block=True, abc_bar=bar)
                     tc.alternative_count_down -= 1
 
             # close repeat
