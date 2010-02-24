@@ -336,6 +336,13 @@ class TestTranslateNotesStructure(TestTranslateNotes):
         expected_output.append("g'4 a'4 b'4 c''4")
         self.translate_and_test(abc_notes, expected_output)
 
+    def test_two_bar_delimited_bars(self):
+        read_info_line(self.tc, "M:4/4")
+        abc_notes = "| C2 D2 E2 F2 | G2 A2 B2 c2 |"
+        expected_output = ["c'4 d'4 e'4 f'4 |", "g'4 a'4 b'4 c''4 |"]
+        self.tc.first_bar = True
+        self.translate_and_test(abc_notes, expected_output)
+
     def test_empty_note_line(self):
         abc_notes = ""
         expected_output = []
@@ -378,6 +385,16 @@ class TestTranslateNotesStructure(TestTranslateNotes):
                            "    c''8 d''8 e''8 f''8 g''8 a''8 b''8 c'''8 |",
                            "    c''8 e''8 d''8 f''8 g''8 b''8 a''8 c'''8",
                            "}"]
+        self.translate_and_test(abc_notes, expected_output)
+
+    def test_a_bar_then_a_repated_bar(self):
+        read_info_line(self.tc, "M:4/4")
+        abc_notes = "C2 D2 E2 F2 |: G2 A2 B2 c2 :|"
+        expected_output = ["c'4 d'4 e'4 f'4 |",
+                           "\repeat volta 2 {",
+                           "    g'4 a'4 b'4 c''4",
+                           "}"]
+        self.tc.first_bar = True
         self.translate_and_test(abc_notes, expected_output)
 
     def test_chained_repeats(self):
@@ -767,6 +784,13 @@ class TestAnacrusis(TestTranslateNotes):
         read_info_line(self.tc, "M:4/4")
         abc_notes = "(3 CDE F2 G2 A2 |"
         expected_output = ["\times 2/3 { c'8 d'8 e'8 } f'4 g'4 a'4 |"]
+        self.tc.first_bar = True
+        self.translate_and_test(abc_notes, expected_output)
+
+    def test_no_anacrusis_6(self):
+        read_info_line(self.tc, "M:4/4")
+        abc_notes = "C2 D2 E2 F2 |"
+        expected_output = ["c'4 d'4 e'4 f'4 |"]
         self.tc.first_bar = True
         self.translate_and_test(abc_notes, expected_output)
         

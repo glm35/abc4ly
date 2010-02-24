@@ -1,22 +1,25 @@
 * Feuille de route
 ** P0
 Répétitions et barres de mesures:
+	+_"| notes | autres notes |"_+
 	notes + |: autres notes :| (reel_amix)
 	+_"|: notes :|"_+
 	+_"|: notes | autres notes :|"_+
         "|: notes :| + |: autres notes :|" (syntaxe valide?)
 	"|: notes :: autres notes :|"
 	" notes :|" (début de répétition implicite au début du morceau)
-	"| notes | autres notes |"
 	erreur: répétition pas refermée
 	erreur(?): répétitions impriquées
 
 Anacrouse
-	2 croches
-	noire pointée
-	triolets et n-uplets
+	+2 croches+
+	note pointée
+	+triolets+
+	n-uplets
 	Réduction (e.g. 8*2 => 4)
 	4*1 en 12/8
+	Factoriser (fonction) le code de réduction de la durée d'une
+        note dans ses composantes base et multiplier.
 
 Corriger les .ly du tunebook qui ont des avertissements:
 	cailleach_reel (anacrouse)

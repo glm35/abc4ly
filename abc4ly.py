@@ -134,6 +134,9 @@ class TuneContext():
         self.note.clear()
 
     def get_partial(self):
+        if self.partial_base == 0:
+            return ""
+
         (meter_num, meter_den) = map(int, self.meter.split("/"))
 
         # Normalize self.partial_x with respect to meter_den
@@ -580,6 +583,10 @@ def translate_notes(tc, abc_line, last_line=True):
                 begin_alternative_2 = True
             else:
                 maybe_end_alternative = True
+                if tc.first_bar and tc.prev_note == None:
+                    # "|" symbol at the beginning of the tune
+                    tc.first_bar = False
+                    flush_bar = False
                 
             # flush bar
             if flush_bar:
