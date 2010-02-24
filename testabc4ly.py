@@ -752,6 +752,13 @@ class TestAnacrusis(TestTranslateNotes):
         self.tc.first_bar = True
         self.translate_and_test(abc_notes, expected_output)
 
+    def test_anacrusis_with_dotted_note(self):
+        read_info_line(self.tc, "M:4/4")
+        abc_notes = "C3 |"
+        expected_output = ["\partial 8*3 c'4. |"]
+        self.tc.first_bar = True
+        self.translate_and_test(abc_notes, expected_output)
+
     def test_no_anacrusis_1(self):
         read_info_line(self.tc, "M:4/4")
         abc_notes = "C2 D2 E2 F2 | E2 F2 G2 A2 |"
@@ -791,6 +798,13 @@ class TestAnacrusis(TestTranslateNotes):
         read_info_line(self.tc, "M:4/4")
         abc_notes = "C2 D2 E2 F2 |"
         expected_output = ["c'4 d'4 e'4 f'4 |"]
+        self.tc.first_bar = True
+        self.translate_and_test(abc_notes, expected_output)
+
+    def test_no_anacrusis_with_dotted_note(self):
+        read_info_line(self.tc, "M:4/4")
+        abc_notes = "C3 D E2 F2 |"
+        expected_output = ["c'4. d'8 e'4 f'4 |"]
         self.tc.first_bar = True
         self.translate_and_test(abc_notes, expected_output)
         
