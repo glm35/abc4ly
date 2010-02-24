@@ -546,11 +546,6 @@ def translate_notes(tc, abc_line, last_line=True):
                 tc.state = "chord"
                 continue
 
-#            if tc.first_bar and tc.note.pitch == "":
-#                # There is nothing before the first bar: do not attempt
-#                # to manage anacrusis
-#                tc.first_bar = False
-
             flush_bar = True
             open_repeat = False
             close_repeat = False
@@ -559,10 +554,18 @@ def translate_notes(tc, abc_line, last_line=True):
             begin_alternative_2 = False
             maybe_end_alternative = False
 
+            if tc.first_bar and tc.prev_note == None:
+                # There is nothing before the first bar: do not attempt
+                # to manage anacrusis
+                tc.first_bar = False
+                flush_bar = False
+
             if bar == "|:":
                 maybe_end_alternative = True
                 open_repeat = True
-                if tc.alternative != 2: #FIXME
+                if tc.ly_line != "":
+                    bar = "|" # Force a bar check when flushing
+                else:
                     flush_bar = False
             elif bar == ":|":
                 if tc.alternative == 0:
@@ -583,10 +586,6 @@ def translate_notes(tc, abc_line, last_line=True):
                 begin_alternative_2 = True
             else:
                 maybe_end_alternative = True
-                if tc.first_bar and tc.prev_note == None:
-                    # "|" symbol at the beginning of the tune
-                    tc.first_bar = False
-                    flush_bar = False
                 
             # flush bar
             if flush_bar:

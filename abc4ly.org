@@ -2,7 +2,7 @@
 ** P0
 Répétitions et barres de mesures:
 	+_"| notes | autres notes |"_+
-	notes + |: autres notes :| (reel_amix)
+	+notes + |: autres notes :| (reel_amix)+
 	+_"|: notes :|"_+
 	+_"|: notes | autres notes :|"_+
         "|: notes :| + |: autres notes :|" (syntaxe valide?)
