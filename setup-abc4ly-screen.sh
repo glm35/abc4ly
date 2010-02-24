@@ -6,7 +6,7 @@ set -e
 ME=$(basename "$0")
 
 if [ "$HOSTNAME" == "potiron" ] || [ "$HOSTNAME" == potimarron ]; then
-    ABC4LY_BASE_DIR=${HOME}/code/abc4ly
+    ABC4LY_BASE_DIR=${HOME}/Documents/code/abc4ly
 else
     ABC4LY_BASE_DIR=${HOME}/doc/.perso/abc4ly
 fi

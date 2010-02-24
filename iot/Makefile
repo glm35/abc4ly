@@ -3,22 +3,22 @@ SHELL=/bin/bash
 # systems, which causes some surprises with the commands. For instance,
 # stdout+stderr IO redirection with "&>" does not work with dash.
 
-LILY_PREFIX=/usr/local/bin
-LILYPOND=${LILY_PREFIX}/lilypond
+#LILY_PREFIX=/usr/local/bin
+#LILYPOND=${LILY_PREFIX}/lilypond
 #ABC2LY=${LILY_PREFIX}/abc2ly
-ABC2LY=../abc4ly.py
-CONVERT_LY=${LILY_PREFIX}/convert-ly
+LILYPOND=lilypond
+ABC2LY=${HOME}/Documents/code/abc4ly/abc4ly.py
 
-src=../../tunebook/tunes
-src2=../../tunebook/tunes/broken
+src=${HOME}/Musique/tunebook/tunes
+#src2=${HOME}/Musique/tunebook/tunes/broken
 
 ly_outdir=ly-out
 
 lyfiles := $(patsubst ${src}/%.abc,${ly_outdir}/%.ly,$(wildcard ${src}/*.abc))
-lyfiles2 := $(patsubst ${src2}/%.abc,${ly_outdir}/%.ly,$(wildcard ${src2}/*.abc))
+#lyfiles2 := $(patsubst ${src2}/%.abc,${ly_outdir}/%.ly,$(wildcard ${src2}/*.abc))
 
 pdffiles := $(patsubst ${src}/%.abc,${ly_outdir}/%.pdf,$(wildcard ${src}/*.abc))
-pdffiles2 := $(patsubst ${src2}/%.abc,${ly_outdir}/%.pdf,$(wildcard ${src2}/*.abc))
+#pdffiles2 := $(patsubst ${src2}/%.abc,${ly_outdir}/%.pdf,$(wildcard ${src2}/*.abc))
 
 all : ${ly_outdir} ${lyfiles} ${lyfiles2}
 
@@ -26,21 +26,15 @@ pdf : ${ly_outdir} ${pdffiles} ${pdffiles2}
 
 ${ly_outdir}/%.pdf : ${ly_outdir}/%.ly
 	@echo [LILYPOND] $<
-	${LILYPOND} -o ${ly_outdir}/$* $<
+	@${LILYPOND} -o ${ly_outdir}/$* $<
 
 ${ly_outdir}/%.ly : ${src}/%.abc ${ABC2LY}
 	@echo [ABC2LY] $<
-	${ABC2LY} -o $@ $<
-#	@${ABC2LY} -o $@ $< 2>${ly_outdir}/abc2ly.log
-#	@cat ${ly_outdir}/abc2ly.log |grep Warning |grep -v "Q specification" || true
-# Note:
-# - split into two commands to be able to filter abc2ly output without losing
-# the return code
-# - we don't care about grep return code
+	@${ABC2LY} -o $@ $<
 
-${ly_outdir}/%.ly : ${src2}/%.abc ${ABC2LY}
-	@echo [ABC2LY] $<
-	${ABC2LY} -o $@ $<
+#${ly_outdir}/%.ly : ${src2}/%.abc ${ABC2LY}
+#	@echo [ABC2LY] $<
+#	@${ABC2LY} -o $@ $<
 
 ${ly_outdir} :
 	@echo [MKDIR] ${ly_outdir}
