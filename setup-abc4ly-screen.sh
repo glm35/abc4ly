@@ -5,11 +5,8 @@ set -e
 
 ME=$(basename "$0")
 
-if [ "$HOSTNAME" == "potiron" ] || [ "$HOSTNAME" == potimarron ]; then
-    ABC4LY_BASE_DIR=${HOME}/Documents/code/abc4ly
-else
-    ABC4LY_BASE_DIR=${HOME}/doc/.perso/abc4ly
-fi
+ABC4LY_BASE_DIR=${HOME}/Documents/code/abc4ly
+TUNES=${HOME}/Musique/tunebook/tunes
 
 # ----------------------------------------------------------------------------
 # Configuration options
@@ -92,6 +89,8 @@ chdir ${ABC4LY_BASE_DIR}/regression-out
 screen -t regression-out
 chdir ${ABC4LY_BASE_DIR}/iot
 screen -t iot
+chdir ${TUNES}
+screen -t tunes
 select 1
 EOF
 

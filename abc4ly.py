@@ -55,13 +55,11 @@ class TuneContext():
         self.prev_note = None
         self.in_triplet = False
         self.triplet_count = 0
-        self.triplet_base = 0
-        self.triplet_mult = 1
+        self.triplet_duration = Duration()
         self.in_broken_rythm = False
 
         self.first_bar = True
-        self.partial_base = 0
-        self.partial_mult = 1
+        self.bar_duration = Duration()
 
         self.ly_line = ""
         self.output = []
@@ -70,95 +68,72 @@ class TuneContext():
         if self.note.pitch == "":
             return
 
+        # Increase the duration of the current bar with the duration of
+        # the note. If the note is inside a triplet, update the duration
+        # only when the last note of the triplet is encountered.
+
+        if self.in_triplet:
+            self.triplet_duration.add(self.note.duration, self.note.dotted)
+            if self.triplet_count == 3:
+                # 8+8+8 (= also 4+8) = 8*3
+                # triplet = \times 2/3
+                # 8*3 / 3 = 8
+                # 8 / 2 = 4
+                assert(self.triplet_duration.mult == 3)
+                assert(self.triplet_duration.base % 2 == 0)
+                triplet_duration = self.triplet_duration.base / 2
+                self.bar_duration.add(triplet_duration)
+        else:
+            self.bar_duration.add(self.note.duration, self.note.dotted)
+
+        # Update self.ly_line with the lilypond representation of the
+        # current Note. Manage inter-note spacing and triplets.
+
         if not self.first_note:
             self.ly_line += " "
         else:
             self.first_note = False
 
-        if self.in_triplet:
-            if self.triplet_base == 0:
-                self.triplet_base = self.note.duration
-            elif self.triplet_base == self.note.duration:
-                self.triplet_mult += 1
-            elif self.triplet_base > self.note.duration:
-                assert(self.triplet_base % self.note.duration == 0)
-                q = self.triplet_base / self.note.duration
-                self.triplet_mult += q
-            elif self.triplet_base < self.note.duration:
-                assert(self.note.duration % self.triplet_base == 0)
-                q = self.note.duration / self.triplet_base
-                self.triplet_base = self.note.duration
-                self.triplet_mult *= q
-                self.triplet_mult += 1
-
-        duration = self.note.duration
-        if self.in_triplet and self.triplet_count == 3:
-            print("triplet (base, mult) = ({0}, {1})".format(self.triplet_base, self.triplet_mult))
-            # 8+8+8 (= also 4+8) = 8*3
-            # triplet = \times 2/3
-            # 8*3 / 3 = 8
-            # 8 / 2 = 4
-            assert(self.triplet_mult == 3)
-            assert(self.triplet_base % 2 == 0)
-            duration = self.triplet_base / 2
-            print("triplet duration: {0}".format(duration))
-
         if self.in_triplet and self.triplet_count == 1:
             self.ly_line += "\times 2/3 { "
-        self.ly_line += self.note.lilyfy()
 
-        if not self.in_triplet or self.triplet_count == 3:
-            if self.partial_base == 0:
-                self.partial_base = duration
-            elif self.partial_base == duration:
-                self.partial_mult += 1
-            elif self.partial_base > duration:
-                assert(self.partial_base % duration == 0)
-                q = self.partial_base / duration
-                self.partial_mult += q
-            elif self.partial_base < duration:
-                assert(duration % self.partial_base == 0)
-                q = duration / self.partial_base
-                self.partial_base = duration
-                self.partial_mult *= q
-                self.partial_mult += 1
+        self.ly_line += self.note.lilyfy()
 
         if self.in_triplet and self.triplet_count == 3:
             self.ly_line += " }"
             self.in_triplet = False
             self.triplet_count = 0
-            self.triplet_base = 0
-            self.triplet_mult = 1
+            self.triplet_duration.clear()
 
         self.prev_note = copy.copy(self.note)
         self.note.clear()
 
     def get_partial(self):
-        if self.partial_base == 0:
+        if self.bar_duration.base == 0:
             return ""
 
         (meter_num, meter_den) = map(int, self.meter.split("/"))
 
-        # Normalize self.partial_x with respect to meter_den
+        # Normalize self.bar_duration.x with respect to meter_den
         # Example: in 4/4, "\partial 8*2" => "\partial 4"
-        if self.partial_base > meter_den:
-            if self.partial_base % meter_den == 0:
-                q = self.partial_base / meter_den
-                if self.partial_mult % q == 0:
-                    self.partial_base = meter_den
-                    self.partial_mult /= q
-        elif self.partial_base < meter_den:
-            if meter_den % self.partial_base == 0:
-                q = meter_den / self.partial_base
-                self.partial_base = meter_den
-                self.partial_mult *= q
+        if self.bar_duration.base > meter_den:
+            if self.bar_duration.base % meter_den == 0:
+                q = self.bar_duration.base / meter_den
+                if self.bar_duration.mult % q == 0:
+                    self.bar_duration.base = meter_den
+                    self.bar_duration.mult /= q
+        elif self.bar_duration.base < meter_den:
+            if meter_den % self.bar_duration.base == 0:
+                q = meter_den / self.bar_duration.base
+                self.bar_duration.base = meter_den
+                self.bar_duration.mult *= q
         
-        if meter_num == self.partial_mult and meter_den == self.partial_base:
+        if meter_num == self.bar_duration.mult and meter_den == self.bar_duration.base:
             partial_string = ""
-        elif self.partial_mult == 1:
-            partial_string = "\partial {0} ".format(self.partial_base)
+        elif self.bar_duration.mult == 1:
+            partial_string = "\partial {0} ".format(self.bar_duration.base)
         else:
-            partial_string = "\partial {0}*{1} ".format(self.partial_base, self.partial_mult)
+            partial_string = "\partial {0}*{1} ".format(self.bar_duration.base, self.bar_duration.mult)
         return partial_string
 
     def flush_line(self, abc_bar="", block=False, block_begin=False, block_end=False, in_block=False):
@@ -223,7 +198,7 @@ class Note():
         self.pitch = ""
         self.octaver = ""
         self.duration = ""
-        self.dotted = ""
+        self.dotted = False
         self.tied = ""
         self.chord = ""
 
@@ -240,12 +215,48 @@ class Note():
 
     def lilyfy(self):
         ly_note = self.pitch + self.octaver
-        ly_note += str(self.duration) + self.dotted
+        ly_note += str(self.duration)
+        if self.dotted:
+            ly_note += "."
         if self.tied:
             ly_note += " ~"
         if self.chord != "":
             ly_note += ' ^"{0}"'.format(self.chord)
         return ly_note
+
+
+# ------------------------------------------------------------------------
+#     The duet representation of a LilyPond duration: (base, multiplier)
+# ------------------------------------------------------------------------
+
+class Duration():
+    def __init__(self):
+        self.clear()
+
+    def clear(self):
+        self.base = 0
+        self.mult = 1
+
+    # Add a simple_duration in lilypond format (4=quarter note, 8=eighth
+    # note, ...) to the object.
+    def add(self, simple_duration, dotted=False):
+        if self.base == 0:
+            self.base = simple_duration
+        elif self.base == simple_duration:
+            self.mult += 1
+        elif self.base > simple_duration:
+            assert(self.base % simple_duration == 0)
+            q = self.base / simple_duration
+            self.mult += q
+        elif self.base < simple_duration:
+            assert(simple_duration % self.base == 0)
+            q = simple_duration / self.base
+            self.base = simple_duration
+            self.mult *= q
+            self.mult += 1
+
+        if dotted:
+            self.add(simple_duration * 2)
 
 
 # ------------------------------------------------------------------------
@@ -748,7 +759,7 @@ def translate_notes(tc, abc_line, last_line=True):
 
         elif tc.state == "duration":
             if al[0] == '>':
-                tc.note.dotted = "."
+                tc.note.dotted = True
                 tc.in_broken_rythm = True
                 al = al[1:]
                 e.colno += 1
@@ -766,7 +777,7 @@ def translate_notes(tc, abc_line, last_line=True):
                 abc_duration = int(lm)
                 if abc_duration % 1.5 == 0:
                     tc.note.duration /= int(abc_duration / 1.5)
-                    tc.note.dotted = "."
+                    tc.note.dotted = True
                 elif abc_duration % 2 == 0:
                     tc.note.duration /= abc_duration
                 else:

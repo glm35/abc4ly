@@ -56,6 +56,7 @@ Traiter la durée des notes:
 		+Idem avec un silence parmi les 3 notes+
 		2 notes (dont une deux fois plus longue)
 		4 notes (dont deux deux fois plus courtes)
+		2 ou 4 notes dans un triolets en anacrouse
 		Généralisation: somme des durées = durée de 2 notes
 
 		Changement d'accord sur la première note d'un triolet marqué
