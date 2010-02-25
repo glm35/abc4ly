@@ -1,22 +1,5 @@
 * Feuille de route
 ** P0
-Anacrouse
-	+2 croches+
-	noire pointée (our_kate)
-	+triolets+
-	n-uplets
-	Réduction (e.g. 8*2 => 4)
-	4*1 en 12/8
-	Factoriser (fonction) le code de réduction de la durée d'une
-        note dans ses composantes base et multiplier.
-
-Corriger les .ly du tunebook qui ont des avertissements:
-	our_kate (bar check)
-
-Corriger les .ly du tunebook dont le rendu est incorrect:
-	Anacrouses (reel_amix, the_flight_of_the_butterfly,
-        cailleach_reel, air_moving)
-
 Répétitions et barres de mesures:
 	+_"| notes | autres notes |"_+
 	+notes + |: autres notes :| (reel_amix)+
@@ -28,10 +11,20 @@ Répétitions et barres de mesures:
 	erreur: répétition pas refermée
 	erreur(?): répétitions impriquées
 
+Anacrouse
+	+2 croches+
+	+noire pointée (our_kate)+
+	+triolets+
+	n-uplets
+	Réduction (e.g. 8*2 => 4)
+	4*1 en 12/8
+	Factoriser (fonction) le code de réduction de la durée d'une
+        note dans ses composantes base et multiplier.
+
 Traiter la durée des notes:
 	+Calculer la durée des notes par défaut (default note length)+
 	Gérer le champ informatif "default note length" (L:) qui permet de changer la durée des notes par défaut:
-		Dans l'entête
+		+Dans l'entête+
 		A l'improviste dans le morceau
 		Erreur si le champ n'a pas la forme: 1 / "nombre entier"
 		Warning si le dénominateur n'est pas de la forme 2^n?
