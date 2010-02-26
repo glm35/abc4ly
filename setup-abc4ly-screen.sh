@@ -6,7 +6,7 @@ set -e
 ME=$(basename "$0")
 
 ABC4LY_BASE_DIR=${HOME}/Documents/code/abc4ly
-TUNES=${HOME}/Musique/tunebook/tunes
+TUNEBOOK=${HOME}/Musique/tunebook
 
 # ----------------------------------------------------------------------------
 # Configuration options
@@ -89,8 +89,10 @@ chdir ${ABC4LY_BASE_DIR}/regression-out
 screen -t regression-out
 chdir ${ABC4LY_BASE_DIR}/iot
 screen -t iot
-chdir ${TUNES}
+chdir ${TUNEBOOK}/tunes
 screen -t tunes
+chdir ${TUNEBOOK}/test/book-only-tunes
+screen -t proto
 select 1
 EOF
 
