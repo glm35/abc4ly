@@ -89,6 +89,8 @@ chdir ${ABC4LY_BASE_DIR}/regression-out
 screen -t regression-out
 chdir ${ABC4LY_BASE_DIR}/iot
 screen -t iot
+chdir ${TUNEBOOK}
+screen -t tunebook
 chdir ${TUNEBOOK}/tunes
 screen -t tunes
 chdir ${TUNEBOOK}/test/book-only-tunes
