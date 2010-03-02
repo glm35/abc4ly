@@ -93,8 +93,8 @@ chdir ${TUNEBOOK}
 screen -t tunebook
 chdir ${TUNEBOOK}/tunes
 screen -t tunes
-chdir ${TUNEBOOK}/test/book-only-tunes
-screen -t proto
+chdir ${TUNEBOOK}/tools
+screen -t tools
 select 1
 EOF
 
