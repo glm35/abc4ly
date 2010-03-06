@@ -1,5 +1,17 @@
 * Feuille de route
 ** P0
+Bar check:	
+	'\bar "||"' à la fin d'une alternative (the wind that shakes the barley)
+
+	A forcer partout où l'auteur du .abc a placé une barre de
+        mesure. Est-ce qu'il faut les préciser explicitement:
+	- à la fin du morceau?
+	- avec les répétitions?
+	- avec les alternatives?
+	ou est-ce que lilypond fait le test?
+	Est-ce qu'une barre spéciale e.g. \bar "||" est utilisée pour le
+        bar-checking, ou est-ce qu'il faut ajouter un bar check en plus?
+
 Répétitions et barres de mesures:
 	+_"| notes | autres notes |"_+
 	+notes + |: autres notes :| (reel_amix)+
@@ -115,16 +127,6 @@ Ligne de commande:
         comportement que abc2ly)
 		Sans option (juste un fichier abc)
 		+Avec option -o+
-
-Bar check:
-	A forcer partout où l'auteur du .abc a placé une barre de
-        mesure. Est-ce qu'il faut les préciser explicitement:
-	- à la fin du morceau?
-	- avec les répétitions?
-	- avec les alternatives?
-	ou est-ce que lilypond fait le test?
-	Est-ce qu'une barre spéciale e.g. \bar "||" est utilisée pour le
-        bar-checking, ou est-ce qu'il faut ajouter un bar check en plus?
 
 Divers:
 	Donner du contexte à toutes les exceptions AbcSyntaxError
