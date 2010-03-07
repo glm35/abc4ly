@@ -12,28 +12,8 @@ Bar check:
 	Est-ce qu'une barre spéciale e.g. \bar "||" est utilisée pour le
         bar-checking, ou est-ce qu'il faut ajouter un bar check en plus?
 
-Répétitions et barres de mesures:
-	+_"| notes | autres notes |"_+
-	+notes + |: autres notes :| (reel_amix)+
-	+_"|: notes :|"_+
-	+_"|: notes | autres notes :|"_+
-        +_"|: notes :| + |: autres notes :|"_+
-	+_"|: notes :: autres notes :|"_+
-	" notes :|" (début de répétition implicite au début du morceau)
-	erreur: répétition pas refermée
-	erreur(?): répétitions impriquées
-
-Anacrouse
-	+2 croches+
-	+noire pointée (our_kate)+
-	+triolets+
-	n-uplets
-	Réduction (e.g. 8*2 => 4)
-	4*1 en 12/8
-	Factoriser (fonction) le code de réduction de la durée d'une
-        note dans ses composantes base et multiplier.
-
 Traiter la durée des notes:
+	En 9/8: "B9" (breeze in batz)
 	+Calculer la durée des notes par défaut (default note length)+
 	Gérer le champ informatif "default note length" (L:) qui permet de changer la durée des notes par défaut:
 		+Dans l'entête+
@@ -68,6 +48,27 @@ Traiter la durée des notes:
 		après le symbole "début de triolet"
 
 	Gérer les n-uplets (avec n variant de 2 à 9)
+
+Répétitions et barres de mesures:
+	+_"| notes | autres notes |"_+
+	+notes + |: autres notes :| (reel_amix)+
+	+_"|: notes :|"_+
+	+_"|: notes | autres notes :|"_+
+        +_"|: notes :| + |: autres notes :|"_+
+	+_"|: notes :: autres notes :|"_+
+	" notes :|" (début de répétition implicite au début du morceau)
+	erreur: répétition pas refermée
+	erreur(?): répétitions impriquées
+
+Anacrouse
+	+2 croches+
+	+noire pointée (our_kate)+
+	+triolets+
+	n-uplets
+	Réduction (e.g. 8*2 => 4)
+	4*1 en 12/8
+	Factoriser (fonction) le code de réduction de la durée d'une
+        note dans ses composantes base et multiplier.
 
 Alternatives:
 	+Deux alternatives, une mesure par alternative+
