@@ -1,27 +1,19 @@
 * Feuille de route
 ** P0
-Répétitions et barres de mesures:
-	+_"| notes | autres notes |"_+
-	+notes + |: autres notes :| (reel_amix)+
-	+_"|: notes :|"_+
-	+_"|: notes | autres notes :|"_+
-        +_"|: notes :| + |: autres notes :|"_+
-	+_"|: notes :: autres notes :|"_+
-	" notes :|" (début de répétition implicite au début du morceau)
-	erreur: répétition pas refermée
-	erreur(?): répétitions impriquées
+Bar check:	
+	'\bar "||"' à la fin d'une alternative (the wind that shakes the barley)
 
-Anacrouse
-	+2 croches+
-	+noire pointée (our_kate)+
-	+triolets+
-	n-uplets
-	Réduction (e.g. 8*2 => 4)
-	4*1 en 12/8
-	Factoriser (fonction) le code de réduction de la durée d'une
-        note dans ses composantes base et multiplier.
+	A forcer partout où l'auteur du .abc a placé une barre de
+        mesure. Est-ce qu'il faut les préciser explicitement:
+	- à la fin du morceau?
+	- avec les répétitions?
+	- avec les alternatives?
+	ou est-ce que lilypond fait le test?
+	Est-ce qu'une barre spéciale e.g. \bar "||" est utilisée pour le
+        bar-checking, ou est-ce qu'il faut ajouter un bar check en plus?
 
 Traiter la durée des notes:
+	En 9/8: "B9" (breeze in batz)
 	+Calculer la durée des notes par défaut (default note length)+
 	Gérer le champ informatif "default note length" (L:) qui permet de changer la durée des notes par défaut:
 		+Dans l'entête+
@@ -56,6 +48,27 @@ Traiter la durée des notes:
 		après le symbole "début de triolet"
 
 	Gérer les n-uplets (avec n variant de 2 à 9)
+
+Répétitions et barres de mesures:
+	+_"| notes | autres notes |"_+
+	+notes + |: autres notes :| (reel_amix)+
+	+_"|: notes :|"_+
+	+_"|: notes | autres notes :|"_+
+        +_"|: notes :| + |: autres notes :|"_+
+	+_"|: notes :: autres notes :|"_+
+	" notes :|" (début de répétition implicite au début du morceau)
+	erreur: répétition pas refermée
+	erreur(?): répétitions impriquées
+
+Anacrouse
+	+2 croches+
+	+noire pointée (our_kate)+
+	+triolets+
+	n-uplets
+	Réduction (e.g. 8*2 => 4)
+	4*1 en 12/8
+	Factoriser (fonction) le code de réduction de la durée d'une
+        note dans ses composantes base et multiplier.
 
 Alternatives:
 	+Deux alternatives, une mesure par alternative+
@@ -115,16 +128,6 @@ Ligne de commande:
         comportement que abc2ly)
 		Sans option (juste un fichier abc)
 		+Avec option -o+
-
-Bar check:
-	A forcer partout où l'auteur du .abc a placé une barre de
-        mesure. Est-ce qu'il faut les préciser explicitement:
-	- à la fin du morceau?
-	- avec les répétitions?
-	- avec les alternatives?
-	ou est-ce que lilypond fait le test?
-	Est-ce qu'une barre spéciale e.g. \bar "||" est utilisée pour le
-        bar-checking, ou est-ce qu'il faut ajouter un bar check en plus?
 
 Divers:
 	Donner du contexte à toutes les exceptions AbcSyntaxError
