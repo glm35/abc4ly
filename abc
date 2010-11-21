@@ -1,0 +1,177 @@
+#!/bin/bash
+
+set -e
+#set -x
+
+ME=$(basename "$0")
+
+# ----------------------------------------------------------------------------
+# Hard-coded options
+# ----------------------------------------------------------------------------
+
+TMP=/tmp
+MIDIPLAYER=timidity
+
+# ----------------------------------------------------------------------------
+# Configuration options
+# (setable with command line parameters)
+# ----------------------------------------------------------------------------
+
+VERBOSE=no
+
+# ----------------------------------------------------------------------------
+# Script usage
+# ----------------------------------------------------------------------------
+
+show_usage()
+{
+    cat <<EOF
+$ME - Play and print ABC files
+Usage:
+    $ME [OPTIONS] COMMAND ABC_FILE
+
+COMMANDS
+    play: play the file
+    print: create a PDF file from the ABC file and open it in a PDF viewer
+    midi: convert the file to MIDI
+
+OPTIONS
+    -o OUTPUT_FILE_NAME: Output file name. Unless this option is set,
+        the output files are generated in the current directory with the
+        same name as the input file and an extension that matches the
+        output file type.
+
+    -h: show this help message
+    -v: be verbose
+    -d: debug mode (set -x)
+EOF
+}
+
+# ----------------------------------------------------------------------------
+# Parse command line options and configure the script
+# ----------------------------------------------------------------------------
+
+function configure
+{
+    while getopts ":vhd" opt; do
+        case $opt in
+            v)
+                VERBOSE=yes
+                ;;
+            h)
+                show_usage
+                exit 0
+                ;;
+            d)
+                set -x
+                ;;
+            
+            ?)
+                show_usage
+                exit 1
+                ;;
+        esac
+    done
+    
+    if [ $VERBOSE == yes ]; then
+        cat <<EOF
+Configuration for $ME:
+    VERBOSE = $VERBOSE
+EOF
+    fi
+}
+
+# ----------------------------------------------------------------------------
+# The commands
+# ----------------------------------------------------------------------------
+
+function play
+{
+    local abcfile="$1"
+    local tune=$(basename $abcfile .abc)
+
+    abc2midi "$abcfile" -o "${TMP}/$tune.mid"
+    ${MIDIPLAYER} "${TMP}/$tune.mid"
+    rm "${TMP}/$tune.mid"
+}
+
+function make_midi
+{
+    local abcfile="$1"
+    local tune=$(basename $abcfile .abc)
+
+    abc2midi "$abcfile" -o "$tune.mid"
+}
+
+function print
+{
+    local abcfile="$1"
+    local tune=$(basename $abcfile .abc)
+
+    # Convert the ABC file to a lilypond file in the TMP directory
+    local lilyfile="${TMP}/${tune}.ly"
+    abc4ly.py -o "${lilyfile}" "${abcfile}"
+
+    cd "$TMP"
+
+    # Compile the lilypond file in the TMP directory
+    lilypond "${lilyfile}"
+
+    # Run a PDF viewer on the PDF file
+    pdfile="${TMP}/${tune}.pdf"
+    evince "$pdfile"
+
+    # Remove the temporary files
+    rm "$pdfile"
+    rm "$lilyfile"
+}
+
+# ----------------------------------------------------------------------------
+# The main program
+# ----------------------------------------------------------------------------
+
+configure $*
+shift $(($OPTIND-1))
+
+command=$1
+if [ "$command" != "play" ] && [ "$command" != "midi" ] && \
+    [ "$command" != "print" ]; then
+    echo "Error: Invalid command \"$command\""
+    exit 1
+fi
+
+abcfile=$2
+if [ ! -r "$abcfile" ]; then
+    echo "Error: Cannot read \"$abcfile\""
+    exit 1
+fi
+
+case "$command" in
+    "play")
+        play "$abcfile"
+        ;;
+
+    "midi")
+        make_midi "$abcfile"
+        ;;
+
+    "print")
+        print "$abcfile"
+        ;;
+esac
+
+exit 0
+
+# ----------------------------------------------------------------------------
+# Text editor tab configuration
+# ----------------------------------------------------------------------------
+
+# Local Variables:
+# mode: sh
+# tab-width: 4
+# sh-basic-offset: 4
+# sh-indentation: 4
+# indent-tabs-mode: nil
+# End:
+# (the following line needs "set modeline" in .vimrc):
+# vim:expandtab:tabstop=4 softtabstop=4 shiftwidth=4
