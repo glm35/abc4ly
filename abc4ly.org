@@ -1,5 +1,10 @@
 * Feuille de route
 ** P0
+Bug:
+	Quand une altération apparaît dans une mesure, elle n'est pas
+        gardée en mémoire pour les autres notes de la mesure
+        (cf. "cyrille_40_s.abc").
+
 Bar check:	
 	'\bar "||"' à la fin d'une alternative (the wind that shakes the barley)
 
