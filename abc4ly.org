@@ -5,6 +5,8 @@ Bug:
         gardée en mémoire pour les autres notes de la mesure
         (cf. "cyrille_40_s.abc").
 
+	Caractère "~" pas géré (cf "boris_40_s.abc")
+
 Bar check:	
 	'\bar "||"' à la fin d'une alternative (the wind that shakes the barley)
 
