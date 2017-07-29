@@ -119,7 +119,11 @@ function print
 
     # Run a PDF viewer on the PDF file
     pdfile="${TMP}/${tune}.pdf"
-    evince "$pdfile"
+    if ! evince "$pdfile" 2>/dev/null; then
+        if ! xreader "$pdfile" 2>/dev/null; then
+            echo "No known PDF player found (evince, xreader)"
+        fi
+    fi
 
     # Remove the temporary files
     rm "$pdfile"
