@@ -28,12 +28,17 @@ show_usage()
     cat <<EOF
 $ME - Play and print ABC files
 Usage:
-    $ME [OPTIONS] COMMAND ABC_FILE
+    $ME [OPTIONS] play ABC_FILE [REFNUM]
+    $ME [OPTIONS] midi ABC_FILE [REFNUM]
+    $ME [OPTIONS] print ABC_FILE
 
 COMMANDS
-    play: play the file
-    print: create a PDF file from the ABC file and open it in a PDF viewer
-    midi: convert the file to MIDI
+    play [REFNUM]: play the first tune in the file, or the tune whose reference
+        number (X:REFNUM) is REFNUM
+    midi [REFNUM]: convert to MIDI the first tune in the file, or the tune whose
+        reference number (X:REFNUM) is REFNUM
+    print: create a PDF file from the first tune in the ABC file and open it in a
+        PDF viewer. Does not support REFNUM (yet)
 
 OPTIONS
     -o OUTPUT_FILE_NAME: Output file name. Unless this option is set,
@@ -89,8 +94,9 @@ function play
 {
     local abcfile="$1"
     local tune=$(basename $abcfile .abc)
+    local refnum="$2"
 
-    abc2midi "$abcfile" -o "${TMP}/$tune.mid"
+    abc2midi "$abcfile" $refnum -o "${TMP}/$tune.mid"
     ${MIDIPLAYER} "${TMP}/$tune.mid"
     rm "${TMP}/$tune.mid"
 }
@@ -99,8 +105,9 @@ function make_midi
 {
     local abcfile="$1"
     local tune=$(basename $abcfile .abc)
+    local refnum="$2"
 
-    abc2midi "$abcfile" -o "$tune.mid"
+    abc2midi "$abcfile" $refnum -o "$tune.mid"
 }
 
 function print
@@ -146,13 +153,21 @@ if [ ! -r "$abcfile" ]; then
     exit 1
 fi
 
+refnum=$3
+if ! [ x"$refnum" == x ]; then
+    if ! [ $refnum -ge 0 ]; then
+        echo "Error: REFNUM must be an integer greater or equal to 0"
+        exit 1
+    fi
+fi
+
 case "$command" in
     "play")
-        play "$abcfile"
+        play "$abcfile" "$refnum"
         ;;
 
     "midi")
-        make_midi "$abcfile"
+        make_midi "$abcfile" "$refnum"
         ;;
 
     "print")
