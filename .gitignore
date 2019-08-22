@@ -10,3 +10,4 @@ iot/iot-report*
 iot/ly-out/*
 iot/test/*
 tmp/*
+.idea
