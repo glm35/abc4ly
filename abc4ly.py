@@ -893,6 +893,7 @@ melody = {
     finally:
         if ly_file != sys.stdout:
             ly_file.close()
+        abc_file.close()
 
     return tc
 
