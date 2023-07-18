@@ -9,7 +9,7 @@ import abc4ly
 from abc4ly import *
 
 # unittest reminder:
-# assert functions: assertEqual(), assertRaises() and assert_(condition)
+# assert functions: assertEqual(), assertRaises(), assertTrue()
 
 class TestFileOperations(unittest.TestCase):
 
@@ -120,7 +120,7 @@ class TestKeySignature(unittest.TestCase):
             #print e.__str__()
             self.assertEqual(exception_text, e.__str__())
         else:
-            self.assert_(False)
+            self.assertTrue(False)
 
     def test_implicit_major(self):
         self.assertEqual("\key c \major",
@@ -211,46 +211,46 @@ class TestMusicComputer(unittest.TestCase):
 
     def test_get_relative_major_scale_sharp(self):
         # A selection of modes widely used for Irish music
-        self.assert_('c' == get_relative_major_scale('c', 'major'))
-        self.assert_('c' == get_relative_major_scale('a', 'minor'))
-        self.assert_('d' == get_relative_major_scale('b', 'minor'))
-        self.assert_('d' == get_relative_major_scale('e', 'dorian'))
-        self.assert_('d' == get_relative_major_scale('a', 'mixolydian'))
-        self.assert_('g' == get_relative_major_scale('e', 'minor'))
-        self.assert_('g' == get_relative_major_scale('d', 'mixolydian'))
-        self.assert_('a' == get_relative_major_scale('fis', 'minor'))
+        self.assertEqual('c', get_relative_major_scale('c', 'major'))
+        self.assertEqual('c', get_relative_major_scale('a', 'minor'))
+        self.assertEqual('d', get_relative_major_scale('b', 'minor'))
+        self.assertEqual('d', get_relative_major_scale('e', 'dorian'))
+        self.assertEqual('d', get_relative_major_scale('a', 'mixolydian'))
+        self.assertEqual('g', get_relative_major_scale('e', 'minor'))
+        self.assertEqual('g', get_relative_major_scale('d', 'mixolydian'))
+        self.assertEqual('a', get_relative_major_scale('fis', 'minor'))
 
     def test_get_relative_major_scale_flat(self):
-        self.assert_('f' == get_relative_major_scale('f', 'major'))
-        self.assert_('ees' == get_relative_major_scale('ees', 'major'))
-        self.assert_('bes' == get_relative_major_scale('g', 'minor'))
+        self.assertEqual('f', get_relative_major_scale('f', 'major'))
+        self.assertEqual('ees', get_relative_major_scale('ees', 'major'))
+        self.assertEqual('bes', get_relative_major_scale('g', 'minor'))
 
     def test_pitch_dico_cmaj(self):
-        self.assert_(self.dico == create_pitch_dico("\key c \major"))
+        self.assertEqual(self.dico, create_pitch_dico("\key c \major"))
 
     def test_pitch_dico_dmaj(self):
         self.dico['f'] = 'fis'
         self.dico['c'] = 'cis'
-        self.assert_(self.dico == create_pitch_dico("\key d \major"))
+        self.assertEqual(self.dico, create_pitch_dico("\key d \major"))
 
     def test_pitch_dico_cismaj(self):
         for n in "fcgdaeb":
             self.dico[n] = n + 'is'
-        self.assert_(self.dico == create_pitch_dico("\key cis \major"))
+        self.assertEqual(self.dico, create_pitch_dico("\key cis \major"))
 
     def test_pitch_dico_besmaj(self):
         self.dico['b'] = 'bes'
         self.dico['e'] = 'ees'
-        self.assert_(self.dico == create_pitch_dico("\key bes \major"))
+        self.assertEqual(self.dico, create_pitch_dico("\key bes \major"))
 
     def test_pitch_dico_fmaj(self):
         self.dico['b'] = 'bes'
-        self.assert_(self.dico == create_pitch_dico("\key f \major"))
+        self.assertEqual(self.dico, create_pitch_dico("\key f \major"))
 
     def test_pitch_dico_gesmaj(self):
         for f in "beadgc":
             self.dico[f] = f + 'es'
-        self.assert_(self.dico == create_pitch_dico("\key ges \major"))
+        self.assertEqual(self.dico, create_pitch_dico("\key ges \major"))
 
 #    def test_pitch_dico_cesmaj(self):
 #        for f in "beadgcf":
@@ -911,8 +911,8 @@ class TestOutputFramework(unittest.TestCase):
         except:
             pass
         convert(test, out)
-        self.assert_(filecmp.cmp(ref, out),
-                     "Files " + ref + " and " + out + " differ")
+        self.assertTrue(filecmp.cmp(ref, out),
+                        "Files " + ref + " and " + out + " differ")
 
 
 class TestOutput(TestOutputFramework):
@@ -977,9 +977,9 @@ class TestCommandLineOptions(unittest.TestCase):
         except:
             pass
         ret = os.system("./abc4ly.py -o  {0} {1}".format(out, test))
-        self.assert_(0 == ret)
-        self.assert_(filecmp.cmp(ref, out),
-                     "Files " + ref + " and " + out + " differ")
+        self.assertEqual(0, ret)
+        self.assertTrue(filecmp.cmp(ref, out),
+                        "Files " + ref + " and " + out + " differ")
 
 
 if __name__ == '__main__':
