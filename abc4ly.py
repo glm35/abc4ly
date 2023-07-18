@@ -325,9 +325,9 @@ def read_line(tc, line):
 def write_header(tc, ly_file):
     ly_file.write("\n" r'''\header {''' "\n")
     ly_file.write('    title = "{0}"\n'.format(tc.title))
-    if tc.composer <>"":
+    if tc.composer != "":
         ly_file.write('    composer = "{0}"\n'.format(tc.composer))
-    if tc.rythm <> "":
+    if tc.rythm != "":
         ly_file.write('    meter = "{0}"\n'.format(tc.rythm))
     ly_file.write("}\n")
 
