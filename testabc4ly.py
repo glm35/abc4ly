@@ -759,6 +759,13 @@ class TestAnacrusis(TestTranslateNotes):
         self.tc.first_bar = True
         self.translate_and_test(abc_notes, expected_output)
 
+    def test_anacrusis_with_triplets(self):
+        read_info_line(self.tc, "M:4/4")
+        abc_notes = "(3DEF |"
+        expected_output = ["\partial 4 \times 2/3 { d'8 e'8 f'8 } |"]
+        self.tc.first_bar = True
+        self.translate_and_test(abc_notes, expected_output)
+
     def test_no_anacrusis_1(self):
         read_info_line(self.tc, "M:4/4")
         abc_notes = "C2 D2 E2 F2 | E2 F2 G2 A2 |"

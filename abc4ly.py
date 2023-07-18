@@ -131,9 +131,10 @@ class TuneContext():
         if meter_num == self.bar_duration.mult and meter_den == self.bar_duration.base:
             partial_string = ""
         elif self.bar_duration.mult == 1:
-            partial_string = "\partial {0} ".format(self.bar_duration.base)
+            partial_string = "\partial {0} ".format(int(self.bar_duration.base))
         else:
-            partial_string = "\partial {0}*{1} ".format(self.bar_duration.base, self.bar_duration.mult)
+            partial_string = "\partial {0}*{1} ".format(int(self.bar_duration.base),
+                                                        int(self.bar_duration.mult))
         return partial_string
 
     def flush_line(self, abc_bar="", block=False, block_begin=False, block_end=False, in_block=False):
@@ -215,7 +216,7 @@ class Note():
 
     def lilyfy(self):
         ly_note = self.pitch + self.octaver
-        ly_note += str(self.duration)
+        ly_note += str(int(self.duration))
         if self.dotted:
             ly_note += "."
         if self.tied:
