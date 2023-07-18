@@ -94,7 +94,7 @@ class TestTimeSignature(unittest.TestCase):
 
         # Check that a time signature including spaces is recognized
         self.assertEqual(normalize_time_signature(" 4 /   4"), "4/4")
-        
+
         # Check that a syntactically incorrect time signature raises an
         # exception
         self.assertRaises(AbcSyntaxError, normalize_time_signature, "4/foo")

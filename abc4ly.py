@@ -127,7 +127,7 @@ class TuneContext():
                 q = meter_den / self.bar_duration.base
                 self.bar_duration.base = meter_den
                 self.bar_duration.mult *= q
-        
+
         if meter_num == self.bar_duration.mult and meter_den == self.bar_duration.base:
             partial_string = ""
         elif self.bar_duration.mult == 1:
@@ -175,7 +175,7 @@ class TuneContext():
         self.alternative = 1
         self.indent_level += 1
         # Remark: No way not to use raw strings with this crazy "\a"
-    
+
     def begin_alternative_2(self):
         self.alternative = 2
 
@@ -517,7 +517,7 @@ def get_bar(abc_snippet):
             break
 
     return bar
-        
+
 
 # Given a line of ABC music, translate the line to lilypond
 
@@ -597,7 +597,7 @@ def translate_notes(tc, abc_line, last_line=True):
                 begin_alternative_2 = True
             else:
                 maybe_end_alternative = True
-                
+
             # flush bar
             if flush_bar:
                 if tc.alternative == 0: # not in alternative
@@ -706,7 +706,7 @@ def translate_notes(tc, abc_line, last_line=True):
                 tc.state = "check_ties"
             else:
                 tc.state = "pitch"
-        
+
         elif tc.state == "pitch":
             abc_pitch = al[0]
             if not abc_pitch in pitches:
