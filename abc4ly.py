@@ -290,7 +290,7 @@ def read_info_line(tc, line):
     raw_field = line[2:] # Remove the leading "T:" or so
     # Remove leading/trailing spaces, and substititue any occurence
     # of more than one space by just one space
-    nice_field = string.join(raw_field.split(), " ")
+    nice_field = " ".join(raw_field.split())
     if line[0] == 'T':
         if tc.title == "":
             tc.title = nice_field
@@ -344,7 +344,7 @@ def normalize_time_signature(meter):
                 not meter_tab[0].isdigit() or \
                 not meter_tab[1].isdigit():
             raise AbcSyntaxError
-        time_signature = string.join(meter_tab, "/")
+        time_signature = "/".join(meter_tab)
     return time_signature
 
 def write_time_signature(ly_file, meter):
