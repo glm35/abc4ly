@@ -116,7 +116,7 @@ class TestKeySignature(unittest.TestCase):
     def translate_and_check_exception(self, tc, abc_snippet, exception_text):
         try:
             translate_key_signature(tc, abc_snippet)
-        except (AbcSyntaxError), e:
+        except AbcSyntaxError as e:
             #print e.__str__()
             self.assertEqual(exception_text, e.__str__())
         else:
@@ -291,7 +291,7 @@ class TestTranslateNotes(unittest.TestCase):
     def translate_and_check_exception(self, abc_notes, exception_text):
         try:
             translate_notes(self.tc, abc_notes)
-        except (AbcSyntaxError), e:
+        except AbcSyntaxError as e:
             #print e.__str__()
             self.assertEqual(e.__str__(), exception_text)
         else:
